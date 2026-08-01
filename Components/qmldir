@@ -1,0 +1,8 @@
+singleton Theme 1.0 Theme.qml
+singleton Config 1.0 Config.qml
+Anim 1.0 Anim.qml
+DashWidget 1.0 DashWidget.qml
+Dashboard 1.0 Dashboard.qml
+Reveal 1.0 Reveal.qml
+ConcaveCorner 1.0 ConcaveCorner.qml
+ScreenCorners 1.0 ScreenCorners.qml
