@@ -1,0 +1,8 @@
+SettingsWindow 1.0 SettingsWindow.qml
+SettingsPage 1.0 SettingsPage.qml
+SettingGroup 1.0 SettingGroup.qml
+SettingRow 1.0 SettingRow.qml
+SettingSlider 1.0 SettingSlider.qml
+SettingToggle 1.0 SettingToggle.qml
+SettingText 1.0 SettingText.qml
+SettingColor 1.0 SettingColor.qml

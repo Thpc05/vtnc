@@ -59,6 +59,8 @@ Singleton {
     readonly property string ipcToolsTarget: "tools"
     readonly property string ipcSessionTarget: "session"
     readonly property string ipcClipboardTarget: "clipboard"
+    // App de configuração (janela flutuante, não faz parte da shell)
+    readonly property string ipcConfigTarget: "config"
 
     // ════════════════════════════════════════
     //  OSD / NOTIFICAÇÕES

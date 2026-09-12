@@ -8,6 +8,7 @@ import "Config"
 import "Island"
 import "Island/Bar"
 import "Services"
+import "Settings"
 import "Ui"
 
 // ═══════════════════════════════════════════
@@ -21,6 +22,15 @@ import "Ui"
 // ═══════════════════════════════════════════
 ShellRoot {
     id: shell
+
+    // ═══ CONFIG — janela flutuante, fora da shell desenhada ═══
+    // Uma só (não por tela) e nasce fechada. Mora aqui dentro de
+    // propósito: escreve nos MESMOS singletons que a shell lê, então
+    // cada slider reflete ao vivo na ilha
+    SettingsWindow {
+        id: configWin
+        visible: false
+    }
 
     // ═══ PILL — a ilha ═══
     Variants {
@@ -215,6 +225,7 @@ ShellRoot {
     //  qs ipc call island toggle <nome> | open <nome> | close
     //  qs ipc -t pill -c toggle | open | close   (ilha normal ↔ wide)
     //  qs ipc -t dashboard -c toggle | open | close
+    //  qs ipc -t config -c toggle | open | close    (app de config)
     //  qs ipc -t osd -c volume | brightness
     //  qs ipc -t launcher | tools | clipboard | session -c toggle
     //  qs ipc -t wallpaper -c toggle | random
@@ -234,6 +245,13 @@ ShellRoot {
         function toggle(): void { Persist.state.wideBar = !Persist.state.wideBar }
         function open(): void { Persist.state.wideBar = true }
         function close(): void { Persist.state.wideBar = false }
+    }
+
+    IpcHandler {
+        target: Config.ipcConfigTarget
+        function toggle(): void { configWin.visible = !configWin.visible }
+        function open(): void { configWin.visible = true }
+        function close(): void { configWin.visible = false }
     }
 
     IpcHandler {
