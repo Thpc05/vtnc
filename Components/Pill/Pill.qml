@@ -187,13 +187,7 @@ Item {
         // Radius deriva da height JÁ animada, sem Behavior próprio: um
         // Behavior aqui perseguiria um alvo móvel e ficaria pra trás,
         // deixando a pill quadrada no meio do morph
-        radius: {
-            const rMax = root.activeFace && root.activeFace.contentRadius >= 0
-                ? root.activeFace.contentRadius
-                : Pill_Theme.radius
-            return Math.min(rMax, height / 2)
-        }
-
+        radius: Pill_Theme.radius
         // Behaviors SÓ durante a troca de face — dentro de uma face a
         // pill segue cru o tamanho que a própria face anima
         Behavior on width {

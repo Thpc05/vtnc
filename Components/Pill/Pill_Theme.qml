@@ -40,6 +40,6 @@ QtObject {
     // ════════════════════════════════════════
     readonly property real width: 100
     readonly property real height: 32
-    readonly property real wideWidth: 200
+    readonly property real wideWidth: 150
     readonly property real wideHeight: 32
 }

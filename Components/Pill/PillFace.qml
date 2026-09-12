@@ -26,7 +26,7 @@ Item {
     property real contentWidth: 100
     property real contentHeight: 32
     // -1 = radius padrão (metade da altura, limitado por Pill_Theme.radius)
-    property real contentRadius: -1
+    property real contentRadius: 32
 
     // Apps: capturam teclado e clique-fora-fecha
     property bool grabsKeyboard: false
