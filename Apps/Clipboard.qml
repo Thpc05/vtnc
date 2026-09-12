@@ -1,8 +1,9 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import "../Components"
-import "../Components/Pill"
+import "../Config"
+import "../Island"
+import "../Ui"
 
 // ═══════════════════════════════════════════
 //  CLIPBOARD — histórico do cliphist.
@@ -27,7 +28,7 @@ import "../Components/Pill"
 //  Requer o coletor: wl-paste --type text/image --watch cliphist store
 //  IPC: qs -c vtnc ipc call clipboard toggle
 // ═══════════════════════════════════════════
-PillFace {
+IslandFace {
     id: root
 
     name: "clipboard"

@@ -3,11 +3,11 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Services.UPower
-import "../Components"
+import "../Config"
 
 // ═══════════════════════════════════════════
 //  BATTERY SERVICE — Estado da bateria (UPower) num lugar só.
-//  O ícone (Modules/Battery) e o painel (Reveals/BatteryReveal)
+//  O ícone (Island/Bar/Battery) e o painel (Island/Bar/BatteryReveal)
 //  liam o mesmo dado cada um por si — inclusive a tabela de glyphs,
 //  que é derivação do nível, não desenho.
 //

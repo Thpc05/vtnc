@@ -1,0 +1,12 @@
+Bar 1.0 Bar.qml
+Battery 1.0 Battery.qml
+BatteryReveal 1.0 BatteryReveal.qml
+Center 1.0 Center.qml
+Media 1.0 Media.qml
+MediaReveal 1.0 MediaReveal.qml
+NotifReveal 1.0 NotifReveal.qml
+OsdBar 1.0 OsdBar.qml
+Reveal 1.0 Reveal.qml
+TrayReveal 1.0 TrayReveal.qml
+WorkspaceReveal 1.0 WorkspaceReveal.qml
+Workspaces 1.0 Workspaces.qml

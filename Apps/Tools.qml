@@ -1,8 +1,8 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import "../Components"
-import "../Components/Pill"
+import "../Config"
+import "../Island"
 
 // ═══════════════════════════════════════════
 //  TOOLS — paleta de ferramentas rápidas.
@@ -20,7 +20,7 @@ import "../Components/Pill"
 //
 //  IPC: qs -c vtnc ipc call tools toggle
 // ═══════════════════════════════════════════
-PillFace {
+IslandFace {
     id: root
 
     name: "tools"

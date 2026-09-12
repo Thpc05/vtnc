@@ -4,7 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Pipewire
-import "../Components"
+import "../Config"
 
 // ═══════════════════════════════════════════
 //  OSD SERVICE — Estado dos OSDs de volume e brilho num lugar só.

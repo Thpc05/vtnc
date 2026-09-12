@@ -1,0 +1,3 @@
+singleton Config 1.0 Config.qml
+singleton Motion 1.0 Motion.qml
+singleton Theme 1.0 Theme.qml

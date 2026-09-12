@@ -1,6 +1,6 @@
 import QtQuick
-import "../Components"
-import "../Components/Pill"
+import "../Config"
+import "../Island"
 import "../Services"
 
 // ═══════════════════════════════════════════
@@ -12,7 +12,7 @@ import "../Services"
 //
 //  IPC: qs -c vtnc ipc call session toggle
 // ═══════════════════════════════════════════
-PillFace {
+IslandFace {
     id: root
 
     name: "session"

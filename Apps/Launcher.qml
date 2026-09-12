@@ -1,14 +1,15 @@
 import QtQuick
 import Quickshell
 import Quickshell.Widgets
-import "../Components"
-import "../Components/Pill"
+import "../Config"
+import "../Island"
+import "../Ui"
 
 // ═══════════════════════════════════════════
 //  LAUNCHER — Busca e lança apps (.desktop).
 //  App face: captura o teclado enquanto aberto.
 // ═══════════════════════════════════════════
-PillFace {
+IslandFace {
     id: root
 
     name: "launcher"

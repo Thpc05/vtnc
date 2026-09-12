@@ -2,8 +2,9 @@ import QtQuick
 import QtQuick.Effects
 import Quickshell
 import Quickshell.Io
-import "../Components"
-import "../Components/Pill"
+import "../Config"
+import "../Island"
+import "../Ui"
 
 // ═══════════════════════════════════════════
 //  WALLPAPER — Seletor de wallpaper (hyprpaper).
@@ -13,7 +14,7 @@ import "../Components/Pill"
 //  IPC:  qs ipc call wallpaper toggle   → abre/fecha o seletor
 //        qs ipc call wallpaper random   → aplica um aleatório
 // ═══════════════════════════════════════════
-PillFace {
+IslandFace {
     id: root
 
     name: "wallpaper"

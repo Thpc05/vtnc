@@ -1,0 +1,5 @@
+BluetoothWidget 1.0 BluetoothWidget.qml
+CalendarWidget 1.0 CalendarWidget.qml
+MediaWidget 1.0 MediaWidget.qml
+NetworkWidget 1.0 NetworkWidget.qml
+VolumeWidget 1.0 VolumeWidget.qml

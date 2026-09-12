@@ -3,10 +3,12 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
-import "Components"
-import "Components/Pill"
-import "Services"
 import "Apps"
+import "Config"
+import "Island"
+import "Island/Bar"
+import "Services"
+import "Ui"
 
 // ═══════════════════════════════════════════
 //  VTNC — shell de Ilha Dinâmica.
@@ -115,7 +117,7 @@ ShellRoot {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 height: win.revealHover
-                    ? Pill_Theme.marginTop + island.height + 24
+                    ? IslandTheme.marginTop + island.height + 24
                     : Config.autoHideRevealZone
 
                 // A espera vale DOBRADO aqui: esta faixa cobre a tela
@@ -158,11 +160,11 @@ ShellRoot {
             }
 
             // ═══ A ILHA ═══
-            Pill {
+            Island {
                 id: island
 
                 anchors.top: parent.top
-                anchors.topMargin: Pill_Theme.marginTop
+                anchors.topMargin: IslandTheme.marginTop
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 // ── AUTOHIDE ── só a animação escolhida age; as outras
@@ -173,7 +175,7 @@ ShellRoot {
                     // slide: sobe pra fora da tela
                     Translate {
                         y: Config.autoHideAnim === "slide"
-                            ? -win.hideP * (island.height + Pill_Theme.marginTop + 20)
+                            ? -win.hideP * (island.height + IslandTheme.marginTop + 20)
                             : 0
                     },
                     // retract: encolhe a largura pro centro
@@ -194,7 +196,7 @@ ShellRoot {
                 // Volume/brilho NÃO são faces: são conteúdo do Center,
                 // com estado no OsdService.
                 faces: [
-                    PillBar {},
+                    Bar {},
                     Launcher {},
                     Wallpaper {},
                     Tools {},
