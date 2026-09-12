@@ -59,10 +59,6 @@ Singleton {
 
             // Modo da ilha (normal ↔ wide)
             property bool wideBar: false
-            // Widgets da dashboard: pins (nome → bool) e posição no
-            // grid (nome → {col, row}, em subcolunas)
-            property var widgetPins: ({})
-            property var widgetLayout: ({})
         }
     }
 }

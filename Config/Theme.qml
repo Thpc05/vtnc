@@ -122,14 +122,10 @@ Singleton {
     //  A altura total deriva do layout — não existe dashHeight fixo
     // ════════════════════════════════════════
     readonly property real dashTopHeight: d.dashTopHeight
-    readonly property int dashColumns: d.dashColumns
+    // Altura de um card de toggle. O card de mídia vale dois deles;
+    // os sliders, 0.72 — ver Dashboard/Dashboard.qml
     readonly property real dashCell: d.dashCell
     readonly property real dashGap: d.dashGap
-    // Derivados das cores: o card é preto como a ilha, e a borda só
-    // existe pra acender no hover
-    readonly property color widgetBgColor: bg
-    readonly property color widgetBorderColor: bg
-    readonly property color widgetBorderHoverColor: accent
     // Blur da capa no fundo do MediaWidget (0 → 1)
     readonly property real widgetMediaBlur: d.widgetMediaBlur
 
@@ -206,7 +202,6 @@ Singleton {
 
             // dashboard
             property real dashTopHeight: 44
-            property int dashColumns: 4
             property real dashCell: 64
             property real dashGap: 8
             property real widgetMediaBlur: 0.6

@@ -443,7 +443,7 @@ IslandFace {
                 radius: 12
                 // Fundo bg (preto) nos DOIS estados; seleção fala
                 // pelo accent do ícone e pela própria expansão
-                color: Theme.widgetBgColor
+                color: Theme.bg
                 clip: true
 
                 // ── ÍCONE DO TIPO: fixo à esquerda nos dois estados ──

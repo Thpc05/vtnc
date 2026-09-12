@@ -16,14 +16,8 @@ SettingsPage {
             onCommit: v => Theme.data.dashWidth = v
         }
         SettingSlider {
-            label: "Colunas"
-            hint: "A unidade interna é a SUBCOLUNA: metade de uma coluna"
-            value: Theme.dashColumns
-            from: 1; to: 8
-            onCommit: v => Theme.data.dashColumns = v
-        }
-        SettingSlider {
-            label: "Altura da célula"
+            label: "Altura do card"
+            hint: "O card de mídia vale dois; os sliders, 0.72"
             value: Theme.dashCell
             from: 24; to: 160; suffix: "px"
             onCommit: v => Theme.data.dashCell = v

@@ -85,6 +85,21 @@ Singleton {
         onTriggered: root.active = "none"
     }
 
+    // ── ESCRITA DO BRILHO ──
+    // sysfs é root-only (conferido: /sys/class/backlight/*/brightness
+    // não é gravável pelo usuário), então quem escreve é o
+    // brightnessctl — ele resolve a permissão via setuid/udev.
+    // O valor de volta continua vindo do polling do sysfs: não
+    // guardamos um valor otimista aqui, senão a barra mostraria um
+    // brilho que o hardware pode ter recusado.
+    Process { id: brightnessProc }
+
+    function setBrightness(pct) {
+        const p = Math.max(1, Math.min(100, Math.round(pct)))
+        brightnessProc.command = ["brightnessctl", "set", p + "%"]
+        brightnessProc.running = true
+    }
+
     function show(name) {
         active = name
         hideTimer.restart()

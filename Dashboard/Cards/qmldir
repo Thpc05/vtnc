@@ -1,0 +1,7 @@
+ToggleCard 1.0 ToggleCard.qml
+SliderCard 1.0 SliderCard.qml
+WifiCard 1.0 WifiCard.qml
+BluetoothCard 1.0 BluetoothCard.qml
+VolumeCard 1.0 VolumeCard.qml
+BrightnessCard 1.0 BrightnessCard.qml
+MediaCard 1.0 MediaCard.qml
