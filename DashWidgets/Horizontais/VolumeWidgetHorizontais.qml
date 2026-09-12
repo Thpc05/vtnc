@@ -75,9 +75,9 @@ DashWidget {
 
             Rectangle {
                 anchors.fill: parent
-                radius: 7
+                radius: Theme.radiusChip
                 color: muteHover.hovered ? Theme.hoverLayer : "transparent"
-                Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                Behavior on color { ColorAnimation { duration: Motion.instant } }
             }
 
             Text {
@@ -85,7 +85,7 @@ DashWidget {
                 text: root.icon
                 color: root.expanded ? Theme.accent : Theme.textMuted
                 font { family: Theme.fontIcon; pixelSize: 16 }
-                Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                Behavior on color { ColorAnimation { duration: Motion.instant } }
             }
 
             HoverHandler { id: muteHover }
@@ -197,9 +197,9 @@ DashWidget {
 
                         Rectangle {
                             anchors.fill: parent
-                            radius: 5
+                            radius: Theme.radiusChip
                             color: inHover.hovered ? Theme.hoverLayer : "transparent"
-                            Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                            Behavior on color { ColorAnimation { duration: Motion.instant } }
                         }
 
                         Text {
@@ -212,7 +212,7 @@ DashWidget {
                             color: inItem.current ? Theme.accent : Theme.textSecondary
                             elide: Text.ElideRight
                             font { family: Theme.fontDisplay; pixelSize: 11 }
-                            Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                            Behavior on color { ColorAnimation { duration: Motion.instant } }
                         }
 
                         HoverHandler { id: inHover }
@@ -254,9 +254,9 @@ DashWidget {
 
                         Rectangle {
                             anchors.fill: parent
-                            radius: 5
+                            radius: Theme.radiusChip
                             color: outHover.hovered ? Theme.hoverLayer : "transparent"
-                            Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                            Behavior on color { ColorAnimation { duration: Motion.instant } }
                         }
 
                         Text {
@@ -269,7 +269,7 @@ DashWidget {
                             color: outItem.current ? Theme.accent : Theme.textSecondary
                             elide: Text.ElideRight
                             font { family: Theme.fontDisplay; pixelSize: 11 }
-                            Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                            Behavior on color { ColorAnimation { duration: Motion.instant } }
                         }
 
                         HoverHandler { id: outHover }
@@ -329,7 +329,7 @@ DashWidget {
                             color: appItem.appMuted ? Theme.textMuted : Theme.textSecondary
                             elide: Text.ElideRight
                             font { family: Theme.fontDisplay; pixelSize: 10 }
-                            Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                            Behavior on color { ColorAnimation { duration: Motion.instant } }
 
                             TapHandler {
                                 gesturePolicy: TapHandler.ReleaseWithinBounds

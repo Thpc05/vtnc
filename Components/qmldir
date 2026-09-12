@@ -1,6 +1,9 @@
 singleton Theme 1.0 Theme.qml
 singleton Config 1.0 Config.qml
-Anim 1.0 Anim.qml
+singleton Motion 1.0 Motion.qml
+Settle 1.0 Settle.qml
+Smooth 1.0 Smooth.qml
+HoverGroup 1.0 HoverGroup.qml
 DashWidget 1.0 DashWidget.qml
 Dashboard 1.0 Dashboard.qml
 Reveal 1.0 Reveal.qml

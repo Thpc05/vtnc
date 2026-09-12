@@ -36,30 +36,12 @@ QtObject {
     readonly property string fontIcon: "JetBrainsMono Nerd Font Propo"
 
     // ════════════════════════════════════════
-    //  BOUNCE — personalidade das animações
-    //  Aplicado a TODA animação de tamanho/expansão (via Anim.qml):
-    //  0 = assenta seco · 1 ≈ sutil · 1.70158 = padrão Qt · 3 = exagerado
+    //  TEMPOS E CURVAS — não moram mais aqui.
+    //  A escala de movimento é do Components/Motion.qml (durações +
+    //  assentamento) e os dois componentes de animação são o Settle
+    //  (forma) e o Smooth (posição/opacidade).
+    //  A coreografia do morph, essa é da ilha: Pill/Pill_Theme.qml.
     // ════════════════════════════════════════
-    readonly property real bounce: 0
-    // Duração padrão de um Anim (sobrescrevível no uso)
-    readonly property int animDuration: 300
-
-    // ════════════════════════════════════════
-    //  TEMPOS GERAIS (ms)
-    //  (a coreografia do morph é da ilha — vive no Pill_Theme)
-    // ════════════════════════════════════════
-    // Expansões de conteúdo (hover, notificação mirada, reveal)
-    readonly property int expandDuration: 320
-    // Dashboard: pesa como uma troca de face, mas não passa pela
-    // coreografia do morph — cresce direto. Sem tempo próprio ela
-    // assenta antes dos apps e parece disparada do lado deles
-    readonly property int dashDuration: 430
-    // Tracking dos sliders OSD (volume/brilho com botão segurado)
-    readonly property int osdTrackDuration: 140
-    // Fades genéricos de conteúdo
-    readonly property int fadeDuration: 150
-    // Feedback de hover (cor/mira/escala de botões)
-    readonly property int hoverFade: 120
 
     // ════════════════════════════════════════
     //  FADE TARDIO — conteúdo que entra na parte final de um morph.
@@ -82,9 +64,57 @@ QtObject {
     // Respiro interno de apps/OSDs: é o padding do CONTEÚDO, não da
     // pill — por isso é geral
     readonly property real contentPadding: 14
+    // Respiro dentro de um card (widget da dashboard)
+    readonly property real cardPadding: 12
     // Tamanho que os apps pedem quando abrem
     readonly property real dashWidth: 600
     readonly property real launcherWidth: 520
+
+    // ════════════════════════════════════════
+    //  RAIO — a borda da shell, uma regra só.
+    //
+    //  Filosofia Apple: cantos CONCÊNTRICOS. Quando B mora dentro de A
+    //  com um respiro p, o raio de B é o de A MENOS p. Só assim as
+    //  duas curvas correm paralelas; raios escolhidos a olho fazem a
+    //  curva de dentro brigar com a de fora, e é isso que faz uma
+    //  interface parecer montada em vez de desenhada.
+    //
+    //  A ILHA fica FORA da cadeia, e isso é decisão, não descuido: o
+    //  canto dela é CONSTANTE em qualquer altura (barra, reveal
+    //  aberto, dashboard). Derivar o raio da altura — stadium quando
+    //  baixa, squircle quando alta — foi testado, e o que incomodava
+    //  era justamente o canto MUDAR durante a abertura.
+    //
+    //  Consequência: a cadeia concêntrica tem raiz no CARD, não na
+    //  ilha. Herdar de uma ilha de canto 16 daria card = 16 − 14 = 2 e
+    //  achataria os widgets. E, já que a ilha não muda mais de canto,
+    //  ela deixou de ser uma referência útil pro que mora dentro.
+    //
+    //  O que sobra de concêntrico é card → chip — e é o par que
+    //  importa de verdade: o chip mora NO canto do card, encostado
+    //  nele. O card flutua no meio da ilha, longe do canto dela.
+    //
+    //  FORA da cadeia (e de propósito): indicadores que são FORMA, não
+    //  moldura — o dot do workspace, a barra de progresso, o ponto de
+    //  notificação não lida. Esses têm o raio que a forma pede.
+    //  Os fundos de linha de lista (Launcher, Clipboard, Wallpaper)
+    //  ainda estão soltos em 10/12/14 — viram um rung próprio quando
+    //  esses apps forem retrabalhados.
+    // ════════════════════════════════════════
+    //  Canto da ilha, igual em TODOS os estados. TETO PRÁTICO: metade
+    //  da altura da barra (Pill_Theme.height / 2 = 16). Acima disso a
+    //  barra baixa clampa sozinha e o canto volta a variar com a
+    //  altura — que é exatamente o que não queremos aqui.
+    readonly property real radiusIsland: 16
+
+    //  Raiz da cadeia do conteúdo. O clamp não é decoração: a cadeia
+    //  subtrai, então baixar o card abaixo do cardPadding levaria o
+    //  chip a um raio NEGATIVO. Com o config app isso vira um slider —
+    //  e um slider tem que poder ir até o fim sem quebrar nada.
+    readonly property real radiusCard: 18
+    readonly property real radiusChip: Math.max(0, radiusCard - cardPadding)
+    // Fora da cadeia: a tela não mora dentro de nada
+    readonly property real radiusScreen: 22
 
     // ════════════════════════════════════════
     //  DASHBOARD (quebra-cabeça de widgets)
@@ -94,7 +124,6 @@ QtObject {
     readonly property int dashColumns: 4
     readonly property real dashCell: 64
     readonly property real dashGap: 8
-    readonly property real widgetRadius: 20
     readonly property color widgetBgColor: bg
     readonly property color widgetBorderColor: bg
     readonly property color widgetBorderHoverColor: accent
@@ -113,11 +142,8 @@ QtObject {
     readonly property real notifHistoryMaxHeight: 180
 
     // ════════════════════════════════════════
-    //  SCREEN CORNERS — decoração da tela
-    //  Positivo = canto recortado (a curva "fecha" o canto).
-    //  NEGATIVO = curva invertida: o preto avança pra dentro e a
-    //  curva sai pra fora — o visual "framed".
+    //  SCREEN CORNERS — decoração da tela.
+    //  O canto é recortado: a curva "fecha" o canto. 0 desliga.
     // ════════════════════════════════════════
-    readonly property real screenCornerRadius: 22
     readonly property color screenCornerColor: "#000000"
 }

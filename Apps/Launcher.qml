@@ -17,11 +17,10 @@ PillFace {
 
     contentWidth: Theme.launcherWidth
     contentHeight: 52 + Math.min(filteredApps.length, Config.maxLauncherResults) * 54 + 12
-    contentRadius: 24
     // Lista muda ao filtrar — a face anima o próprio tamanho
     Behavior on contentHeight {
         enabled: active
-        Anim { duration: 180 }
+        Settle { duration: 180 }
     }
 
     property string searchText: ""
@@ -153,7 +152,7 @@ PillFace {
                 readonly property bool isSelected: ListView.isCurrentItem
 
                 color: isSelected ? Theme.surface : "transparent"
-                Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                Behavior on color { ColorAnimation { duration: Motion.instant } }
 
                 function executeApp() {
                     modelData.execute()
@@ -179,7 +178,7 @@ PillFace {
                         radius: 2
                         color: delegateRoot.isSelected ? Theme.accent : "transparent"
                         anchors.verticalCenter: parent.verticalCenter
-                        Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                        Behavior on color { ColorAnimation { duration: Motion.instant } }
                     }
 
                     IconImage {
@@ -188,7 +187,7 @@ PillFace {
                         anchors.verticalCenter: parent.verticalCenter
                         source: Quickshell.iconPath(delegateRoot.modelData.icon, true)
                         scale: delegateRoot.isSelected ? 1.05 : 1.0
-                        Behavior on scale { NumberAnimation { duration: Theme.hoverFade } }
+                        Behavior on scale { NumberAnimation { duration: Motion.instant } }
                     }
 
                     Column {

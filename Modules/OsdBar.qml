@@ -64,7 +64,7 @@ Row {
         width: pctMetrics.width
         height: pctText.implicitHeight
         Behavior on width {
-            NumberAnimation { duration: Theme.hoverFade; easing.type: Easing.OutCubic }
+            NumberAnimation { duration: Motion.instant; easing.type: Easing.OutCubic }
         }
 
         Text {

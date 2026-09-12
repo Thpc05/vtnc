@@ -17,7 +17,7 @@ Row {
     opacity: isPlaying ? 1 : 0
     visible: opacity > 0
     Behavior on opacity {
-        NumberAnimation { duration: Theme.fadeDuration * 2; easing.type: Easing.OutCubic }
+        Smooth {}
     }
 
     // Cada barra tem timing levemente diferente pra parecer orgânico

@@ -81,9 +81,9 @@ DashWidget {
 
             Rectangle {
                 anchors.fill: parent
-                radius: 7
+                radius: Theme.radiusChip
                 color: mediaIconHover.hovered ? Theme.hoverLayer : "transparent"
-                Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                Behavior on color { ColorAnimation { duration: Motion.instant } }
             }
 
             Text {
@@ -91,7 +91,7 @@ DashWidget {
                 text: MediaService.isPlaying ? "󰝚" : "󰝛"
                 color: root.expanded ? Theme.accent : Theme.textMuted
                 font { family: Theme.fontIcon; pixelSize: 16 }
-                Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                Behavior on color { ColorAnimation { duration: Motion.instant } }
             }
 
             HoverHandler { id: mediaIconHover }
@@ -135,9 +135,9 @@ DashWidget {
 
             Rectangle {
                 anchors.fill: parent
-                radius: 6
+                radius: Theme.radiusChip
                 color: srcHover.hovered || root.sourceMenu ? Theme.hoverLayer : "transparent"
-                Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                Behavior on color { ColorAnimation { duration: Motion.instant } }
             }
 
             Row {
@@ -152,7 +152,7 @@ DashWidget {
                     color: root.sourceMenu ? Theme.accent
                         : (srcHover.hovered ? Theme.textPrimary : Theme.textMuted)
                     font { family: Theme.fontIcon; pixelSize: 12 }
-                    Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                    Behavior on color { ColorAnimation { duration: Motion.instant } }
                 }
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
@@ -162,7 +162,7 @@ DashWidget {
                     width: Math.min(implicitWidth, 72)
                     elide: Text.ElideRight
                     font { family: Theme.fontDisplay; pixelSize: 10 }
-                    Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                    Behavior on color { ColorAnimation { duration: Motion.instant } }
                 }
             }
 
@@ -225,9 +225,9 @@ DashWidget {
 
                 Rectangle {
                     anchors.fill: parent
-                    radius: 8
+                    radius: Theme.radiusChip
                     color: prevHover.hovered ? Theme.hoverLayer : "transparent"
-                    Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                    Behavior on color { ColorAnimation { duration: Motion.instant } }
                 }
 
                 Text {
@@ -235,7 +235,7 @@ DashWidget {
                     text: "󰒮"
                     color: prevHover.hovered ? Theme.textPrimary : Theme.textSecondary
                     font { family: Theme.fontIcon; pixelSize: 16 }
-                    Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                    Behavior on color { ColorAnimation { duration: Motion.instant } }
                 }
 
                 HoverHandler { id: prevHover }
@@ -249,9 +249,9 @@ DashWidget {
 
                 Rectangle {
                     anchors.fill: parent
-                    radius: 9
+                    radius: Theme.radiusChip
                     color: playHover.hovered ? Theme.hoverLayer : "transparent"
-                    Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                    Behavior on color { ColorAnimation { duration: Motion.instant } }
                 }
 
                 Text {
@@ -259,7 +259,7 @@ DashWidget {
                     text: MediaService.isPlaying ? "󰏤" : "󰐊"
                     color: playHover.hovered ? Theme.accent : Theme.textPrimary
                     font { family: Theme.fontIcon; pixelSize: 19 }
-                    Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                    Behavior on color { ColorAnimation { duration: Motion.instant } }
                 }
 
                 HoverHandler { id: playHover }
@@ -273,9 +273,9 @@ DashWidget {
 
                 Rectangle {
                     anchors.fill: parent
-                    radius: 8
+                    radius: Theme.radiusChip
                     color: nextHover.hovered ? Theme.hoverLayer : "transparent"
-                    Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                    Behavior on color { ColorAnimation { duration: Motion.instant } }
                 }
 
                 Text {
@@ -283,7 +283,7 @@ DashWidget {
                     text: "󰒭"
                     color: nextHover.hovered ? Theme.textPrimary : Theme.textSecondary
                     font { family: Theme.fontIcon; pixelSize: 16 }
-                    Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                    Behavior on color { ColorAnimation { duration: Motion.instant } }
                 }
 
                 HoverHandler { id: nextHover }
@@ -321,7 +321,7 @@ DashWidget {
         anchors.topMargin: 4
         opacity: root.sourceMenu && root.lateReveal > 0 ? 1 : 0
         visible: opacity > 0
-        Behavior on opacity { NumberAnimation { duration: Theme.hoverFade } }
+        Behavior on opacity { NumberAnimation { duration: Motion.instant } }
 
         Column {
             id: menuCol
@@ -386,9 +386,9 @@ DashWidget {
 
                     Rectangle {
                         anchors.fill: parent
-                        radius: 6
+                        radius: Theme.radiusChip
                         color: itemHover.hovered ? Theme.hoverLayer : "transparent"
-                        Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                        Behavior on color { ColorAnimation { duration: Motion.instant } }
                     }
 
                     Text {
@@ -398,7 +398,7 @@ DashWidget {
                         text: MediaService.sourceIcon(srcItem.modelData)
                         color: itemHover.hovered ? Theme.textPrimary : Theme.textSecondary
                         font { family: Theme.fontIcon; pixelSize: 12 }
-                        Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                        Behavior on color { ColorAnimation { duration: Motion.instant } }
                     }
 
                     Text {
@@ -411,7 +411,7 @@ DashWidget {
                         color: itemHover.hovered ? Theme.textPrimary : Theme.textSecondary
                         elide: Text.ElideRight
                         font { family: Theme.fontDisplay; pixelSize: 11 }
-                        Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                        Behavior on color { ColorAnimation { duration: Motion.instant } }
                     }
 
                     HoverHandler { id: itemHover }

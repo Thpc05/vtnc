@@ -40,9 +40,9 @@ DashWidget {
 
             Rectangle {
                 anchors.fill: parent
-                radius: 7
+                radius: Theme.radiusChip
                 color: iconHover.hovered ? Theme.hoverLayer : "transparent"
-                Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                Behavior on color { ColorAnimation { duration: Motion.instant } }
             }
 
             Text {
@@ -53,7 +53,7 @@ DashWidget {
                 }
                 color: root.expanded ? Theme.accent : Theme.textMuted
                 font { family: Theme.fontIcon; pixelSize: 16 }
-                Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                Behavior on color { ColorAnimation { duration: Motion.instant } }
             }
 
             HoverHandler { id: iconHover }
@@ -92,9 +92,9 @@ DashWidget {
 
                 Rectangle {
                     anchors.fill: parent
-                    radius: 6
+                    radius: Theme.radiusChip
                     color: scanHover.hovered ? Theme.hoverLayer : "transparent"
-                    Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                    Behavior on color { ColorAnimation { duration: Motion.instant } }
                 }
 
                 Text {
@@ -105,7 +105,7 @@ DashWidget {
                         ? Theme.accent
                         : (scanHover.hovered ? Theme.textPrimary : Theme.textMuted)
                     font { family: Theme.fontIcon; pixelSize: 12 }
-                    Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                    Behavior on color { ColorAnimation { duration: Motion.instant } }
                 }
 
                 HoverHandler { id: scanHover }
@@ -123,9 +123,9 @@ DashWidget {
 
                 Rectangle {
                     anchors.fill: parent
-                    radius: 6
+                    radius: Theme.radiusChip
                     color: appHover.hovered ? Theme.hoverLayer : "transparent"
-                    Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                    Behavior on color { ColorAnimation { duration: Motion.instant } }
                 }
 
                 Text {
@@ -133,7 +133,7 @@ DashWidget {
                     text: ""
                     color: appHover.hovered ? Theme.textPrimary : Theme.textMuted
                     font { family: Theme.fontIcon; pixelSize: 10 }
-                    Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                    Behavior on color { ColorAnimation { duration: Motion.instant } }
                 }
 
                 HoverHandler { id: appHover }
@@ -177,9 +177,9 @@ DashWidget {
             // Mira: fundo sutil sob o item mirado
             Rectangle {
                 anchors.fill: parent
-                radius: 6
+                radius: Theme.radiusChip
                 color: devHover.hovered ? Theme.hoverLayer : "transparent"
-                Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                Behavior on color { ColorAnimation { duration: Motion.instant } }
             }
 
             // Accent = conectado (clique conecta/desconecta)
@@ -193,7 +193,7 @@ DashWidget {
                 color: devItem.modelData.connected ? Theme.accent : Theme.textSecondary
                 elide: Text.ElideRight
                 font { family: Theme.fontDisplay; pixelSize: 11 }
-                Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                Behavior on color { ColorAnimation { duration: Motion.instant } }
             }
 
             HoverHandler { id: devHover }

@@ -5,22 +5,16 @@ import QtQuick
 //  Item puro, não-interativo: fica fora da mask, então nunca
 //  intercepta cliques.
 //
-//  Theme.screenCornerRadius aceita NEGATIVO:
-//   > 0  o canto é RECORTADO — a massa preta fica entre o vértice e
-//        o arco, "fechando" o canto (o padrão).
-//   < 0  a curva INVERTE — a massa vira um quarto de disco que
-//        avança pra dentro da tela: é o visual "framed".
-//   = 0  desliga.
+//  Theme.radiusScreen recorta o canto: a massa preta fica
+//  entre o vértice e o arco, "fechando" o canto. 0 desliga.
 // ═══════════════════════════════════════════
 Item {
     id: root
 
-    readonly property real r: Math.abs(Theme.screenCornerRadius)
-    readonly property bool framed: Theme.screenCornerRadius < 0
+    readonly property real r: Math.max(0, Theme.radiusScreen)
 
     component Corner: ConcaveCorner {
         radius: root.r
-        framed: root.framed
         fillColor: Theme.screenCornerColor
     }
 

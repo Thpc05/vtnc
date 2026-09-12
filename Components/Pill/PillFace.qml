@@ -22,11 +22,12 @@ Item {
     // "bar" (face padrão) | "app" (captura teclado/tela)
     property string role: "app"
 
-    // Tamanho que a face quer ter quando está ativa
+    // Tamanho que a face quer ter quando está ativa.
+    // O RAIO não é da face: é da ilha (Pill_Theme.radius, constante).
+    // Face nenhuma escolhe o próprio canto — é isso que mantém a borda
+    // igual em todos os estados.
     property real contentWidth: 100
     property real contentHeight: 32
-    // -1 = radius padrão (metade da altura, limitado por Pill_Theme.radius)
-    property real contentRadius: 32
 
     // Apps: capturam teclado e clique-fora-fecha
     property bool grabsKeyboard: false

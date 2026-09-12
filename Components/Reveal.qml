@@ -26,11 +26,6 @@ Item {
     // Altura que o host cresce quando revelado
     property real panelHeight: panel ? panel.implicitHeight : 0
 
-    // Largura NATURAL do painel. Usada por hosts que NÃO esticam — a
-    // bolha da framed sai nesta largura. Hosts que esticam (a pill, que
-    // hospeda o painel full-width) ignoram. 0 = deixa o host decidir.
-    property real panelWidth: 0
-
     // Mirado dentro do painel — setado pelo reveal concreto
     property bool panelHovered: false
 
@@ -39,8 +34,15 @@ Item {
     // reveals armarem: isto é explícito, não é o mouse passeando.
     property bool autoShow: false
 
-    // Mirado (cru): a Bar aplica o grace period antes de fechar
+    // Mirado (cru): o HoverGroup da Bar aplica as esperas
     readonly property bool revealed: anchorHover.hovered || panelHovered || autoShow
+
+    // Clique no anchor. HOJE NÃO FAZ NADA de propósito: o reveal abre
+    // só por hover. O handler fica aqui porque o alvo já está montado
+    // e o clique é útil no futuro (fixar o painel, abrir um app).
+    // Quem ligar isto: NÃO escreva em `HoverGroup.candidate` — ver a
+    // armadilha documentada no openNow de lá.
+    signal anchorTapped()
 
     width: childrenRect.width
     height: childrenRect.height
@@ -48,5 +50,10 @@ Item {
     HoverHandler {
         id: anchorHover
         margin: 6 // ícones são pequenos; folga no alvo
+    }
+
+    TapHandler {
+        gesturePolicy: TapHandler.ReleaseWithinBounds
+        onTapped: reveal.anchorTapped()
     }
 }

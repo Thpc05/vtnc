@@ -1,5 +1,6 @@
 pragma Singleton
 import QtQuick
+import ".."
 
 // ═══════════════════════════════════════════
 //  PILL THEME — Estética só da ilha: a geometria da casca e a
@@ -24,16 +25,32 @@ QtObject {
     readonly property int faceFadeInDelay: 200
     readonly property int faceFadeIn: 160
 
+    // A dashboard NÃO passa pela coreografia de troca de face: ela
+    // cresce direto, dentro da própria bar. Mas precisa PARAR no mesmo
+    // instante que um app pararia, senão parece disparada do lado
+    // deles. O morph de um app só começa depois do fade de saída — daí
+    // a soma. Derivado, não calibrado na mão: mexer em qualquer um dos
+    // dois reajusta a dashboard sozinho
+    readonly property int dashDuration: faceFadeOut + morphDuration
+
+    // (a curva do assentamento é global: Components/Motion.qml)
+
+    // Escala do conteúdo na troca de face: o que sai encolhe, o que
+    // entra nasce menor e assenta em 1. Sem isto o conteúdo só pisca;
+    // com isto ele parece estar DENTRO da ilha que se move.
+    readonly property real faceScaleOut: 0.94
+    readonly property real faceScaleIn: 0.92
+
     // ════════════════════════════════════════
     //  GEOMETRIA
     // ════════════════════════════════════════
-    readonly property real radius: 32
+    // Canto da ilha — CONSTANTE, igual em toda altura. Não deriva mais
+    // da altura: o canto mudar durante a abertura é o que incomodava.
+    // O min(altura/2, ...) na Pill continua, mas só como piso de
+    // segurança (o Qt clamparia de qualquer jeito)
+    readonly property real radius: Theme.radiusIsland
     // Distância ilha ↔ topo da tela
     readonly property real marginTop: 6
-    // Respiro abaixo da ilha. Hoje só compõe a altura da framed; no
-    // futuro fecha a reserva de espaço da pill sozinha
-    // (marginTop + height + marginDown)
-    readonly property real marginDown: 6
 
     // ════════════════════════════════════════
     //  TAMANHOS POR ESTADO

@@ -36,7 +36,6 @@ PillFace {
 
     contentWidth: 560
     contentHeight: Theme.contentPadding * 2 + 32 + 420
-    contentRadius: 26
 
     // {id, preview, kind: "text"|"image"|"video", ext, imgSize, imgDims}
     property var items: []
@@ -344,9 +343,9 @@ PillFace {
 
                 Rectangle {
                     anchors.fill: parent
-                    radius: 6
+                    radius: Theme.radiusChip
                     color: wipeHover.hovered ? Theme.hoverLayer : "transparent"
-                    Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                    Behavior on color { ColorAnimation { duration: Motion.instant } }
                 }
 
                 Text {
@@ -356,7 +355,7 @@ PillFace {
                     text: "Limpar"
                     color: wipeHover.hovered ? Theme.textPrimary : Theme.textMuted
                     font { family: Theme.fontDisplay; pixelSize: 11 }
-                    Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                    Behavior on color { ColorAnimation { duration: Motion.instant } }
                 }
 
                 HoverHandler { id: wipeHover }
@@ -465,7 +464,7 @@ PillFace {
                     text: box.typeIconGlyph
                     color: box.sel ? Theme.accent : Theme.textMuted
                     font { family: Theme.fontIcon; pixelSize: 13 }
-                    Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                    Behavior on color { ColorAnimation { duration: Motion.instant } }
                 }
 
                 // ── IDLE: conteúdo numa linha ──
@@ -482,7 +481,7 @@ PillFace {
                     elide: Text.ElideRight
                     opacity: box.sel ? 0 : 1
                     visible: opacity > 0
-                    Behavior on opacity { NumberAnimation { duration: Theme.fadeDuration } }
+                    Behavior on opacity { NumberAnimation { duration: Motion.quick } }
                     font { family: Theme.fontDisplay; pixelSize: 11 }
                 }
 
@@ -492,7 +491,7 @@ PillFace {
                     anchors.margins: 8
                     opacity: box.sel ? 1 : 0
                     visible: opacity > 0
-                    Behavior on opacity { NumberAnimation { duration: Theme.fadeDuration } }
+                    Behavior on opacity { NumberAnimation { duration: Motion.quick } }
 
                     // TITLE BAR: ícone (esq, fixo) | data/hora (centro) | ações
                     Text {
@@ -515,9 +514,9 @@ PillFace {
 
                             Rectangle {
                                 anchors.fill: parent
-                                radius: 7
+                                radius: Theme.radiusChip
                                 color: copyHover.hovered ? Theme.hoverLayer : "transparent"
-                                Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                                Behavior on color { ColorAnimation { duration: Motion.instant } }
                             }
 
                             Text {
@@ -525,7 +524,7 @@ PillFace {
                                 text: "󰆏"
                                 color: copyHover.hovered ? Theme.accent : Theme.textMuted
                                 font { family: Theme.fontIcon; pixelSize: 12 }
-                                Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                                Behavior on color { ColorAnimation { duration: Motion.instant } }
                             }
 
                             HoverHandler { id: copyHover }
@@ -543,9 +542,9 @@ PillFace {
 
                             Rectangle {
                                 anchors.fill: parent
-                                radius: 7
+                                radius: Theme.radiusChip
                                 color: delHover.hovered ? Theme.hoverLayer : "transparent"
-                                Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                                Behavior on color { ColorAnimation { duration: Motion.instant } }
                             }
 
                             Text {
@@ -553,7 +552,7 @@ PillFace {
                                 text: "󰅖"
                                 color: delHover.hovered ? Theme.danger : Theme.textMuted
                                 font { family: Theme.fontIcon; pixelSize: 12 }
-                                Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                                Behavior on color { ColorAnimation { duration: Motion.instant } }
                             }
 
                             HoverHandler { id: delHover }

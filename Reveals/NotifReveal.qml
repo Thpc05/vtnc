@@ -14,7 +14,6 @@ Reveal {
     id: root
 
     name: "notifs"
-    panelWidth: 340 // largura natural na bolha da framed
 
     readonly property int count: NotifServer.history.count
 
@@ -52,7 +51,7 @@ Reveal {
         text: "󰂚"
         color: root.revealed ? Theme.textPrimary : Theme.textSecondary
         font { family: Theme.fontIcon; pixelSize: 14 }
-        Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+        Behavior on color { ColorAnimation { duration: Motion.instant } }
 
         Rectangle {
             visible: root.count > 0
@@ -71,7 +70,7 @@ Reveal {
     panel: Item {
         implicitHeight: root.panelHeight
 
-        Behavior on opacity { NumberAnimation { duration: Theme.fadeDuration } }
+        Behavior on opacity { NumberAnimation { duration: Motion.quick } }
 
         HoverHandler { id: panelHover }
 
@@ -95,9 +94,9 @@ Reveal {
 
             Rectangle {
                 anchors.fill: parent
-                radius: 6
+                radius: Theme.radiusChip
                 color: clearHover.hovered ? Theme.hoverLayer : "transparent"
-                Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                Behavior on color { ColorAnimation { duration: Motion.instant } }
             }
 
             Text {
@@ -107,7 +106,7 @@ Reveal {
                 text: "Limpar"
                 color: clearHover.hovered ? Theme.textPrimary : Theme.textMuted
                 font { family: Theme.fontDisplay; pixelSize: 11 }
-                Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                Behavior on color { ColorAnimation { duration: Motion.instant } }
             }
 
             HoverHandler { id: clearHover }
@@ -213,9 +212,9 @@ Reveal {
 
                         Rectangle {
                             anchors.fill: parent
-                            radius: 5
+                            radius: Theme.radiusChip
                             color: xHover.hovered ? Theme.hoverLayer : "transparent"
-                            Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                            Behavior on color { ColorAnimation { duration: Motion.instant } }
                         }
 
                         Text {
@@ -223,7 +222,7 @@ Reveal {
                             text: "󰅖"
                             color: xHover.hovered ? Theme.danger : Theme.textMuted
                             font { family: Theme.fontIcon; pixelSize: 11 }
-                            Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                            Behavior on color { ColorAnimation { duration: Motion.instant } }
                         }
 
                         HoverHandler { id: xHover }

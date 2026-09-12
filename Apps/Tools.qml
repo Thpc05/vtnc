@@ -258,7 +258,7 @@ PillFace {
                     height: 30
                     clip: true
                     opacity: shown ? 1 : 0
-                    Behavior on opacity { NumberAnimation { duration: Theme.fadeDuration } }
+                    Behavior on opacity { NumberAnimation { duration: Motion.quick } }
 
                     // Separador sutil entre categorias
                     Rectangle {
@@ -272,10 +272,10 @@ PillFace {
                     // Mira: acompanha a SELEÇÃO (mouse ou setas)
                     Rectangle {
                         anchors.fill: parent
-                        radius: 9
+                        radius: Theme.radiusChip
                         visible: !tool.isSep
                         color: tool.selected ? Theme.hoverLayer : "transparent"
-                        Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                        Behavior on color { ColorAnimation { duration: Motion.instant } }
                     }
 
                     // Ícone da ferramenta
@@ -285,7 +285,7 @@ PillFace {
                         text: (tool.isSep || tool.isInd) ? "" : tool.modelData.icon
                         color: tool.armed ? Theme.accent : Theme.textPrimary
                         font { family: Theme.fontIcon; pixelSize: 17 }
-                        Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                        Behavior on color { ColorAnimation { duration: Motion.instant } }
                     }
 
                     // Indicador de gravação: ponto pulsando (clique para)

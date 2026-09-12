@@ -34,8 +34,8 @@ Row {
                 ? Theme.accent
                 : (dotHover.hovered ? Theme.textSecondary : Theme.textMuted)
 
-            Behavior on width { Anim { duration: 250 } }
-            Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+            Behavior on width { Settle { duration: 250 } }
+            Behavior on color { ColorAnimation { duration: Motion.instant } }
 
             HoverHandler { id: dotHover }
             TapHandler { onTapped: Hyprland.dispatch("workspace " + modelData.id) }

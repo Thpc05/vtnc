@@ -39,7 +39,7 @@ DashWidget {
             text: "󰃭"
             color: root.expanded ? Theme.accent : Theme.textMuted
             font { family: Theme.fontIcon; pixelSize: 16 }
-            Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+            Behavior on color { ColorAnimation { duration: Motion.instant } }
         }
         Text {
             anchors.verticalCenter: parent.verticalCenter

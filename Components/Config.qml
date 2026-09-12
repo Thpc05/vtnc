@@ -38,8 +38,6 @@ QtObject {
     readonly property string ipcTarget: "island"
     // Modo da ilha: normal ↔ wide
     readonly property string ipcPillTarget: "pill"
-    // Barra de topo independente (por baixo da pill)
-    readonly property string ipcFramedTarget: "framed"
     readonly property string ipcDashboardTarget: "dashboard"
     readonly property string ipcLauncherTarget: "launcher"
     readonly property string ipcOsdTarget: "osd"
@@ -62,8 +60,8 @@ QtObject {
     readonly property int backlightPollMs: 300
 
     // ════════════════════════════════════════
-    //  AUTOHIDE — a pill (e a framed) se escondem no monitor que
-    //  está em fullscreen. Mouse no topo da tela revela de volta.
+    //  AUTOHIDE — a pill se esconde no monitor que está em
+    //  fullscreen. Mouse no topo da tela revela de volta.
     // ════════════════════════════════════════
     // Animação: "slide" (sobe pra fora) | "fade" | "retract" (encolhe)
     readonly property string autoHideAnim: "slide"

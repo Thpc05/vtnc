@@ -13,5 +13,5 @@ Text {
     // acima do nível, é só mais um ícone
     color: BatteryService.warning ? Theme.danger : Theme.textSecondary
     font { family: Theme.fontIcon; pixelSize: 13 }
-    Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+    Behavior on color { ColorAnimation { duration: Motion.instant } }
 }

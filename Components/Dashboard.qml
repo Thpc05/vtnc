@@ -21,8 +21,8 @@ import "../Services"
 //  espaço vazio só move.
 //  Pin: botão direito trava o widget expandido.
 //
-//  Registrar um widget = criar em DashWidgets/Horizontais/ (ou
-//  /Verticais/) + declarar aqui com gridCol/gridRow.
+//  Registrar um widget = criar em DashWidgets/Horizontais/ +
+//  declarar aqui com gridCol/gridRow.
 // ═══════════════════════════════════════════
 Item {
     id: root
@@ -37,7 +37,7 @@ Item {
 
     property real layoutWidth: baseWidth
     Behavior on layoutWidth {
-        NumberAnimation { duration: Theme.expandDuration; easing.type: Easing.OutQuart }
+        Settle {}
     }
     width: layoutWidth
 
@@ -60,28 +60,15 @@ Item {
                 return widgets[i]
         return null
     }
-    property Item shownWidget: null
-    onHoveredWidgetChanged: {
-        if (hoveredWidget) {
-            shownWidget = hoveredWidget
-            closeTimer.stop()
-        } else {
-            closeTimer.restart()
-        }
+
+    HoverGroup {
+        id: widgetGroup
+        candidate: root.hoveredWidget
     }
-    Timer {
-        id: closeTimer
-        interval: 250
-        onTriggered: root.shownWidget = null
-    }
+    readonly property Item shownWidget: widgetGroup.shown
 
     // Dashboard fechou → recolhe o hover (pins ficam)
-    onVisibleChanged: {
-        if (!visible) {
-            closeTimer.stop()
-            shownWidget = null
-        }
-    }
+    onVisibleChanged: if (!visible) widgetGroup.closeNow()
 
     function isExpanded(w) {
         return w.pinned || shownWidget === w
@@ -94,7 +81,7 @@ Item {
     // ═══════════════════════════════════════════
     property real layoutHeight: 0
     Behavior on layoutHeight {
-        NumberAnimation { duration: Theme.expandDuration; easing.type: Easing.OutQuart }
+        Settle {}
     }
     implicitHeight: layoutHeight
 
@@ -327,6 +314,8 @@ Item {
             const w = widgets[i]
             w.cellW = Qt.binding(() => root.cellW)
             w.expanded = Qt.binding(() => w.pinned || root.shownWidget === w)
+            // Clique no widget pula a espera do hover
+            w.tapped.connect(() => widgetGroup.openNow(w))
             w.pinnedChanged.connect(() => {
                 const pins = Persist.state.widgetPins
                 pins[w.name] = w.pinned
@@ -356,9 +345,6 @@ Item {
     //  sizeIdle/sizeExpand/expandDir são editáveis por instância
     //  (defaults declarados em cada widget).
     //  (notificações moram no NotifReveal, que funciona na dashboard)
-    //
-    //  SESSION: as duas variantes existem em Horizontais/ e Verticais/
-    //  mas NENHUMA está registrada — a decidir.
     // ═══════════════════════════════════
     MediaWidgetHorizontais     { id: wMedia; gridCol: 0; gridRow: 0 }
     NetworkWidgetHorizontais   { id: wNet;   gridCol: 4; gridRow: 0 }

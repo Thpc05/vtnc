@@ -5,7 +5,6 @@ import Quickshell.Wayland
 import Quickshell.Hyprland
 import "Components"
 import "Components/Pill"
-import "Components/Framed"
 import "Services"
 import "Apps"
 
@@ -14,97 +13,14 @@ import "Apps"
 //  Este arquivo é o ÚNICO ponto de registro: pra adicionar ou
 //  remover um módulo, basta mexer na lista `faces` abaixo.
 //
-//  Até 3 janelas por tela, nesta ordem (a ordem de declaração é o
-//  z-order dentro da mesma layer — a última mapeada fica por cima):
-//    1. RESERVA (invisível) — reserva o espaço de topo (exclusiveZone)
-//    2. FRAMED  — a barra de topo (só quando ligada), por baixo
-//    3. PILL    — a ilha, por cima de tudo (intocada)
-//  A ilha é overlay: ela mesma não reserva espaço (exclusiveZone: 0).
+//  Uma janela por tela: a ilha, na layer Overlay. Ela é puramente
+//  overlay — não reserva espaço (exclusiveZone: 0) e não empurra
+//  janela nenhuma do Hyprland.
 // ═══════════════════════════════════════════
 ShellRoot {
     id: shell
 
-    // Base da reserva de topo. Hoje só a framed reserva; o futuro
-    // `|| (pillExclusive ? ... )` entra aqui
-    readonly property real framedReserve: Persist.state.framed ? Framed_Theme.height : 0
-
-    // ═══ 1. RESERVA (exclusivezone) — janela invisível, por tela ═══
-    // Ancorada só no topo: o layer-shell respeita a zona exclusiva dela
-    // e empurra as janelas pra baixo. Clique atravessa (mask vazia).
-    // Per-monitor: no monitor em fullscreen a reserva SOLTA (0) — as
-    // janelas sobem junto com a framed que some
-    Variants {
-        model: shell.framedReserve > 0 ? Quickshell.screens : []
-
-        PanelWindow {
-            required property var modelData
-            screen: modelData
-            color: "transparent"
-            anchors { top: true; left: true; right: true }
-            implicitHeight: Framed_Theme.height
-            // Esta É quem reserva: reserva o espaço contra as janelas
-            // reais do Hyprland (a framed e a pill IGNORAM esta zona)
-            WlrLayershell.exclusionMode: ExclusionMode.Normal
-            exclusiveZone: Fullscreen.on(modelData.name) ? 0 : shell.framedReserve
-            mask: Region {}
-        }
-    }
-
-    // ═══ 2. FRAMED — a barra de topo (por baixo da pill) ═══
-    Variants {
-        model: Persist.state.framed ? Quickshell.screens : []
-
-        PanelWindow {
-            id: framedWin
-
-            required property var modelData
-            readonly property alias bar: bar
-
-            screen: modelData
-            color: "transparent"
-            // Camada Top (acima das janelas), mas IGNORA a zona da
-            // reserva — senão a barra desceria pra dentro do espaço
-            // que ela mesma reservou. A pill (Overlay) fica por cima.
-            WlrLayershell.layer: WlrLayer.Top
-            WlrLayershell.exclusionMode: ExclusionMode.Ignore
-            anchors { top: true; bottom: true; left: true; right: true }
-
-            // ── AUTOHIDE ── some no fullscreen (junto com a reserva).
-            // Sem peek e sem alwaysAutoHide — a framed só reage ao
-            // fullscreen; o peek do topo é só da pill
-            readonly property bool hidden: Fullscreen.on(modelData.name)
-            property real hideP: hidden ? 1 : 0
-            Behavior on hideP {
-                NumberAnimation { duration: Theme.expandDuration; easing.type: Easing.OutQuart }
-            }
-
-            // Só a faixa e a bolha ativa recebem clique; o resto
-            // atravessa pro Hyprland
-            mask: Region {
-                item: bar.hitAreas[0]
-                Region {
-                    item: bar.hitAreas[1]
-                    intersection: Intersection.Combine
-                }
-            }
-
-            Framed {
-                id: bar
-                anchors.fill: parent
-                onBackgroundTapped: AppService.toggleDashboard()
-
-                // Fade escolhe opacity; slide/retract sobem a barra
-                opacity: Config.autoHideAnim === "fade" ? 1 - framedWin.hideP : 1
-                transform: Translate {
-                    y: Config.autoHideAnim === "fade"
-                        ? 0
-                        : -framedWin.hideP * Framed_Theme.height
-                }
-            }
-        }
-    }
-
-    // ═══ 3. PILL — a ilha (por cima) ═══
+    // ═══ PILL — a ilha ═══
     Variants {
         id: windows
 
@@ -128,8 +44,9 @@ ShellRoot {
             // ── AUTOHIDE ── (este monitor)
             readonly property bool autoHiding:
                 Fullscreen.on(modelData.name) || Config.alwaysAutoHide
-            // Mouse na faixa do topo revela a pill de volta
-            property bool revealHover: false
+            // Mouse na faixa do topo revela a pill de volta (com as
+            // esperas do HoverGroup lá embaixo, em revealCatch)
+            readonly property bool revealHover: revealGroup.open
             // Notificação recém-chegada (peek temporário)
             property bool notifAuto: false
             Connections {
@@ -155,13 +72,16 @@ ShellRoot {
             readonly property bool hidden: autoHiding && !forced
             property real hideP: hidden ? 1 : 0
             Behavior on hideP {
-                NumberAnimation { duration: Theme.expandDuration; easing.type: Easing.OutQuart }
+                // Smooth, não Settle: no modo "retract" o hideP vira xScale,
+                // e um overshoot passando de 1 deixaria a escala NEGATIVA
+                // (a ilha espelhada por um frame)
+                Smooth {}
             }
 
             screen: modelData
             color: "transparent"
-            // Overlay: SEMPRE por cima (inclusive da framed, que é Top)
-            // e IGNORA a zona da reserva — a ilha flutua livre no topo
+            // Overlay: SEMPRE por cima, e não reserva nem respeita zona
+            // exclusiva — a ilha flutua livre no topo
             WlrLayershell.layer: WlrLayer.Overlay
             WlrLayershell.exclusionMode: ExclusionMode.Ignore
             WlrLayershell.keyboardFocus: (mine && AppService.wantsKeyboard)
@@ -198,22 +118,16 @@ ShellRoot {
                     ? Pill_Theme.marginTop + island.height + 24
                     : Config.autoHideRevealZone
 
-                HoverHandler {
-                    onHoveredChanged: {
-                        if (hovered) {
-                            revealCloseTimer.stop()
-                            win.revealHover = true
-                        } else {
-                            revealCloseTimer.restart()
-                        }
-                    }
+                // A espera vale DOBRADO aqui: esta faixa cobre a tela
+                // inteira no topo, então qualquer passada do mouse pela
+                // borda superior revelaria a ilha escondida. O grace no
+                // fechar é o que deixa o mouse descer da faixa até a
+                // pill sem ela piscar
+                HoverGroup {
+                    id: revealGroup
+                    candidate: revealCatchHover.hovered ? true : null
                 }
-                // Grace pro mouse cruzar da faixa até a pill sem piscar
-                Timer {
-                    id: revealCloseTimer
-                    interval: 300
-                    onTriggered: win.revealHover = false
-                }
+                HoverHandler { id: revealCatchHover }
             }
 
             // Overlay invisível — clique fora fecha o app.
@@ -298,7 +212,6 @@ ShellRoot {
     //
     //  qs ipc call island toggle <nome> | open <nome> | close
     //  qs ipc -t pill -c toggle | open | close   (ilha normal ↔ wide)
-    //  qs ipc -t framed -c toggle | open | close (barra de topo)
     //  qs ipc -t dashboard -c toggle | open | close
     //  qs ipc -t osd -c volume | brightness
     //  qs ipc -t launcher | tools | clipboard | session -c toggle
@@ -319,14 +232,6 @@ ShellRoot {
         function toggle(): void { Persist.state.wideBar = !Persist.state.wideBar }
         function open(): void { Persist.state.wideBar = true }
         function close(): void { Persist.state.wideBar = false }
-    }
-
-    IpcHandler {
-        target: Config.ipcFramedTarget
-        // Barra de topo independente (por baixo da pill), global
-        function toggle(): void { Persist.state.framed = !Persist.state.framed }
-        function open(): void { Persist.state.framed = true }
-        function close(): void { Persist.state.framed = false }
     }
 
     IpcHandler {

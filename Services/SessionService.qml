@@ -3,8 +3,7 @@ import QtQuick
 import Quickshell
 
 // ═══════════════════════════════════════════
-//  SESSION SERVICE — Ações de sessão, compartilhadas pelo app
-//  Apps/Session.qml e pelo DashWidgets/SessionWidget.qml.
+//  SESSION SERVICE — Ações de sessão, usadas pelo Apps/Session.qml.
 //  (o nome é "SessionService" pra não colidir com o tipo do app)
 //
 //  `danger`: ações destrutivas ficam vermelhas ao selecionar.

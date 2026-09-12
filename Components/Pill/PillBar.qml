@@ -51,16 +51,21 @@ PillFace {
     }
 
     // ── DRIVER do modo wide ──
-    // Com a framed ligada a pill fica normal: os workspaces/cluster e
-    // os reveals migram pra barra de topo (a notificação também nasce
-    // lá). Sem a framed, é a wide de sempre.
-    readonly property bool wideOn: !Persist.state.framed
-        && (Persist.state.wideBar || hover.hovered || autoReveal)
-    // Regra de negócio: ao sair da wide, PRIMEIRO o reveal fecha
-    // (revealHeight → 0), só então a pill contrai
-    property real wide: (wideOn || revealHeight > 0) ? 1 : 0
+    // `revealGroup.open` entra aqui por causa do grace: tirar o mouse
+    // da ilha não fecha o reveal na hora, e sem este termo a wide
+    // colapsaria sozinha durante a espera — a pill ficaria estreita E
+    // alta por ~meio segundo. Com ele, os dois seguram e SOLTAM no
+    // mesmo instante (quando o grace expira)
+    readonly property bool wideOn:
+        Persist.state.wideBar || hover.hovered || autoReveal || revealGroup.open
+    // Sair da wide com um reveal aberto é UM movimento só: `wide` e
+    // `revealHeight` caem juntos (mesma duração/easing), então a pill
+    // contrai em largura e altura ao mesmo tempo. NÃO condicionar isto
+    // a `revealHeight > 0` — o reveal fecharia primeiro e a pill
+    // passaria pela wide antes de virar normal (morph em dois tempos)
+    property real wide: wideOn ? 1 : 0
     Behavior on wide {
-        NumberAnimation { duration: Theme.expandDuration; easing.type: Easing.OutQuart }
+        Settle {}
     }
     // Conteúdo da wide entra na 2ª metade: nunca vaza da pill estreita
     readonly property real lateWide: Math.max(0, wide * 2 - 1)
@@ -68,9 +73,10 @@ PillFace {
     // ── DRIVER da dashboard ──
     property real expand: forceExpand ? 1 : 0
     Behavior on expand {
-        // Tempo PRÓPRIO (não o expandDuration): a dashboard tem o peso
-        // de uma troca de face e precisa acompanhar os apps
-        NumberAnimation { duration: Theme.dashDuration; easing.type: Easing.OutQuart }
+        // Tempo PRÓPRIO: a dashboard não passa pela coreografia de troca
+        // de face, cresce direto — mas precisa ASSENTAR junto com um app
+        // (ver Pill_Theme.dashDuration, que é derivado disso)
+        Settle { duration: Pill_Theme.dashDuration }
     }
     // Conteúdo da dashboard aparece na 2ª metade da expansão (e some
     // na 1ª metade do colapso — nunca vaza da pill)
@@ -92,73 +98,55 @@ PillFace {
         notifReveal
     ]
 
-    // Regra de negócio: reveals só armam com a wide aberta + um
-    // respiro. Sem isso, mirar a borda da pill normal faz os anchors
-    // varrerem por baixo do mouse durante o morph e o reveal pisca.
-    property bool revealsArmed: false
-    onWideOnChanged: {
-        if (wideOn) {
-            revealArmTimer.restart()
-        } else {
-            revealArmTimer.stop()
-            revealsArmed = false
-        }
-    }
-    Timer {
-        id: revealArmTimer
-        interval: Theme.expandDuration + 120
-        onTriggered: root.revealsArmed = true
-    }
-
-    // Reveal mirado agora (cru; null enquanto desarmado)
+    // Reveal mirado agora (cru). O autoShow (notificação chegando) tem
+    // prioridade: é explícito, não é o mouse passeando
     readonly property Item hoveredReveal: {
-        // autoShow não espera armar: é explícito, não é o mouse
-        // passeando pela borda durante o morph
         for (let i = 0; i < reveals.length; i++)
             if (reveals[i].autoShow)
                 return reveals[i]
-        if (!revealsArmed)
-            return null
         for (let i = 0; i < reveals.length; i++)
             if (reveals[i].revealed)
                 return reveals[i]
         return null
     }
 
-    // Reveal mostrado — segue o mirado com um grace period no fechar,
-    // pro mouse cruzar do anchor até o painel sem colapsar no meio.
-    // Fora da pill não tem travessia: fecha na hora (é o que dispara
-    // a sequência reveal fecha → wide contrai)
-    property Item shownReveal: null
-    onHoveredRevealChanged: {
-        if (hoveredReveal) {
-            shownReveal = hoveredReveal
-            revealCloseTimer.stop()
-        } else if (!hover.hovered) {
-            revealCloseTimer.stop()
-            shownReveal = null
-        } else {
-            revealCloseTimer.restart()
-        }
+    // ── AS ESPERAS ──
+    // O openDelay do grupo é o que substituiu o antigo `revealsArmed`:
+    // aquilo era um timer que desabilitava os reveals durante o morph
+    // da wide, porque os anchors varrem por baixo do mouse enquanto a
+    // pill cresce e o reveal piscava. Com a espera, um anchor que
+    // passa sob o cursor nunca acumula os 350ms — o sintoma some sem
+    // precisar de estado extra. E as duas esperas NÃO se somam: armar
+    // + delay dariam ~800ms até o primeiro reveal, que parece travado.
+    HoverGroup {
+        id: revealGroup
+        candidate: root.hoveredReveal
     }
-    Timer {
-        id: revealCloseTimer
-        interval: 250
-        onTriggered: root.shownReveal = null
+    readonly property Item shownReveal: revealGroup.shown
+
+    // Sair da ilha NÃO fecha na hora: cai no closeGrace do grupo, pro
+    // painel não sumir no instante em que o mouse escapa da borda
+    onHoveredRevealChanged: {
+        if (hoveredReveal && hoveredReveal.autoShow)
+            revealGroup.openNow(hoveredReveal) // explícito: não espera
     }
 
     // Altura extra do painel revelado
     property real revealHeight: shownReveal ? shownReveal.panelHeight + 10 : 0
     Behavior on revealHeight {
-        NumberAnimation { duration: Theme.expandDuration; easing.type: Easing.OutQuart }
+        Settle {}
     }
+    // O Settle passa do alvo nos DOIS sentidos: ao fechar, revealHeight
+    // mergulha abaixo de zero. Isso daria altura negativa no host, e a
+    // barra inteira pinçaria — 7px de mergulho numa faixa de 32px é 22%
+    // da altura, lido como glitch, não como peso. A dashboard PODE
+    // pinçar (398px de curso, o mergulho é proporcional e parece peso);
+    // a barra não tem essa folga. Todo consumidor usa o valor preso
+    readonly property real revealH: Math.max(0, revealHeight)
 
     // Wiring pelo contrato: panels reparentados pro host. O painel
     // SEMPRE estica na pill — é o jeito da ilha
     Component.onCompleted: {
-        // Nasceu já em modo wide (persistido)? Arma os reveals
-        if (wideOn)
-            revealArmTimer.start()
         for (let i = 0; i < reveals.length; i++) {
             const r = reveals[i]
             if (!r.panel)
@@ -180,7 +168,7 @@ PillFace {
     // a pill cresce — 2 × 15px/dot mantém a folga simétrica
     property real wideExtra: Math.max(0, ws.count - 5) * 30
     Behavior on wideExtra {
-        NumberAnimation { duration: Theme.expandDuration; easing.type: Easing.OutQuart }
+        Settle {}
     }
 
     // Normal: mínimo do Pill_Theme, cresce se o miolo não couber
@@ -200,7 +188,7 @@ PillFace {
     // quando um widget expande além do piso base) e a pill acompanha
     contentWidth: idleW
         + (dash.width + Theme.contentPadding * 2 - idleW) * expand
-    contentHeight: idleH + revealHeight
+    contentHeight: idleH + revealH
         + (Theme.dashTopHeight + dash.implicitHeight + Theme.contentPadding - idleH) * expand
 
     HoverHandler { id: hover }
@@ -301,7 +289,7 @@ PillFace {
         anchors.right: parent.right
         anchors.leftMargin: Theme.contentPadding
         anchors.rightMargin: Theme.contentPadding
-        height: root.revealHeight
+        height: root.revealH
         clip: true
     }
 

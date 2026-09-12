@@ -59,15 +59,12 @@ Singleton {
 
             // Modo da pill (normal ↔ wide)
             property bool wideBar: false
-            // Barra de topo independente, por baixo da pill (IPC `framed`)
-            property bool framed: false
             // Widgets da dashboard: pins (nome → bool) e posição no
             // grid (nome → {col, row}, em subcolunas)
             property var widgetPins: ({})
             property var widgetLayout: ({})
 
             onWideBarChanged: root.saveSoon()
-            onFramedChanged: root.saveSoon()
             onWidgetPinsChanged: root.saveSoon()
             onWidgetLayoutChanged: root.saveSoon()
         }

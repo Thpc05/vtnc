@@ -13,7 +13,6 @@ Reveal {
     id: root
 
     name: "media"
-    panelWidth: 260 // largura natural na bolha da framed
 
     // Volume/brilho tomam o centro INTEIRO — relógio E visualizer:
     // ele sai da frente e volta depois. Já o takeover de mídia é dele
@@ -32,7 +31,7 @@ Reveal {
     visible: opacity > 0
 
     Behavior on width { SmoothedAnimation { duration: 350 } }
-    Behavior on opacity { NumberAnimation { duration: Theme.fadeDuration } }
+    Behavior on opacity { NumberAnimation { duration: Motion.quick } }
 
     // ── ANCHOR: o visualizer ──
     Visualizer {
@@ -45,7 +44,7 @@ Reveal {
     panel: Item {
         implicitHeight: media.implicitHeight + 6
 
-        Behavior on opacity { NumberAnimation { duration: Theme.fadeDuration } }
+        Behavior on opacity { NumberAnimation { duration: Motion.quick } }
 
         HoverHandler { id: panelHover }
 

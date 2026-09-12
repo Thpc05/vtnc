@@ -44,7 +44,8 @@ Item {
     // DRIVER único: fades e largura derivam dele
     property real mode: taken ? 1 : 0
     Behavior on mode {
-        NumberAnimation { duration: Theme.expandDuration; easing.type: Easing.OutQuart }
+        // `mode` vira LARGURA (extraWidth) — por isso assenta
+        Settle {}
     }
 
     // Quem tomou por ÚLTIMO — e segue dono da largura enquanto a

@@ -12,7 +12,6 @@ Reveal {
     id: root
 
     name: "battery"
-    panelWidth: 240 // largura natural na bolha da framed
 
     panelHovered: panelHover.hovered
 
@@ -27,7 +26,7 @@ Reveal {
     visible: opacity > 0
 
     Behavior on width { SmoothedAnimation { duration: 350 } }
-    Behavior on opacity { NumberAnimation { duration: Theme.fadeDuration } }
+    Behavior on opacity { NumberAnimation { duration: Motion.quick } }
 
     // ── ANCHOR: a bateria de emergência ──
     Battery {
@@ -39,7 +38,7 @@ Reveal {
     panel: Item {
         implicitHeight: detailCol.implicitHeight + 8
 
-        Behavior on opacity { NumberAnimation { duration: Theme.fadeDuration } }
+        Behavior on opacity { NumberAnimation { duration: Motion.quick } }
 
         HoverHandler { id: panelHover }
 

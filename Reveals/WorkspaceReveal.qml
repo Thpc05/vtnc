@@ -19,7 +19,6 @@ Reveal {
     id: root
 
     name: "workspaces"
-    panelWidth: 320 // largura natural na bolha da framed
 
     // A Bar dimensiona a pill wide pelo nº de dots — repassa
     readonly property int count: ws.count
@@ -64,7 +63,7 @@ Reveal {
     panel: Item {
         implicitHeight: wsCol.implicitHeight + 8
 
-        Behavior on opacity { NumberAnimation { duration: Theme.fadeDuration } }
+        Behavior on opacity { NumberAnimation { duration: Motion.quick } }
 
         HoverHandler { id: panelHover }
 
@@ -93,9 +92,9 @@ Reveal {
                     // Mira
                     Rectangle {
                         anchors.fill: parent
-                        radius: 6
+                        radius: Theme.radiusChip
                         color: rowHover.hovered ? Theme.hoverLayer : "transparent"
-                        Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                        Behavior on color { ColorAnimation { duration: Motion.instant } }
                     }
 
                     // Número (accent = focado)
@@ -112,7 +111,7 @@ Reveal {
                             pixelSize: 11
                             weight: wsRow.focused ? 700 : 400
                         }
-                        Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                        Behavior on color { ColorAnimation { duration: Motion.instant } }
                     }
 
                     // Ícones das janelas
@@ -139,9 +138,9 @@ Reveal {
 
                                 Rectangle {
                                     anchors.fill: parent
-                                    radius: 5
+                                    radius: Theme.radiusChip
                                     color: winHover.hovered ? Theme.hoverLayer : "transparent"
-                                    Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                                    Behavior on color { ColorAnimation { duration: Motion.instant } }
                                 }
 
                                 IconImage {

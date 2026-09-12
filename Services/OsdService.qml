@@ -33,7 +33,7 @@ Singleton {
     // animado — impossível dessincronizar, mesmo com o botão preso
     property real shownVolume: 0
     Behavior on shownVolume {
-        NumberAnimation { duration: Theme.osdTrackDuration; easing.type: Easing.OutCubic }
+        NumberAnimation { duration: Motion.track; easing.type: Easing.OutCubic }
     }
     readonly property int volumePct: Math.round(shownVolume * 100)
 
@@ -54,7 +54,7 @@ Singleton {
 
     property real shownBrightness: 0
     Behavior on shownBrightness {
-        NumberAnimation { duration: Theme.osdTrackDuration; easing.type: Easing.OutCubic }
+        NumberAnimation { duration: Motion.track; easing.type: Easing.OutCubic }
     }
     readonly property int brightnessPct: Math.round(shownBrightness)
 

@@ -46,23 +46,15 @@ Rectangle {
     //   "down-both"  → desce + largura pros DOIS lados (centrado)
     property string expandDir: "down"
 
-    //  ORIENTAÇÃO: widgets verticais são COLUNAS (estreitos e altos,
-    //  3 linhas já no idle; sizeIdle segue ditando a largura).
-    //  Cada variante é um arquivo próprio, em DashWidgets/Horizontais/
-    //  ou DashWidgets/Verticais/ — a Dashboard registra UMA delas
-    //  (mesmo `name` = mesma persistência).
-    //  v1: vertical expande só pros lados (down não adiciona linhas)
-    property string orientation: "horizontal" // horizontal | vertical
-    readonly property bool vertical: orientation === "vertical"
-
     function spanOf(s) {
         return s === "full" ? 8 : (s === "big" ? 4 : (s === "small" ? 1 : 2))
     }
     readonly property int spanIdle: spanOf(sizeIdle)
     readonly property int spanExp: Math.max(spanOf(sizeExpand), spanIdle)
-    readonly property int rows: vertical ? 3 : 1
-    readonly property int rowsExp:
-        vertical ? rows : (expandDir.indexOf("down") >= 0 ? 3 : 1)
+    // Todo widget ocupa 1 linha no idle; "down*" adiciona linhas ao
+    // expandir
+    readonly property int rows: 1
+    readonly property int rowsExp: expandDir.indexOf("down") >= 0 ? 3 : 1
 
     //  Quantas subcolunas o canto ESQUERDO recua ao expandir
     //  (a Dashboard ancora o rect expandido em gridCol − leftGrow)
@@ -92,7 +84,7 @@ Rectangle {
     // ── DRIVER da expansão in-place ──
     property real reveal: expanded ? 1 : 0
     Behavior on reveal {
-        NumberAnimation { duration: Theme.expandDuration; easing.type: Easing.OutQuart }
+        Settle {}
     }
     // Conteúdo expandido aparece na 2ª metade (e some na 1ª do colapso)
     readonly property real lateReveal: Math.max(0, reveal * 2 - 1)
@@ -117,21 +109,24 @@ Rectangle {
     // altura (mesma duração/easing). Durante o drag, o dedo manda
     Behavior on x {
         enabled: !widget.dragging
-        NumberAnimation { duration: Theme.expandDuration; easing.type: Easing.OutQuart }
+        Smooth {}
     }
     Behavior on y {
         enabled: !widget.dragging
-        NumberAnimation { duration: Theme.expandDuration; easing.type: Easing.OutQuart }
+        Smooth {}
     }
     z: dragging ? 10 : 0
 
-    radius: Theme.widgetRadius
+    radius: Theme.radiusCard
     color: Theme.widgetBgColor
     // Borda acende SÓ com o mouse em cima (pinado não conta)
     border.width: 1
     border.color: hovered ? Theme.widgetBorderHoverColor : Theme.widgetBorderColor
-    Behavior on border.color { ColorAnimation { duration: Theme.hoverFade } }
+    Behavior on border.color { ColorAnimation { duration: Motion.instant } }
     clip: true
+
+    // Clique simples: pula a espera do hover (a Dashboard escuta)
+    signal tapped()
 
     HoverHandler { id: hoverH }
 
@@ -145,6 +140,15 @@ Rectangle {
     DragHandler {
         id: dragH
         acceptedButtons: Qt.LeftButton
+    }
+
+    // Clique esquerdo sem arrastar. Convive com o DragHandler acima:
+    // passado o limiar de movimento o drag toma o grab e este desiste,
+    // então arrastar não conta como clique
+    TapHandler {
+        acceptedButtons: Qt.LeftButton
+        gesturePolicy: TapHandler.ReleaseWithinBounds
+        onTapped: widget.tapped()
     }
 
     // Fundo full-bleed (atrás do conteúdo, sem margens)
@@ -161,7 +165,7 @@ Rectangle {
     Item {
         id: contentHost
         anchors.fill: parent
-        anchors.margins: 12
+        anchors.margins: Theme.cardPadding
     }
 
     // ── CADEADO: fixa o widget. SÓ aparece com o mouse em cima
@@ -175,13 +179,13 @@ Rectangle {
         z: 5
         opacity: widget.hovered ? 1 : 0
         visible: opacity > 0
-        Behavior on opacity { NumberAnimation { duration: Theme.hoverFade } }
+        Behavior on opacity { NumberAnimation { duration: Motion.instant } }
 
         Rectangle {
             anchors.fill: parent
-            radius: 6
+            radius: Theme.radiusChip
             color: lockHover.hovered ? Theme.hoverLayer : "transparent"
-            Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+            Behavior on color { ColorAnimation { duration: Motion.instant } }
         }
 
         Text {
@@ -189,7 +193,7 @@ Rectangle {
             text: "󰌾"
             color: widget.pinned ? Theme.accent : Theme.textMuted
             font { family: Theme.fontIcon; pixelSize: 11 }
-            Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+            Behavior on color { ColorAnimation { duration: Motion.instant } }
         }
 
         HoverHandler { id: lockHover }

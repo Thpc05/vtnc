@@ -8,8 +8,7 @@ import "../Services"
 //  reiniciar · desligar). Mesma linguagem do Tools: hover e seleção
 //  são o mesmo índice, ←/→ movem, Enter dispara, Esc fecha. Ações
 //  destrutivas acendem em danger.
-//  As ações moram em Services/SessionService.qml (as mesmas do
-//  SessionWidget da dashboard).
+//  As ações moram em Services/SessionService.qml.
 //
 //  IPC: qs -c vtnc ipc call session toggle
 // ═══════════════════════════════════════════
@@ -96,9 +95,9 @@ PillFace {
 
                     Rectangle {
                         anchors.fill: parent
-                        radius: 9
+                        radius: Theme.radiusChip
                         color: act.selected ? Theme.hoverLayer : "transparent"
-                        Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                        Behavior on color { ColorAnimation { duration: Motion.instant } }
                     }
 
                     Text {
@@ -108,7 +107,7 @@ PillFace {
                             ? (act.modelData.danger ? Theme.danger : Theme.accent)
                             : Theme.textPrimary
                         font { family: Theme.fontIcon; pixelSize: 17 }
-                        Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                        Behavior on color { ColorAnimation { duration: Motion.instant } }
                     }
 
                     HoverHandler {

@@ -14,7 +14,6 @@ Reveal {
     id: root
 
     name: "tray"
-    panelWidth: 240 // largura natural na bolha da framed
 
     readonly property int count: SystemTray.items.values.length
 
@@ -41,7 +40,7 @@ Reveal {
         text: "󰇘"
         color: root.revealed ? Theme.textPrimary : Theme.textSecondary
         font { family: Theme.fontIcon; pixelSize: 14 }
-        Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+        Behavior on color { ColorAnimation { duration: Motion.instant } }
     }
 
     // ── PANEL: ícones + menu do ícone mirado ──
@@ -49,7 +48,7 @@ Reveal {
         implicitHeight: 30
             + (root.menuEntries.length > 0 ? menuCol.implicitHeight + 6 : 0)
 
-        Behavior on opacity { NumberAnimation { duration: Theme.fadeDuration } }
+        Behavior on opacity { NumberAnimation { duration: Motion.quick } }
 
         HoverHandler { id: panelHover }
 
@@ -85,9 +84,9 @@ Reveal {
 
                     Rectangle {
                         anchors.fill: parent
-                        radius: 7
+                        radius: Theme.radiusChip
                         color: trayItem.menuOpen ? Theme.hoverLayer : "transparent"
-                        Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                        Behavior on color { ColorAnimation { duration: Motion.instant } }
                     }
 
                     IconImage {
@@ -95,7 +94,7 @@ Reveal {
                         implicitSize: iconHover.hovered ? 20 : 17
                         source: trayItem.modelData.icon
                         Behavior on implicitSize {
-                            NumberAnimation { duration: Theme.hoverFade; easing.type: Easing.OutCubic }
+                            NumberAnimation { duration: Motion.instant; easing.type: Easing.OutCubic }
                         }
                     }
 
@@ -163,7 +162,7 @@ Reveal {
                         color: entryHover.hovered && entryItem.enabled
                             ? Theme.hoverLayer
                             : "transparent"
-                        Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                        Behavior on color { ColorAnimation { duration: Motion.instant } }
                     }
 
                     Text {

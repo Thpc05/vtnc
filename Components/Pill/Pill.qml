@@ -11,9 +11,13 @@ import "../../Services"
 //  adicionadas/removidas sem tocar neste arquivo.
 //
 //  Coreografia do morph (ENTRE faces):
-//    1. conteúdo atual some          (faceFadeOut)
-//    2. face troca → pill morfa      (morphDuration)
-//    3. conteúdo novo entra          (faceFadeInDelay + faceFadeIn)
+//    1. conteúdo atual encolhe e some   (faceFadeOut)
+//    2. face troca → pill morfa         (morphDuration, com assentamento)
+//    3. conteúdo novo cresce e entra    (faceFadeInDelay + faceFadeIn)
+//
+//  O conteúdo ESCALA junto, não só faz cross-fade: quem sai encolhe,
+//  quem entra nasce menor e assenta. É o que faz o conteúdo parecer
+//  estar dentro da ilha que se move, em vez de piscar por cima dela.
 //
 //  DENTRO da mesma face a pill segue o contentWidth/Height cru — é a
 //  face que anima o próprio tamanho. Assim conteúdo e borda derivam
@@ -131,25 +135,53 @@ Item {
     SequentialAnimation {
         id: morphSeq
 
-        // 1. conteúdo atual some
-        NumberAnimation {
-            target: faceHost
-            property: "opacity"
-            to: 0
-            duration: Pill_Theme.faceFadeOut
-            easing.type: Easing.InQuad
+        // 1. conteúdo atual encolhe e some
+        ParallelAnimation {
+            NumberAnimation {
+                target: faceHost
+                property: "opacity"
+                to: 0
+                duration: Pill_Theme.faceFadeOut
+                easing.type: Easing.InQuad
+            }
+            NumberAnimation {
+                target: faceHost
+                property: "scale"
+                to: Pill_Theme.faceScaleOut
+                duration: Pill_Theme.faceFadeOut
+                easing.type: Easing.InQuad
+            }
         }
-        // 2. troca a face → Behaviors da pill morfam o tamanho
-        ScriptAction { script: root.shownState = root.desiredState }
+        // 2. troca a face → Behaviors da pill morfam o tamanho.
+        //    O conteúdo novo já nasce encolhido (invisível ainda), pra
+        //    ter de onde crescer no passo 4
+        ScriptAction {
+            script: {
+                root.shownState = root.desiredState
+                faceHost.scale = Pill_Theme.faceScaleIn
+            }
+        }
         // 3. espera a borda chegar perto do destino
         PauseAnimation { duration: Pill_Theme.faceFadeInDelay }
-        // 4. conteúdo novo entra
-        NumberAnimation {
-            target: faceHost
-            property: "opacity"
-            to: 1
-            duration: Pill_Theme.faceFadeIn
-            easing.type: Easing.OutQuad
+        // 4. conteúdo novo cresce e entra. A escala assenta com o mesmo
+        //    overshoot da borda: os dois param juntos, não em tempos
+        //    diferentes
+        ParallelAnimation {
+            NumberAnimation {
+                target: faceHost
+                property: "opacity"
+                to: 1
+                duration: Pill_Theme.faceFadeIn
+                easing.type: Easing.OutQuad
+            }
+            NumberAnimation {
+                target: faceHost
+                property: "scale"
+                to: 1
+                duration: Pill_Theme.faceFadeIn
+                easing.type: Easing.OutBack
+                easing.overshoot: Motion.overshoot
+            }
         }
     }
 
@@ -184,29 +216,35 @@ Item {
 
         width: root.activeFace ? root.activeFace.contentWidth : Pill_Theme.width
         height: root.activeFace ? root.activeFace.contentHeight : Pill_Theme.height
-        // Radius deriva da height JÁ animada, sem Behavior próprio: um
-        // Behavior aqui perseguiria um alvo móvel e ficaria pra trás,
-        // deixando a pill quadrada no meio do morph
-        radius: Pill_Theme.radius
+        // Canto CONSTANTE: não deriva da altura. O min(altura/2, …) só
+        // protege o frame de squash do overshoot, onde a altura mergulha
+        // (e o Math.max, o frame em que ela passa abaixo de zero) — fora
+        // isso o raio é sempre Pill_Theme.radius
+        radius: Math.min(Math.max(0, height) / 2, Pill_Theme.radius)
         // Behaviors SÓ durante a troca de face — dentro de uma face a
-        // pill segue cru o tamanho que a própria face anima
+        // pill segue cru o tamanho que a própria face anima.
+        // Os dois eixos na MESMA curva e duração: precisam assentar no
+        // mesmo instante, senão a ilha "desmonta" no fim do morph
         Behavior on width {
             enabled: root.morphing
-            Anim { duration: Pill_Theme.morphDuration }
+            Settle { duration: Pill_Theme.morphDuration }
         }
         Behavior on height {
             enabled: root.morphing
-            Anim { duration: Pill_Theme.morphDuration }
+            Settle { duration: Pill_Theme.morphDuration }
         }
 
         // Segura o clique pra ele não atravessar a pill (o toggle da
         // dashboard vive no fundo da linha de topo da Bar)
         TapHandler {}
 
-        // Host das faces (a coreografia anima a opacity daqui)
+        // Host das faces (a coreografia anima opacity E scale daqui).
+        // A escala parte do centro: o conteúdo cresce de dentro da
+        // ilha, não de um canto
         Item {
             id: faceHost
             anchors.fill: parent
+            transformOrigin: Item.Center
         }
     }
 }

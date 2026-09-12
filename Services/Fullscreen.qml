@@ -6,8 +6,7 @@ import Quickshell.Hyprland
 
 // ═══════════════════════════════════════════
 //  FULLSCREEN — Quais monitores têm fullscreen REAL (modo 2).
-//  Usado pelo autohide: a pill (e a framed) se escondem no monitor
-//  em fullscreen.
+//  Usado pelo autohide: a pill se esconde no monitor em fullscreen.
 //
 //  O Hyprland tem DOIS modos: 1 = maximized (respeita a barra) e
 //  2 = fullscreen (cobre tudo). O `hasfullscreen` do workspace é só

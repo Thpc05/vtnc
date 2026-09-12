@@ -69,9 +69,9 @@ Row {
 
                 Rectangle {
                     anchors.fill: parent
-                    radius: 6
+                    radius: Theme.radiusChip
                     color: chipHover.hovered ? Theme.hoverLayer : "transparent"
-                    Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                    Behavior on color { ColorAnimation { duration: Motion.instant } }
                 }
 
                 Text {
@@ -79,7 +79,7 @@ Row {
                     text: MediaService.sourceIcon(MediaService.active)
                     color: chipHover.hovered ? Theme.textPrimary : Theme.textMuted
                     font { family: Theme.fontIcon; pixelSize: 12 }
-                    Behavior on color { ColorAnimation { duration: Theme.hoverFade } }
+                    Behavior on color { ColorAnimation { duration: Motion.instant } }
                 }
 
                 HoverHandler { id: chipHover }

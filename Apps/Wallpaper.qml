@@ -33,7 +33,6 @@ PillFace {
     // Margens simétricas: a grade respira igual em todos os lados
     contentWidth: visibleColumns * cellW + Theme.contentPadding * 2 + 8
     contentHeight: Theme.contentPadding * 2 + 32 + shownRows * cellH
-    contentRadius: 26
 
     // ─── LISTA DE ARQUIVOS ───
     Process {
@@ -193,7 +192,7 @@ PillFace {
                         maskSource: thumbMask
 
                         scale: cell.isSelected ? 1.0 : 0.96
-                        Behavior on scale { Anim { duration: 140 } }
+                        Behavior on scale { Settle { duration: 140 } }
                     }
                 }
 
