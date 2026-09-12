@@ -34,14 +34,14 @@ FloatingWindow {
 
     // ── REGISTRO DE PÁGINAS ──
     readonly property list<Item> pages: [
-        aparencia, movimento, ilha, control center, comportamento, sistema
+        aparencia, movimento, ilha, controlCenter, comportamento, sistema
     ]
     property int atual: 0
 
     AppearancePage { id: aparencia }
     MotionPage     { id: movimento }
     IslandPage     { id: ilha }
-    ControlCenterPage  { id: control center }
+    ControlCenterPage  { id: controlCenter }
     BehaviorPage   { id: comportamento }
     PathsPage      { id: sistema }
 

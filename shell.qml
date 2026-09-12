@@ -238,7 +238,7 @@ ShellRoot {
         function toggle(name: string): void { AppService.toggle(name) }
         function close(): void { AppService.close() }
         function osd(name: string): void { OsdService.show(name) }
-        function control center(): void { AppService.toggle("controlcenter") }
+        function controlcenter(): void { AppService.toggle("controlcenter") }
     }
 
     IpcHandler {
