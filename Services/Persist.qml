@@ -2,24 +2,23 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "../Config"
 
 // ═══════════════════════════════════════════
-//  PERSIST — Estado da shell que sobrevive a restarts.
+//  PERSIST — Estado que a SHELL escreve sozinha.
 //  Acesso: Persist.state.<campo> (ler e escrever).
 //
-//  ARMADILHAS do FileView/JsonAdapter (todas custaram bug real):
-//  - NUNCA `property alias` para dentro do adapter — o alias
-//    re-inicializa os defaults POR CIMA dos valores carregados;
-//  - auto-save só DEPOIS do load (senão a carga sobrescreve o
-//    arquivo com defaults) — daí o gate `loaded` + coalesce;
-//  - path SEMPRE absoluto ("~" não expande: vira um diretório
-//    literal chamado "~" ao lado do cwd);
-//  - Singleton é LAZY e o load aplica DEPOIS do primeiro acesso:
-//    bindings se corrigem sozinhos, mas leitura IMPERATIVA em
-//    Component.onCompleted pega defaults. Quem precisa ler na mão
-//    usa `Connections { target: Persist; onLoadedChanged }`.
+//  A FRONTEIRA que importa: aqui é o que a shell decide em runtime —
+//  você nunca edita isto à mão nem versiona. Configuração (o que VOCÊ
+//  escolhe, e que faz sentido copiar pra outra máquina) mora nos
+//  singletons de Config/ e no Island/IslandTheme.qml, cada um no seu
+//  arquivo. Por isso são arquivos separados e não um blob só.
 //
-//  Para adicionar um dado: 1 property no JsonAdapter + 1 onChanged.
+//  As armadilhas do FileView/JsonAdapter estão documentadas em
+//  Config/Motion.qml — valem igual aqui.
+//
+//  Para adicionar um dado: 1 property no JsonAdapter. O
+//  `onAdapterUpdated` já cobre o save de todas.
 // ═══════════════════════════════════════════
 Singleton {
     id: root
@@ -43,7 +42,7 @@ Singleton {
     FileView {
         id: file
 
-        path: "/home/thpc/.local/state/vtnc/vtnc-state.json"
+        path: Paths.state
         // Estado precisa estar pronto antes dos consumidores montarem
         blockLoading: true
 
@@ -53,20 +52,17 @@ Singleton {
             root.loaded = true
             writeAdapter()
         }
+        onAdapterUpdated: root.saveSoon()
 
         adapter: JsonAdapter {
             id: data
 
-            // Modo da pill (normal ↔ wide)
+            // Modo da ilha (normal ↔ wide)
             property bool wideBar: false
             // Widgets da dashboard: pins (nome → bool) e posição no
             // grid (nome → {col, row}, em subcolunas)
             property var widgetPins: ({})
             property var widgetLayout: ({})
-
-            onWideBarChanged: root.saveSoon()
-            onWidgetPinsChanged: root.saveSoon()
-            onWidgetLayoutChanged: root.saveSoon()
         }
     }
 }

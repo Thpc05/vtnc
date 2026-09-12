@@ -1,62 +1,116 @@
 pragma Singleton
 import QtQuick
+import Quickshell
+import Quickshell.Io
 import "../Config"
 
 // ═══════════════════════════════════════════
-//  PILL THEME — Estética só da ilha: a geometria da casca e a
+//  ISLAND THEME — Estética só da ilha: a geometria da casca e a
 //  coreografia do morph.
 //
 //  Nada aqui é lido por app, OSD, reveal ou módulo — se algum deles
 //  precisar de um token daqui, ele deixou de ser conteúdo e virou
 //  parte da ilha. Cores, fontes e o que a ilha HOSPEDA moram em
-//  Config/Theme.qml.
+//  Config/Theme.qml; a escala de movimento, em Config/Motion.qml.
+//
+//  PERSISTÊNCIA: mesmo padrão do Config/Motion.qml (armadilhas do
+//  FileView documentadas lá).
 // ═══════════════════════════════════════════
-QtObject {
+Singleton {
+    id: root
+
+    readonly property var data: d
+    property bool loaded: false
+
     // ════════════════════════════════════════
     //  COREOGRAFIA DO MORPH (ms)
-    //  Entre faces: conteúdo sai → pill morfa → conteúdo entra.
+    //  Entre faces: conteúdo sai → ilha morfa → conteúdo entra.
     //  INVARIANTE: morphDuration ≤ faceFadeInDelay + faceFadeIn.
-    //  A pill precisa terminar o morph enquanto os Behaviors dela
+    //  A ilha precisa terminar o morph enquanto os Behaviors dela
     //  ainda estão habilitados (`enabled: morphing`, ver Island.qml) —
     //  senão o tamanho salta no fim.
     // ════════════════════════════════════════
-    readonly property int faceFadeOut: 90
-    readonly property int morphDuration: 340
-    readonly property int faceFadeInDelay: 200
-    readonly property int faceFadeIn: 160
+    readonly property int faceFadeOut: d.faceFadeOut
+    readonly property int morphDuration: d.morphDuration
+    readonly property int faceFadeInDelay: d.faceFadeInDelay
+    readonly property int faceFadeIn: d.faceFadeIn
 
-    // A dashboard NÃO passa pela coreografia de troca de face: ela
-    // cresce direto, dentro da própria bar. Mas precisa PARAR no mesmo
-    // instante que um app pararia, senão parece disparada do lado
-    // deles. O morph de um app só começa depois do fade de saída — daí
-    // a soma. Derivado, não calibrado na mão: mexer em qualquer um dos
-    // dois reajusta a dashboard sozinho
+    // DERIVADO (não vai pro adapter): a dashboard não passa pela
+    // coreografia de troca de face, cresce direto. Mas precisa PARAR
+    // no mesmo instante que um app pararia, senão parece disparada do
+    // lado deles — e o morph de um app só começa depois do fade de
+    // saída, daí a soma. Mexer em qualquer um dos dois reajusta a
+    // dashboard sozinho.
     readonly property int dashDuration: faceFadeOut + morphDuration
-
-    // (a curva do assentamento é global: Config/Motion.qml)
 
     // Escala do conteúdo na troca de face: o que sai encolhe, o que
     // entra nasce menor e assenta em 1. Sem isto o conteúdo só pisca;
     // com isto ele parece estar DENTRO da ilha que se move.
-    readonly property real faceScaleOut: 0.94
-    readonly property real faceScaleIn: 0.92
+    readonly property real faceScaleOut: d.faceScaleOut
+    readonly property real faceScaleIn: d.faceScaleIn
+
+    // (a curva do assentamento é global: Config/Motion.qml)
 
     // ════════════════════════════════════════
     //  GEOMETRIA
     // ════════════════════════════════════════
-    // Canto da ilha — CONSTANTE, igual em toda altura. Não deriva mais
-    // da altura: o canto mudar durante a abertura é o que incomodava.
-    // O min(altura/2, ...) na Island continua, mas só como piso de
-    // segurança (o Qt clamparia de qualquer jeito)
+    // DERIVADO do Theme: a ilha é o topo da linguagem de cantos, não
+    // um raio próprio. Ver a seção RAIO do Config/Theme.qml
     readonly property real radius: Theme.radiusIsland
+
     // Distância ilha ↔ topo da tela
-    readonly property real marginTop: 6
+    readonly property real marginTop: d.marginTop
 
     // ════════════════════════════════════════
     //  TAMANHOS POR ESTADO
     // ════════════════════════════════════════
-    readonly property real width: 100
-    readonly property real height: 32
-    readonly property real wideWidth: 150
-    readonly property real wideHeight: 32
+    readonly property real width: d.width
+    readonly property real height: d.height
+    readonly property real wideWidth: d.wideWidth
+    readonly property real wideHeight: d.wideHeight
+
+    // ── persistência (ver Config/Motion.qml para as armadilhas) ──
+    function saveSoon() {
+        if (loaded)
+            saveTimer.restart()
+    }
+
+    Timer {
+        id: saveTimer
+        interval: 100
+        onTriggered: file.writeAdapter()
+    }
+
+    FileView {
+        id: file
+
+        path: Paths.island
+        blockLoading: true
+
+        onLoaded: root.loaded = true
+        onLoadFailed: {
+            root.loaded = true
+            writeAdapter()
+        }
+        onAdapterUpdated: root.saveSoon()
+
+        adapter: JsonAdapter {
+            id: d
+
+            // coreografia (dashDuration é derivado — não entra aqui)
+            property int faceFadeOut: 90
+            property int morphDuration: 340
+            property int faceFadeInDelay: 200
+            property int faceFadeIn: 160
+            property real faceScaleOut: 0.94
+            property real faceScaleIn: 0.92
+
+            // geometria (radius é derivado do Theme — não entra aqui)
+            property real marginTop: 6
+            property real width: 100
+            property real height: 32
+            property real wideWidth: 150
+            property real wideHeight: 32
+        }
+    }
 }
