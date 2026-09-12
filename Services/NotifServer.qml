@@ -2,7 +2,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Services.Notifications
-import "../Config"
+import "../ConfigValues"
 
 // ═══════════════════════════════════════════
 //  NOTIF SERVER — Recebe as notificações do sistema

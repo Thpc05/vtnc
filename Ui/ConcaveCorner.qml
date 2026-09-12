@@ -1,5 +1,5 @@
 import QtQuick
-import "../Config"
+import "../ConfigValues"
 
 // ═══════════════════════════════════════════
 //  CONCAVE CORNER — um quarto de curva que "solda" duas superfícies

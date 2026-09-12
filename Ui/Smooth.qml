@@ -1,5 +1,5 @@
 import QtQuick
-import "../Config"
+import "../ConfigValues"
 
 // ═══════════════════════════════════════════
 //  SMOOTH — A animação de POSIÇÃO/OPACIDADE da shell.

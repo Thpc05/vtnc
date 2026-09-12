@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Services.Mpris
-import "../../Config"
+import "../../ConfigValues"
 import "../../Services"
 import "../../Ui"
 

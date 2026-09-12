@@ -1,5 +1,5 @@
 import QtQuick
-import "../Config"
+import "../ConfigValues"
 
 // ═══════════════════════════════════════════
 //  MEDIA WAVE — Barra de progresso em ONDA.

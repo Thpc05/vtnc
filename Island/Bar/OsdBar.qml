@@ -1,5 +1,5 @@
 import QtQuick
-import "../../Config"
+import "../../ConfigValues"
 
 // ═══════════════════════════════════════════
 //  OSD BAR — ícone | barra | porcentagem.

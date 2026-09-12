@@ -1,5 +1,5 @@
 import QtQuick
-import "../Config"
+import "../ConfigValues"
 
 // ═══════════════════════════════════════════
 //  SCREEN CORNERS — Cantos da tela.

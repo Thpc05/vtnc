@@ -3,7 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Services.UPower
-import "../Config"
+import "../ConfigValues"
 
 // ═══════════════════════════════════════════
 //  BATTERY SERVICE — Estado da bateria (UPower) num lugar só.

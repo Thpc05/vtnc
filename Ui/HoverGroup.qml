@@ -1,11 +1,11 @@
 import QtQuick
-import "../Config"
+import "../ConfigValues"
 
 // ═══════════════════════════════════════════
 //  HOVER GROUP — "um por vez, com paciência".
 //
 //  Esta lógica estava escrita TRÊS vezes (reveals da barra, widgets da
-//  dashboard, faixa que revela a ilha escondida), cada cópia com um
+//  control center, faixa que revela a ilha escondida), cada cópia com um
 //  grace period ligeiramente diferente. Aqui é uma só.
 //
 //  O CONTRATO: quem usa alimenta `candidate` (o que o mouse mira

@@ -1,5 +1,5 @@
 import QtQuick
-import "../Config"
+import "../ConfigValues"
 
 // ═══════════════════════════════════════════
 //  MEDIA ART — Capa com FALLBACK. Tenta qualquer URL (Spotify http,

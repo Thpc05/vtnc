@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Widgets
-import "../Config"
+import "../ConfigValues"
 import "../Island"
 import "../Ui"
 

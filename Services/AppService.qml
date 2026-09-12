@@ -11,7 +11,7 @@ import Quickshell.Hyprland
 //  COMO ele aparece é da ilha (morfando). Enquanto os dois viviam
 //  juntos, o estado ficava misturado com a animação.
 //
-//  MULTI-MONITOR: app e dashboard abrem SÓ no monitor focado — senão
+//  MULTI-MONITOR: app e control center abrem SÓ no monitor focado — senão
 //  toda ilha morfa junto e as barras se copiam. Guardamos o nome do
 //  monitor no instante da abertura (`monitor`); cada ilha só reage se
 //  for a dela (`showsOn`). O relógio, a wide e os reveals seguem
@@ -22,12 +22,12 @@ Singleton {
     id: root
 
     // Nome da face de app aberta ("none" = nenhuma).
-    // A dashboard é uma face como as outras — antes ela era um bool à
+    // A control center é uma face como as outras — antes ela era um bool à
     // parte aqui, porque vivia dentro da barra em vez de ser um rosto
     // da ilha. Virou app, e o caso especial sumiu junto
     property string active: "none"
 
-    // Monitor onde o app/dashboard nasceu (nome da screen do Hyprland).
+    // Monitor onde o app/control center nasceu (nome da screen do Hyprland).
     // "" = nenhum alvo → cai pro comportamento antigo (todas as telas),
     // o que também cobre o caso de o foco não estar disponível.
     property string monitor: ""

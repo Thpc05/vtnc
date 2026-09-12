@@ -1,5 +1,5 @@
 import QtQuick
-import "../Config"
+import "../ConfigValues"
 
 // ═══════════════════════════════════════════
 //  HOVERABLE — A "mira" da shell: o alvo que acende sob o mouse.

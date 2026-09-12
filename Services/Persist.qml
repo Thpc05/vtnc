@@ -2,7 +2,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import "../Config"
+import "../ConfigValues"
 
 // ═══════════════════════════════════════════
 //  PERSIST — Estado que a SHELL escreve sozinha.

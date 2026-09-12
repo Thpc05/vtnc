@@ -2,7 +2,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import "../Config"
+import "../ConfigValues"
 
 // ═══════════════════════════════════════════
 //  ISLAND THEME — Estética só da ilha: a geometria da casca e a

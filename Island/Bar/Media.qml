@@ -1,12 +1,12 @@
 import QtQuick
-import "../../Config"
+import "../../ConfigValues"
 import "../../Services"
 import "../../Ui"
 
 // ═══════════════════════════════════════════
 //  MEDIA — Painel do MediaReveal: capa + título/artista + onda de
 //  progresso + seletor de fonte. Tudo vem do MediaService (a mesma
-//  fonte do MediaWidget da dashboard), então trocar o player num
+//  fonte do MediaWidget da control center), então trocar o player num
 //  lugar troca em todos.
 //
 //  Módulo puro: quem hospeda controla opacity/visible.

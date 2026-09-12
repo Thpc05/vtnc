@@ -2,7 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Widgets
-import "../../Config"
+import "../../ConfigValues"
 import "../../Ui"
 
 // ═══════════════════════════════════════════

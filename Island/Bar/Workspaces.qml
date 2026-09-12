@@ -1,6 +1,6 @@
 import QtQuick
 import Quickshell.Hyprland
-import "../../Config"
+import "../../ConfigValues"
 import "../../Ui"
 
 // ═══════════════════════════════════════════

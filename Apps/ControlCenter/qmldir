@@ -1,0 +1,4 @@
+ControlCenter 1.0 ControlCenter.qml
+ControlCard 1.0 ControlCard.qml
+ControlDetail 1.0 ControlDetail.qml
+DetailRow 1.0 DetailRow.qml

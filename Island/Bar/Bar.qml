@@ -1,5 +1,5 @@
 import ".."
-import "../../Config"
+import "../../ConfigValues"
 import "../../Services"
 import "../../Ui"
 import QtQuick
@@ -17,8 +17,8 @@ import QtQuick
 //  nenhum reveal concreto — só o contrato Reveal (anchor + panel),
 //  mesmo padrão Island ↔ IslandFace.
 //
-//  A dashboard NÃO mora mais aqui. Ela virou uma face de app
-//  (Dashboard/Dashboard.qml) e a ilha MORFA nela, como faz com o
+//  A control center NÃO mora mais aqui. Ela virou uma face de app
+//  (ControlCenter/ControlCenter.qml) e a ilha MORFA nela, como faz com o
 //  launcher. Antes ela crescia pra baixo dentro desta face, o que
 //  fazia o relógio, os workspaces e o cluster de reveals ficarem
 //  pendurados em cima dela — um Control Center não é continuação da
@@ -34,7 +34,7 @@ IslandFace {
     role: "bar"
 
     // Emitido quando o FUNDO da linha de topo é clicado
-    // (a Island conecta em abrir a dashboard)
+    // (a Island conecta em abrir a control center)
     signal backgroundTapped()
 
     readonly property real sidePad: Theme.contentPadding + 4
@@ -124,7 +124,7 @@ IslandFace {
     // O Settle passa do alvo nos DOIS sentidos: ao fechar, revealHeight
     // mergulha abaixo de zero. Isso daria altura negativa no host, e a
     // barra inteira pinçaria — 7px de mergulho numa faixa de 32px é 22%
-    // da altura, lido como glitch, não como peso. A dashboard PODE
+    // da altura, lido como glitch, não como peso. A control center PODE
     // pinçar (398px de curso, o mergulho é proporcional e parece peso);
     // a barra não tem essa folga. Todo consumidor usa o valor preso
     readonly property real revealH: Math.max(0, revealHeight)
@@ -185,7 +185,7 @@ IslandFace {
         anchors.right: parent.right
         height: root.idleH
 
-        // Clique no fundo VAZIO abre a dashboard. Hit-test manual:
+        // Clique no fundo VAZIO abre a control center. Hit-test manual:
         // cliques sobre o conteúdo não contam (o TapHandler não toma
         // grab exclusivo, então tudo chega aqui). O painel do reveal
         // fica de fora por estar abaixo do topRow

@@ -1,5 +1,5 @@
 import "."
-import "../Config"
+import "../ConfigValues"
 import "../Services"
 import "../Ui"
 import "Bar"
@@ -35,7 +35,7 @@ Item {
     property list<Item> faces
 
     // Este monitor é o dono do que está aberto? (setado pelo shell)
-    // App e dashboard só nascem na ilha do monitor focado; as outras
+    // App e control center só nascem na ilha do monitor focado; as outras
     // ficam na barra, sem morfar. A barra idle/wide/reveals não passa
     // por aqui — é per-monitor de graça
     property bool monitorActive: true
@@ -103,9 +103,9 @@ Item {
                 f.requested.connect(() => root.toggleApp(f.name))
             if (f.closeRequested !== undefined)
                 f.closeRequested.connect(() => AppService.close())
-            // Clique no fundo da linha de topo da bar abre a dashboard
+            // Clique no fundo da linha de topo da bar abre a control center
             if (f.backgroundTapped !== undefined)
-                f.backgroundTapped.connect(() => AppService.toggle("dashboard"))
+                f.backgroundTapped.connect(() => AppService.toggle("controlcenter"))
         }
         syncFaces()
     }
@@ -227,7 +227,7 @@ Item {
         }
 
         // Segura o clique pra ele não atravessar a pill (o toggle da
-        // dashboard vive no fundo da linha de topo da Bar)
+        // control center vive no fundo da linha de topo da Bar)
         TapHandler {}
 
         // Host das faces (a coreografia anima opacity E scale daqui).

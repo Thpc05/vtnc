@@ -2,7 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.SystemTray
-import "../../Config"
+import "../../ConfigValues"
 
 // ═══════════════════════════════════════════
 //  TRAY REVEAL — Apps ocultos (steam, discord...).

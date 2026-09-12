@@ -4,12 +4,12 @@ import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import "Apps"
-import "Apps/Dashboard"
-import "Config"
+import "Apps/ControlCenter"
+import "ConfigValues"
 import "Island"
 import "Island/Bar"
 import "Services"
-import "Settings"
+import "SettingsQml"
 import "Ui"
 
 // ═══════════════════════════════════════════
@@ -45,11 +45,11 @@ ShellRoot {
             required property var modelData
             readonly property alias island: island
 
-            // Este monitor é o dono do que está aberto? App e dashboard
+            // Este monitor é o dono do que está aberto? App e control center
             // nascem no monitor focado; os outros seguem só com a barra
             readonly property bool mine: AppService.showsOn(modelData.name)
 
-            // Apps E dashboard cobrem a tela (clique-fora-fecha); só
+            // Apps E control center cobrem a tela (clique-fora-fecha); só
             // apps capturam teclado — hover não rouba nada. Só a janela
             // dona reage — senão as duas telas se copiam
             readonly property bool isOpen: mine && AppService.isOpen
@@ -78,7 +78,7 @@ ShellRoot {
             // gatilho é opcional via Config)
             readonly property bool forced:
                   (Config.autoHideShowOnApp && mine && AppService.hasApp)
-                || (Config.autoHideShowOnDashboard && mine && AppService.active === "dashboard")
+                || (Config.autoHideShowOnControlCenter && mine && AppService.active === "controlcenter")
                 || (Config.autoHideShowOnOsd && OsdService.showing)
                 || (Config.autoHideShowOnNotif && notifAuto)
                 || revealHover
@@ -200,7 +200,7 @@ ShellRoot {
                 // Cada face é independente: remova uma linha (e o
                 // arquivo) e o resto continua funcionando.
                 //
-                // Só morfa em app/dashboard se este for o monitor dono
+                // Só morfa em app/control center se este for o monitor dono
                 // (a barra idle/wide/reveals continua em todas as telas)
                 monitorActive: win.mine
 
@@ -208,7 +208,7 @@ ShellRoot {
                 // com estado no OsdService.
                 faces: [
                     Bar {},
-                    Dashboard {},
+                    ControlCenter {},
                     Launcher {},
                     Wallpaper {},
                     Tools {},
@@ -226,7 +226,7 @@ ShellRoot {
     //
     //  qs ipc call island toggle <nome> | open <nome> | close
     //  qs ipc -t pill -c toggle | open | close   (ilha normal ↔ wide)
-    //  qs ipc -t dashboard -c toggle | open | close
+    //  qs ipc -t control center -c toggle | open | close
     //  qs ipc -t settings -c toggle | open | close  (app de settings)
     //  qs ipc -t osd -c volume | brightness
     //  qs ipc -t launcher | tools | clipboard | session -c toggle
@@ -238,7 +238,7 @@ ShellRoot {
         function toggle(name: string): void { AppService.toggle(name) }
         function close(): void { AppService.close() }
         function osd(name: string): void { OsdService.show(name) }
-        function dashboard(): void { AppService.toggle("dashboard") }
+        function control center(): void { AppService.toggle("controlcenter") }
     }
 
     IpcHandler {
@@ -257,9 +257,9 @@ ShellRoot {
     }
 
     IpcHandler {
-        target: Config.ipcDashboardTarget
-        function toggle(): void { AppService.toggle("dashboard") }
-        function open(): void { AppService.open("dashboard") }
+        target: Config.ipcControlCenterTarget
+        function toggle(): void { AppService.toggle("controlcenter") }
+        function open(): void { AppService.open("controlcenter") }
         function close(): void { AppService.close() }
     }
 
