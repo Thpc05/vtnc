@@ -1,7 +1,9 @@
 import QtQuick
 import "Cards"
+import "Details"
 import "../../Config"
 import "../../Island"
+import "../../Ui"
 
 // ═══════════════════════════════════════════
 //  DASHBOARD — O Control Center.
@@ -28,6 +30,49 @@ IslandFace {
 
     name: "dashboard"
     role: "app"
+    // Virou app de verdade, então Esc fecha — como no launcher
+    grabsKeyboard: true
+
+    // ═══════════════════════════════════════════
+    //  DETALHE — o card mostra o ESTADO e alterna; o detalhe mostra a
+    //  LISTA e escolhe. É essa divisão que deixa o card ter tamanho
+    //  fixo: o que não cabe não fica espremido, vai pro detalhe.
+    //
+    //  A Dashboard não conhece nenhum detalhe concreto, só o contrato
+    //  DashDetail. Registrar = criar em Details/ + 1 id aqui + o
+    //  `detail:` no card.
+    // ═══════════════════════════════════════════
+    readonly property list<Item> detalhes: [redeDet, btDet, audioDet]
+    property string detail: ""
+
+    readonly property Item detalheAtivo: {
+        for (let i = 0; i < detalhes.length; i++)
+            if (detalhes[i].name === detail)
+                return detalhes[i]
+        return null
+    }
+
+    // Fechar volta pra grade: reabrir a dashboard num detalhe deixado
+    // aberto dias atrás não é o que se espera
+    onActiveChanged: if (!active) detail = ""
+
+    // Esc volta UM nível: detalhe → grade → fecha
+    Keys.onEscapePressed: {
+        if (detail !== "")
+            detail = ""
+        else
+            root.closeRequested()
+    }
+
+    Component.onCompleted: {
+        for (let i = 0; i < detalhes.length; i++) {
+            const d = detalhes[i]
+            d.parent = detalheHost
+            d.width = Qt.binding(() => detalheHost.width)
+            d.visible = Qt.binding(() => root.detalheAtivo === d)
+            d.back.connect(() => root.detail = "")
+        }
+    }
 
     readonly property real gap: Theme.dashGap
     // Duas colunas de cards, com o vão no meio
@@ -36,7 +81,35 @@ IslandFace {
     readonly property real unidade: Theme.dashCell
 
     contentWidth: Theme.dashWidth
-    contentHeight: pilha.implicitHeight + Theme.contentPadding * 2
+    // A ilha morfa pra caber o detalhe, em vez de a lista rolar dentro
+    // de uma caixa fixa. Settle porque é mudança de FORMA — e quem
+    // anima é a face (contrato do IslandFace: dentro de uma face é ela
+    // que anima o próprio tamanho; a Island segue cru)
+    contentHeight: (detalheAtivo ? detalheAtivo.implicitHeight
+                                 : pilha.implicitHeight)
+                   + Theme.contentPadding * 2
+    Behavior on contentHeight {
+        enabled: root.active
+        Settle {}
+    }
+
+    // ── HOST DO DETALHE ── (os detalhes são reparentados pra cá)
+    Item {
+        id: detalheHost
+
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.margins: Theme.contentPadding
+        height: root.detalheAtivo ? root.detalheAtivo.implicitHeight : 0
+        opacity: root.detalheAtivo ? 1 : 0
+        visible: opacity > 0
+        Behavior on opacity { Smooth { duration: Motion.quick } }
+    }
+
+    NetworkDetail   { id: redeDet }
+    BluetoothDetail { id: btDet }
+    AudioDetail     { id: audioDet }
 
     Column {
         id: pilha
@@ -46,6 +119,9 @@ IslandFace {
         anchors.right: parent.right
         anchors.margins: Theme.contentPadding
         spacing: root.gap
+        opacity: root.detalheAtivo ? 0 : 1
+        visible: opacity > 0
+        Behavior on opacity { Smooth { duration: Motion.quick } }
 
         // ── LINHA 1: Wi-Fi/Bluetooth empilhados | Mídia (altura dupla)
         Row {
@@ -59,10 +135,14 @@ IslandFace {
                 WifiCard {
                     width: parent.width
                     height: root.unidade
+                    detail: "network"
+                    onDetailRequested: nome => root.detail = nome
                 }
                 BluetoothCard {
                     width: parent.width
                     height: root.unidade
+                    detail: "bluetooth"
+                    onDetailRequested: nome => root.detail = nome
                 }
             }
 
@@ -86,6 +166,8 @@ IslandFace {
         VolumeCard {
             width: parent.width
             height: root.unidade * 0.72
+            detail: "audio"
+            onDetailRequested: nome => root.detail = nome
         }
     }
 }
