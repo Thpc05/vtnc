@@ -1,6 +1,5 @@
 import ".."
 import "../../Config"
-import "../../Dashboard"
 import "../../Services"
 import "../../Ui"
 import QtQuick
@@ -18,7 +17,13 @@ import QtQuick
 //  nenhum reveal concreto — só o contrato Reveal (anchor + panel),
 //  mesmo padrão Island ↔ IslandFace.
 //
-//  `expand` (0 → 1): idle → dashboard. SÓ via IPC (hover não abre).
+//  A dashboard NÃO mora mais aqui. Ela virou uma face de app
+//  (Dashboard/Dashboard.qml) e a ilha MORFA nela, como faz com o
+//  launcher. Antes ela crescia pra baixo dentro desta face, o que
+//  fazia o relógio, os workspaces e o cluster de reveals ficarem
+//  pendurados em cima dela — um Control Center não é continuação da
+//  barra. Com isso saíram daqui o driver `expand`, o `forceExpand`, o
+//  `lateExpand` e o repasse de teclado.
 //
 //  Tamanhos e opacidades derivam dos drivers — nada dessincroniza.
 // ═══════════════════════════════════════════
@@ -28,14 +33,8 @@ IslandFace {
     name: "bar"
     role: "bar"
 
-    // Setado pela Island (o IPC força a dashboard)
-    property bool forceExpand: false
-
-    // Dashboard aberta com um widget pedindo teclado (senha do wifi)
-    readonly property bool dashKeyboard: forceExpand && dash.wantsKeyboard
-
     // Emitido quando o FUNDO da linha de topo é clicado
-    // (a Island conecta em toggleDashboard)
+    // (a Island conecta em abrir a dashboard)
     signal backgroundTapped()
 
     readonly property real sidePad: Theme.contentPadding + 4
@@ -70,20 +69,6 @@ IslandFace {
     // Conteúdo da wide entra na 2ª metade: nunca vaza da pill estreita
     readonly property real lateWide: Math.max(0, wide * 2 - 1)
 
-    // ── DRIVER da dashboard ──
-    property real expand: forceExpand ? 1 : 0
-    Behavior on expand {
-        // Tempo PRÓPRIO: a dashboard não passa pela coreografia de troca
-        // de face, cresce direto — mas precisa ASSENTAR junto com um app
-        // (ver IslandTheme.dashDuration, que é derivado disso)
-        Settle { duration: IslandTheme.dashDuration }
-    }
-    // Conteúdo da dashboard aparece na 2ª metade da expansão (e some
-    // na 1ª metade do colapso — nunca vaza da pill)
-    readonly property real lateExpand: Math.max(0, expand * 2 - 1)
-    // Conteúdo do modo wide: visível na wide E na dashboard — o topo
-    // da dashboard É a pill wide
-    readonly property real wideContent: Math.max(lateWide * (1 - expand), lateExpand)
 
     // ═══════════════════════════════════════════
     //  REVEALS — registro. O anchor é declarado onde ele vive
@@ -184,18 +169,13 @@ IslandFace {
     readonly property real idleH:
         IslandTheme.height + (IslandTheme.wideHeight - IslandTheme.height) * wide
 
-    // A dashboard sobrepõe os dois: a largura dela é dinâmica (cresce
-    // quando um widget expande além do piso base) e a pill acompanha
     contentWidth: idleW
-        + (dash.width + Theme.contentPadding * 2 - idleW) * expand
     contentHeight: idleH + revealH
-        + (Theme.dashTopHeight + dash.implicitHeight + Theme.contentPadding - idleH) * expand
 
     HoverHandler { id: hover }
 
     // ═══════════════════════════════════════════
-    //  LINHA PRINCIPAL — idle ocupa tudo; com a dashboard aberta vira
-    //  a "title bar" dela (o mesmo conteúdo da pill wide)
+    //  LINHA PRINCIPAL — a barra em si
     // ═══════════════════════════════════════════
     Item {
         id: topRow
@@ -203,9 +183,9 @@ IslandFace {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        height: root.idleH + (Theme.dashTopHeight - root.idleH) * root.expand
+        height: root.idleH
 
-        // Clique no fundo VAZIO alterna a dashboard. Hit-test manual:
+        // Clique no fundo VAZIO abre a dashboard. Hit-test manual:
         // cliques sobre o conteúdo não contam (o TapHandler não toma
         // grab exclusivo, então tudo chega aqui). O painel do reveal
         // fica de fora por estar abaixo do topRow
@@ -231,7 +211,7 @@ IslandFace {
             anchors.left: parent.left
             anchors.leftMargin: root.sidePad
             anchors.verticalCenter: parent.verticalCenter
-            opacity: root.wideContent
+            opacity: root.lateWide
             visible: opacity > 0
         }
 
@@ -265,7 +245,7 @@ IslandFace {
             anchors.rightMargin: root.sidePad
             anchors.verticalCenter: parent.verticalCenter
             spacing: 12
-            opacity: root.wideContent
+            opacity: root.lateWide
             visible: opacity > 0
 
             TrayReveal { id: trayReveal }
@@ -291,25 +271,5 @@ IslandFace {
         anchors.rightMargin: Theme.contentPadding
         height: root.revealH
         clip: true
-    }
-
-    // ═══════════════════════════════════════════
-    //  DASHBOARD — quebra-cabeça de widgets.
-    //  Ancorada no revealHost: reveal aberto empurra o grid
-    //  (ordem vertical: pill wide → reveal → dashboard)
-    // ═══════════════════════════════════════════
-    Dashboard {
-        id: dash
-
-        anchors.top: revealHost.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        // Piso mínimo — widget em posição além dele faz a dashboard
-        // (e a pill, via contentWidth) crescer pra acomodar
-        baseWidth: Theme.dashWidth - Theme.contentPadding * 2
-        // Fade do conteúdo: segue o morph (sem Behavior próprio), mas o
-        // PONTO de início é uma variável. Menor `dashContentStart` =
-        // entra antes e sobe mais gradual (menos "pipoca")
-        opacity: Theme.lateReveal(root.expand, Theme.dashContentStart)
-        visible: opacity > 0
     }
 }

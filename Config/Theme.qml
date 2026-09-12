@@ -36,8 +36,16 @@ Singleton {
     readonly property color danger: d.danger
     readonly property color separator: d.separator
     readonly property color shadow: d.shadow
-    // "Mira": fundo de TODO efeito hover/selected da shell
+    // "Mira": fundo de TODO efeito hover/selected da shell.
+    // É uma CAMADA (branco com alfa), feita pra somar sobre o que
+    // estiver embaixo — não serve de cor de superfície
     readonly property color hoverLayer: d.hoverLayer
+
+    // Superfície de card: o degrau acima do preto. Usar a hoverLayer
+    // aqui era o erro que deixava os cards cinza-claro demais — ela é
+    // camada de mira, não superfície. No escuro do iOS o card fica em
+    // ~#1C1C1E sobre fundo quase preto; este é o mesmo degrau
+    readonly property color card: d.card
 
     // O FUNDO PRINCIPAL É FIXO e fica FORA do que se pode configurar.
     // É uma decisão de projeto, não um esquecimento: a ilha é preta,
@@ -56,19 +64,10 @@ Singleton {
     readonly property string fontMono: d.fontMono
     readonly property string fontIcon: d.fontIcon
 
-    // ════════════════════════════════════════
-    //  FADE TARDIO — conteúdo que entra na parte final de um morph.
-    //  Não é animação própria: deriva do driver (o morph já anima).
-    //  `start` (fração 0-1) = onde o conteúdo começa a aparecer.
-    //   0.5 = só na segunda metade (seco); menor = entra antes e sobe
-    //   mais gradual (fade mais suave/lento na percepção).
-    // ════════════════════════════════════════
-    function lateReveal(x, start) {
-        return Math.max(0, Math.min(1, (x - start) / (1 - start)))
-    }
-    readonly property real lateStart: d.lateStart
-    // Dashboard: mais suave que o padrão (o conteúdo "pipocava")
-    readonly property real dashContentStart: d.dashContentStart
+    // (o FADE TARDIO saiu com a dashboard: era ela que precisava de um
+    //  ponto de entrada próprio pro conteúdo não "pipocar" ao crescer
+    //  dentro da barra. Como face de app, ela usa a coreografia de
+    //  morph da ilha, que já cuida disso)
 
     // ════════════════════════════════════════
     //  CONTEÚDO — o que a ilha hospeda
@@ -121,7 +120,6 @@ Singleton {
     //  DASHBOARD
     //  A altura total deriva do layout — não existe dashHeight fixo
     // ════════════════════════════════════════
-    readonly property real dashTopHeight: d.dashTopHeight
     // Altura de um card de toggle. O card de mídia vale dois deles;
     // os sliders, 0.72 — ver Dashboard/Dashboard.qml
     readonly property real dashCell: d.dashCell
@@ -178,16 +176,13 @@ Singleton {
             property string danger: "#ff5555"
             property string separator: "#16ffffff"
             property string shadow: "#cc000000"
+            property string card: "#141416"
             property string hoverLayer: "#2effffff"
 
             // fontes
             property string fontDisplay: "SF Pro Display"
             property string fontMono: "SF Mono"
             property string fontIcon: "JetBrainsMono Nerd Font Propo"
-
-            // fade tardio
-            property real lateStart: 0.3
-            property real dashContentStart: 0.9
 
             // conteúdo
             property real contentPadding: 14
@@ -201,7 +196,6 @@ Singleton {
             property real radiusScreen: 22
 
             // dashboard
-            property real dashTopHeight: 44
             property real dashCell: 64
             property real dashGap: 8
             property real widgetMediaBlur: 0.6

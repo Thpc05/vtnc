@@ -35,14 +35,6 @@ Singleton {
     readonly property int faceFadeInDelay: d.faceFadeInDelay
     readonly property int faceFadeIn: d.faceFadeIn
 
-    // DERIVADO (não vai pro adapter): a dashboard não passa pela
-    // coreografia de troca de face, cresce direto. Mas precisa PARAR
-    // no mesmo instante que um app pararia, senão parece disparada do
-    // lado deles — e o morph de um app só começa depois do fade de
-    // saída, daí a soma. Mexer em qualquer um dos dois reajusta a
-    // dashboard sozinho.
-    readonly property int dashDuration: faceFadeOut + morphDuration
-
     // Escala do conteúdo na troca de face: o que sai encolhe, o que
     // entra nasce menor e assenta em 1. Sem isto o conteúdo só pisca;
     // com isto ele parece estar DENTRO da ilha que se move.
@@ -97,7 +89,7 @@ Singleton {
         adapter: JsonAdapter {
             id: d
 
-            // coreografia (dashDuration é derivado — não entra aqui)
+            // coreografia do morph
             property int faceFadeOut: 90
             property int morphDuration: 340
             property int faceFadeInDelay: 200

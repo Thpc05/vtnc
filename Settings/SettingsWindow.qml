@@ -64,7 +64,7 @@ FloatingWindow {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         width: 210
-        color: Theme.hoverLayer
+        color: Theme.card
 
         Column {
             anchors.fill: parent

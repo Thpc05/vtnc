@@ -1,6 +1,6 @@
 import QtQuick
 import ".."
-import "../../Config"
+import "../../../Config"
 
 // ═══════════════════════════════════════════
 //  TOGGLE CARD — A forma do Wi-Fi e do Bluetooth no Control Center:

@@ -1,6 +1,7 @@
 import QtQuick
 import "Cards"
-import "../Config"
+import "../../Config"
+import "../../Island"
 
 // ═══════════════════════════════════════════
 //  DASHBOARD — O Control Center.
@@ -16,32 +17,34 @@ import "../Config"
 //  runtime de propósito — posição de card é desenho, não preferência.
 //
 //  Registrar um card = criar em Cards/ + colocar aqui.
+//
+//  É uma FACE DE APP, não um pedaço da barra. Antes ela crescia pra
+//  baixo dentro da Bar, o que deixava o relógio, os workspaces e o
+//  cluster de reveals pendurados em cima dela. Um Control Center não
+//  é continuação da barra: a ilha MORFA nele, como faz no launcher.
 // ═══════════════════════════════════════════
-Item {
+IslandFace {
     id: root
 
-    // Largura BASE pedida pela Bar; a dashboard não cresce mais além
-    // dela (era o container que se esticava pra caber um expandido)
-    property real baseWidth: 400
-
-    // Nenhum widget pede teclado nesta versão: senha de Wi-Fi mora no
-    // detalhe, que ainda não existe. A Bar lê isto pela cadeia
-    // Dashboard → Bar → Island → shell
-    readonly property bool wantsKeyboard: false
+    name: "dashboard"
+    role: "app"
 
     readonly property real gap: Theme.dashGap
     // Duas colunas de cards, com o vão no meio
-    readonly property real meia: (width - gap) / 2
+    readonly property real meia: (pilha.width - gap) / 2
     // Altura de um card de toggle; o card de mídia vale dois + o vão
     readonly property real unidade: Theme.dashCell
 
-    width: baseWidth
-    implicitHeight: pilha.implicitHeight
+    contentWidth: Theme.dashWidth
+    contentHeight: pilha.implicitHeight + Theme.contentPadding * 2
 
     Column {
         id: pilha
 
-        width: parent.width
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.margins: Theme.contentPadding
         spacing: root.gap
 
         // ── LINHA 1: Wi-Fi/Bluetooth empilhados | Mídia (altura dupla)

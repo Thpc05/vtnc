@@ -16,7 +16,15 @@ SettingsPage {
             onCommit: hex => Theme.data.accent = hex
         }
         SettingColor {
+            label: "Card"
+            hint: "O degrau acima do preto. O FUNDO principal é fixo em "
+                + "#000000 e não se configura — a ilha é preta, ponto"
+            value: Theme.card
+            onCommit: hex => Theme.data.card = hex
+        }
+        SettingColor {
             label: "Superfície"
+            hint: "Fundo de capa sem arte e trilha do progresso"
             value: Theme.surface
             onCommit: hex => Theme.data.surface = hex
         }

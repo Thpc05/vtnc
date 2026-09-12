@@ -1,7 +1,7 @@
 import QtQuick
 import ".."
-import "../../Config"
-import "../../Ui"
+import "../../../Config"
+import "../../../Ui"
 
 // ═══════════════════════════════════════════
 //  SLIDER CARD — O slider do Control Center: o card INTEIRO é a
@@ -28,7 +28,7 @@ DashCard {
     // O card do slider não acende inteiro: quem mostra o nível é o
     // preenchimento
     lit: false
-    color: Theme.hoverLayer
+    color: Theme.card
 
     function _apply(px) {
         root.commit(Math.max(0, Math.min(1, px / root.width)))

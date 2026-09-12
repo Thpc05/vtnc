@@ -26,7 +26,7 @@ Column {
         // O card mede o conteúdo; não tem altura própria
         height: linhas.implicitHeight + Theme.cardPadding * 2
         radius: Theme.radiusCard
-        color: Theme.hoverLayer
+        color: Theme.card
 
         Column {
             id: linhas

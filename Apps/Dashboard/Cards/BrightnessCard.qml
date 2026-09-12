@@ -1,7 +1,7 @@
 import QtQuick
 import "."
-import "../../Config"
-import "../../Services"
+import "../../../Config"
+import "../../../Services"
 
 // ═══════════════════════════════════════════
 //  BRIGHTNESS CARD — O slider de brilho.

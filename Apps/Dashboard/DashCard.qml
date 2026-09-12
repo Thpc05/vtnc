@@ -1,6 +1,6 @@
 import QtQuick
-import "../Config"
-import "../Ui"
+import "../../Config"
+import "../../Ui"
 
 // ═══════════════════════════════════════════
 //  DASH CARD — A casca de um card do Control Center.
@@ -42,7 +42,7 @@ Rectangle {
                                          : Theme.textSecondary
 
     radius: Theme.radiusCard
-    color: lit ? Theme.accent : Theme.hoverLayer
+    color: lit ? Theme.accent : Theme.card
     Behavior on color { ColorAnimation { duration: Motion.instant } }
     clip: true
 

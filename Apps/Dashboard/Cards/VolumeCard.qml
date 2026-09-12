@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell.Services.Pipewire
 import "."
-import "../../Config"
+import "../../../Config"
 
 // ═══════════════════════════════════════════
 //  VOLUME CARD — O slider de som.

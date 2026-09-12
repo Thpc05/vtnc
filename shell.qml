@@ -4,6 +4,7 @@ import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import "Apps"
+import "Apps/Dashboard"
 import "Config"
 import "Island"
 import "Island/Bar"
@@ -77,7 +78,7 @@ ShellRoot {
             // gatilho é opcional via Config)
             readonly property bool forced:
                   (Config.autoHideShowOnApp && mine && AppService.hasApp)
-                || (Config.autoHideShowOnDashboard && mine && AppService.dashboard)
+                || (Config.autoHideShowOnDashboard && mine && AppService.active === "dashboard")
                 || (Config.autoHideShowOnOsd && OsdService.showing)
                 || (Config.autoHideShowOnNotif && notifAuto)
                 || revealHover
@@ -207,6 +208,7 @@ ShellRoot {
                 // com estado no OsdService.
                 faces: [
                     Bar {},
+                    Dashboard {},
                     Launcher {},
                     Wallpaper {},
                     Tools {},
@@ -236,7 +238,7 @@ ShellRoot {
         function toggle(name: string): void { AppService.toggle(name) }
         function close(): void { AppService.close() }
         function osd(name: string): void { OsdService.show(name) }
-        function dashboard(): void { AppService.toggleDashboard() }
+        function dashboard(): void { AppService.toggle("dashboard") }
     }
 
     IpcHandler {
@@ -256,8 +258,8 @@ ShellRoot {
 
     IpcHandler {
         target: Config.ipcDashboardTarget
-        function toggle(): void { AppService.toggleDashboard() }
-        function open(): void { AppService.openDashboard() }
+        function toggle(): void { AppService.toggle("dashboard") }
+        function open(): void { AppService.open("dashboard") }
         function close(): void { AppService.close() }
     }
 

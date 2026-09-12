@@ -96,21 +96,6 @@ SettingsPage {
                 font { family: Theme.fontMono; pixelSize: 12 }
             }
         }
-
-        SettingRow {
-            label: "Dashboard"
-            hint: "DERIVADO: sair + morfar. É o que faz a dashboard "
-                + "assentar no mesmo instante que um app"
-            controlWidth: 80
-
-            Text {
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                text: IslandTheme.dashDuration + " ms"
-                color: Theme.textMuted
-                font { family: Theme.fontMono; pixelSize: 12 }
-            }
-        }
     }
 
     SettingGroup {

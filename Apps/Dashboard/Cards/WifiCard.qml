@@ -3,7 +3,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Networking
 import "."
-import "../../Config"
+import "../../../Config"
 
 // ═══════════════════════════════════════════
 //  WIFI CARD — Estado do Wi-Fi; o corpo liga/desliga.

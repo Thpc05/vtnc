@@ -2,7 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Bluetooth
 import "."
-import "../../Config"
+import "../../../Config"
 
 // ═══════════════════════════════════════════
 //  BLUETOOTH CARD — Estado do adapter; o corpo liga/desliga.

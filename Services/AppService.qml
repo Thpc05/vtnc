@@ -21,10 +21,11 @@ import Quickshell.Hyprland
 Singleton {
     id: root
 
-    // Nome da face de app aberta ("none" = nenhuma)
+    // Nome da face de app aberta ("none" = nenhuma).
+    // A dashboard é uma face como as outras — antes ela era um bool à
+    // parte aqui, porque vivia dentro da barra em vez de ser um rosto
+    // da ilha. Virou app, e o caso especial sumiu junto
     property string active: "none"
-    // Dashboard aberta (é conteúdo, não app: não captura teclado)
-    property bool dashboard: false
 
     // Monitor onde o app/dashboard nasceu (nome da screen do Hyprland).
     // "" = nenhum alvo → cai pro comportamento antigo (todas as telas),
@@ -42,18 +43,14 @@ Singleton {
     // durante o slurp, que precisa da tela livre. Quem hospeda liga
     // isto na face ativa.
     property bool releaseInput: false
-    // Um widget da dashboard pede o teclado (senha do wifi)
-    property bool dashKeyboard: false
-
     readonly property bool hasApp: active !== "none"
     // Pro shell: mask fullscreen (clique-fora-fecha) e teclado
     readonly property bool grabsInput: hasApp && !releaseInput
-    readonly property bool wantsKeyboard: grabsInput || (dashboard && dashKeyboard)
+    readonly property bool wantsKeyboard: grabsInput
     // Alguma coisa aberta cobrindo a tela?
-    readonly property bool isOpen: grabsInput || dashboard
+    readonly property bool isOpen: grabsInput
 
     function open(name) {
-        dashboard = false
         monitor = _focused()
         active = name
     }
@@ -67,25 +64,6 @@ Singleton {
 
     function close() {
         active = "none"
-        dashboard = false
         monitor = ""
-    }
-
-    function openDashboard() {
-        active = "none"
-        monitor = _focused()
-        dashboard = true
-    }
-
-    // Dashboard SUBSTITUI o que estiver aberto na hora
-    function toggleDashboard() {
-        if (hasApp) {
-            close()
-            return
-        }
-        if (dashboard)
-            close()
-        else
-            openDashboard()
     }
 }

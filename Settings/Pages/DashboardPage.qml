@@ -28,13 +28,6 @@ SettingsPage {
             from: 0; to: 32; suffix: "px"
             onCommit: v => Theme.data.dashGap = v
         }
-        SettingSlider {
-            label: "Altura do topo"
-            hint: "A faixa que vira a title bar quando a dashboard abre"
-            value: Theme.dashTopHeight
-            from: 20; to: 100; suffix: "px"
-            onCommit: v => Theme.data.dashTopHeight = v
-        }
     }
 
     SettingGroup {
@@ -46,21 +39,6 @@ SettingsPage {
             value: Theme.widgetMediaBlur
             from: 0; to: 1; step: 0.05
             onCommit: v => Theme.data.widgetMediaBlur = v
-        }
-        SettingSlider {
-            label: "Entrada do conteúdo"
-            hint: "Em que ponto da expansão o conteúdo começa a aparecer. "
-                + "Menor entra antes e mais gradual (menos 'pipoca')"
-            value: Theme.dashContentStart
-            from: 0; to: 0.99; step: 0.05
-            onCommit: v => Theme.data.dashContentStart = v
-        }
-        SettingSlider {
-            label: "Entrada padrão"
-            hint: "O mesmo, para o resto da shell"
-            value: Theme.lateStart
-            from: 0; to: 0.99; step: 0.05
-            onCommit: v => Theme.data.lateStart = v
         }
     }
 

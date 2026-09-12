@@ -1,9 +1,9 @@
 import QtQuick
 import QtQuick.Effects
 import ".."
-import "../../Config"
-import "../../Services"
-import "../../Ui"
+import "../../../Config"
+import "../../../Services"
+import "../../../Ui"
 
 // ═══════════════════════════════════════════
 //  MEDIA CARD — O card alto do Control Center: capa borrada ao

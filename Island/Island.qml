@@ -45,7 +45,6 @@ Item {
     //  (o que abrir é dado; COMO abrir é da ilha: morfando)
     // ═══════════════════════════════════════════
     readonly property string appState: monitorActive ? AppService.active : "none"
-    readonly property bool dashForced: monitorActive && AppService.dashboard
 
     // Prioridade: app > bar (a bar cuida de idle/hover sozinha).
     // OSD não entra: é conteúdo do Center, não rosto da ilha
@@ -63,12 +62,6 @@ Item {
         target: AppService
         property: "releaseInput"
         value: !!(root.activeFace && root.activeFace.releaseInput)
-        when: root.activeFace !== null
-    }
-    Binding {
-        target: AppService
-        property: "dashKeyboard"
-        value: !!(root.activeFace && root.activeFace.dashKeyboard)
         when: root.activeFace !== null
     }
 
@@ -110,12 +103,9 @@ Item {
                 f.requested.connect(() => root.toggleApp(f.name))
             if (f.closeRequested !== undefined)
                 f.closeRequested.connect(() => AppService.close())
-            // Clique no fundo da linha de topo da bar alterna a dashboard
+            // Clique no fundo da linha de topo da bar abre a dashboard
             if (f.backgroundTapped !== undefined)
-                f.backgroundTapped.connect(() => AppService.toggleDashboard())
-            // A face padrão (bar) recebe o forçar-dashboard do IPC
-            if (f.forceExpand !== undefined)
-                f.forceExpand = Qt.binding(() => root.dashForced)
+                f.backgroundTapped.connect(() => AppService.toggle("dashboard"))
         }
         syncFaces()
     }
