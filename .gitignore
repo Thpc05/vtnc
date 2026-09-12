@@ -1,0 +1,38 @@
+# ═══════════════════════════════════════════
+#  vtnc — o que NÃO entra no repositório
+#
+#  Nota: a configuração da shell (theme/motion/island/config) e o
+#  estado dela vivem FORA daqui, em ~/.local/state/vtnc/. Não há nada
+#  a ignorar por causa deles — os valores de fábrica ficam versionados
+#  em ConfigValues/Defaults.qml, que é fonte, não estado.
+# ═══════════════════════════════════════════
+
+# ── Qt / QML ──
+# Bytecode e cache que o motor gera ao lado do fonte
+*.qmlc
+*.jsc
+.qt/
+# Config do language server: aponta para caminhos da máquina
+.qmlls.ini
+
+# ── Claude Code ──
+# O diretório inteiro. O settings.local.json ali guarda permissões POR
+# MÁQUINA e não faz sentido versionar.
+# Se um dia quiser compartilhar um settings.json ou um CLAUDE.md, troque
+# esta linha por `.claude/settings.local.json` — senão eles também
+# ficariam de fora, sem aviso
+.claude/
+
+# ── Editores ──
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Backups e sistema ──
+# Inclui os .bak que uma migração de chaves deixa para trás
+*.bak
+*.orig
+*.rej
+*~
+.DS_Store
