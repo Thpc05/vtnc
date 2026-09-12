@@ -24,12 +24,12 @@ import "Ui"
 ShellRoot {
     id: shell
 
-    // ═══ CONFIG — janela flutuante, fora da shell desenhada ═══
+    // ═══ SETTINGS — janela flutuante, fora da shell desenhada ═══
     // Uma só (não por tela) e nasce fechada. Mora aqui dentro de
     // propósito: escreve nos MESMOS singletons que a shell lê, então
     // cada slider reflete ao vivo na ilha
     SettingsWindow {
-        id: configWin
+        id: settingsWin
         visible: false
     }
 
@@ -227,7 +227,7 @@ ShellRoot {
     //  qs ipc call island toggle <nome> | open <nome> | close
     //  qs ipc -t pill -c toggle | open | close   (ilha normal ↔ wide)
     //  qs ipc -t dashboard -c toggle | open | close
-    //  qs ipc -t config -c toggle | open | close    (app de config)
+    //  qs ipc -t settings -c toggle | open | close  (app de settings)
     //  qs ipc -t osd -c volume | brightness
     //  qs ipc -t launcher | tools | clipboard | session -c toggle
     //  qs ipc -t wallpaper -c toggle | random
@@ -250,10 +250,10 @@ ShellRoot {
     }
 
     IpcHandler {
-        target: Config.ipcConfigTarget
-        function toggle(): void { configWin.visible = !configWin.visible }
-        function open(): void { configWin.visible = true }
-        function close(): void { configWin.visible = false }
+        target: Config.ipcSettingsTarget
+        function toggle(): void { settingsWin.visible = !settingsWin.visible }
+        function open(): void { settingsWin.visible = true }
+        function close(): void { settingsWin.visible = false }
     }
 
     IpcHandler {

@@ -3,115 +3,115 @@ import ".."
 import "../../Config"
 
 SettingsPage {
-    title: "Comportamento"
+    title: "Behavior"
     icon: "󰒓"
 
     SettingGroup {
-        title: "Autohide"
-        // A ilha se esconde no monitor em fullscreen; o mouse no topo
-        // da tela traz ela de volta
+        title: "Auto-hide"
+        // The island hides on whichever monitor is fullscreen; the
+        // pointer at the top of the screen brings it back
 
         SettingToggle {
-            label: "Esconder sempre"
-            hint: "Não só em fullscreen: a ilha vive guardada e só o "
-                + "mouse no topo revela"
+            label: "Always hide"
+            hint: "Not just in fullscreen: the island lives tucked away and "
+                + "only the pointer at the top reveals it"
             checked: Config.alwaysAutoHide
-            onCommit: v => Config.data.alwaysAutoHide = v
+            store: Config.data; key: "alwaysAutoHide"; defaults: Defaults.config
         }
         SettingSlider {
-            label: "Faixa de revelação"
-            hint: "Altura da tira no topo que reage ao mouse"
+            label: "Reveal strip"
+            hint: "Height of the band at the top that reacts to the pointer"
             value: Config.autoHideRevealZone
             from: 1; to: 40; suffix: "px"
-            onCommit: v => Config.data.autoHideRevealZone = v
+            store: Config.data; key: "autoHideRevealZone"; defaults: Defaults.config
         }
-        SettingText {
-            label: "Animação"
-            hint: "slide · fade · retract"
-            text: Config.autoHideAnim
-            onCommit: v => Config.data.autoHideAnim = v
+        SettingChoice {
+            label: "Animation"
+            options: ["slide", "fade", "retract"]
+            value: Config.autoHideAnim
+            store: Config.data; key: "autoHideAnim"; defaults: Defaults.config
         }
     }
 
     SettingGroup {
-        title: "O que força a ilha a aparecer"
+        title: "What forces the island visible"
 
         SettingToggle {
-            label: "App aberto"
-            hint: "Desligar isto faz o launcher em fullscreen digitar "
-                + "numa ilha invisível — deixe ligado a menos que saiba "
-                + "o que quer"
+            label: "App open"
+            hint: "Turning this off means opening the launcher in fullscreen "
+                + "types into an invisible island — leave it on unless you "
+                + "know what you want"
             checked: Config.autoHideShowOnApp
-            onCommit: v => Config.data.autoHideShowOnApp = v
+            store: Config.data; key: "autoHideShowOnApp"; defaults: Defaults.config
         }
         SettingToggle {
-            label: "Dashboard aberta"
+            label: "Control Center open"
             checked: Config.autoHideShowOnDashboard
-            onCommit: v => Config.data.autoHideShowOnDashboard = v
+            store: Config.data; key: "autoHideShowOnDashboard"; defaults: Defaults.config
         }
         SettingToggle {
-            label: "Volume / brilho"
+            label: "Volume or brightness"
             checked: Config.autoHideShowOnOsd
-            onCommit: v => Config.data.autoHideShowOnOsd = v
+            store: Config.data; key: "autoHideShowOnOsd"; defaults: Defaults.config
         }
         SettingToggle {
-            label: "Notificação chegando"
+            label: "Notification arriving"
             checked: Config.autoHideShowOnNotif
-            onCommit: v => Config.data.autoHideShowOnNotif = v
+            store: Config.data; key: "autoHideShowOnNotif"; defaults: Defaults.config
         }
     }
 
     SettingGroup {
-        title: "OSD e notificações"
+        title: "OSD and notifications"
 
         SettingSlider {
-            label: "OSD some depois de"
+            label: "OSD hides after"
             value: Config.osdTimeout
             from: 500; to: 8000; step: 250; suffix: "ms"
-            onCommit: v => Config.data.osdTimeout = v
+            store: Config.data; key: "osdTimeout"; defaults: Defaults.config
         }
         SettingToggle {
-            label: "Mostrar porcentagem"
-            hint: "O número ao lado da barra de volume/brilho"
+            label: "Show percentage"
+            hint: "The number next to the volume and brightness bar"
             checked: Config.osdShowPercent
-            onCommit: v => Config.data.osdShowPercent = v
+            store: Config.data; key: "osdShowPercent"; defaults: Defaults.config
         }
         SettingSlider {
-            label: "Notificação some depois de"
+            label: "Notification hides after"
             value: Config.notifyTimeout
             from: 1000; to: 15000; step: 500; suffix: "ms"
-            onCommit: v => Config.data.notifyTimeout = v
+            store: Config.data; key: "notifyTimeout"; defaults: Defaults.config
         }
         SettingSlider {
-            label: "Histórico guarda"
+            label: "History keeps"
             value: Config.maxNotifHistory
-            from: 1; to: 100; suffix: "itens"
-            onCommit: v => Config.data.maxNotifHistory = v
+            from: 1; to: 100; suffix: "items"
+            store: Config.data; key: "maxNotifHistory"; defaults: Defaults.config
         }
     }
 
     SettingGroup {
-        title: "Diversos"
+        title: "Misc"
 
         SettingSlider {
-            label: "Resultados do launcher"
+            label: "Launcher results"
             value: Config.maxLauncherResults
-            from: 1; to: 20; suffix: "itens"
-            onCommit: v => Config.data.maxLauncherResults = v
+            from: 1; to: 20; suffix: "items"
+            store: Config.data; key: "maxLauncherResults"; defaults: Defaults.config
         }
         SettingSlider {
-            label: "Aviso de bateria"
-            hint: "Abaixo disto a bateria aparece ao lado do relógio. "
-                + "100 = sempre visível, útil pra testar"
+            label: "Battery warning"
+            hint: "Below this the battery shows up next to the clock. "
+                + "100 = always visible, handy for testing"
             value: Config.batteryWarnLevel
             from: 0; to: 100; suffix: "%"
-            onCommit: v => Config.data.batteryWarnLevel = v
+            store: Config.data; key: "batteryWarnLevel"; defaults: Defaults.config
         }
         SettingToggle {
-            label: "Legenda no Tools"
-            hint: "Nome do selecionado embaixo dos ícones"
+            label: "Caption in Tools"
+            hint: "Name of the selected item under the icons"
             checked: Config.showTips
-            onCommit: v => Config.data.showTips = v
+            store: Config.data; key: "showTips"; defaults: Defaults.config
         }
     }
 }

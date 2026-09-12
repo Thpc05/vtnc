@@ -29,7 +29,8 @@ SettingRow {
     property real step: 1
     property string suffix: ""
 
-    signal commit(real v)
+    // Feeds the revert comparison in SettingRow
+    currentValue: value
 
     controlWidth: 210
 
@@ -42,7 +43,7 @@ SettingRow {
         if (step > 0)
             v = Math.round(v / step) * step
         if (v !== value)
-            root.commit(v)
+            root.apply(v)
     }
 
     Item {

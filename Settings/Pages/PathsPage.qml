@@ -3,128 +3,135 @@ import ".."
 import "../../Config"
 
 SettingsPage {
-    title: "Sistema"
+    title: "System"
     icon: "󰋊"
 
     SettingGroup {
-        title: "Pastas"
+        title: "Folders"
 
         SettingText {
             label: "Wallpapers"
             text: Config.wallpaperPath
-            onCommit: v => Config.data.wallpaperPath = v
+            store: Config.data; key: "wallpaperPath"; defaults: Defaults.config
         }
         SettingText {
-            label: "Capturas de tela"
+            label: "Screenshots"
             text: Config.screenshotPath
-            onCommit: v => Config.data.screenshotPath = v
+            store: Config.data; key: "screenshotPath"; defaults: Defaults.config
         }
         SettingText {
-            label: "Gravações"
+            label: "Recordings"
             text: Config.recordingPath
-            onCommit: v => Config.data.recordingPath = v
+            store: Config.data; key: "recordingPath"; defaults: Defaults.config
         }
     }
 
     SettingGroup {
-        title: "Papel de parede e cores"
+        title: "Wallpaper and colors"
 
-        SettingText {
-            label: "Transição"
-            hint: "none · simple · fade · left · right · top · bottom · "
-                + "wipe · wave · grow · center · any · outer · random"
-            text: Config.wallpaperTransition
-            onCommit: v => Config.data.wallpaperTransition = v
+        SettingChoice {
+            label: "Transition"
+            options: ["none", "simple", "fade", "left", "right", "top",
+                      "bottom", "wipe", "wave", "grow", "center", "any",
+                      "outer", "random"]
+            value: Config.wallpaperTransition
+            store: Config.data; key: "wallpaperTransition"; defaults: Defaults.config
         }
         SettingSlider {
-            label: "Duração da transição"
+            label: "Transition duration"
             value: Config.wallpaperTransitionMs
             from: 0; to: 4000; step: 100; suffix: "ms"
-            onCommit: v => Config.data.wallpaperTransitionMs = v
+            store: Config.data; key: "wallpaperTransitionMs"; defaults: Defaults.config
         }
         SettingToggle {
-            label: "Cores seguem o papel de parede"
-            hint: "O matugen extrai a paleta da imagem. O FUNDO fica de "
-                + "fora e continua #000000 — e a mira do hover também, "
-                + "porque ela é camada com alfa, não cor"
+            label: "Colors follow the wallpaper"
+            hint: "matugen pulls the palette out of the image. The "
+                + "background stays #000000, and so does the hover layer — "
+                + "it is an alpha layer, not a color"
             checked: Config.wallpaperTintsShell
-            onCommit: v => Config.data.wallpaperTintsShell = v
+            store: Config.data; key: "wallpaperTintsShell"; defaults: Defaults.config
         }
-        SettingText {
-            label: "Esquema"
-            hint: "scheme-tonal-spot · scheme-vibrant · scheme-content · "
-                + "scheme-expressive · scheme-fidelity · scheme-neutral · "
-                + "scheme-monochrome · scheme-fruit-salad · scheme-rainbow"
-            text: Config.matugenScheme
-            onCommit: v => Config.data.matugenScheme = v
+        SettingChoice {
+            label: "Scheme"
+            hint: "How far the palette drifts from the image: content and "
+                + "fidelity stay faithful, expressive shifts the hue on "
+                + "purpose, monochrome drops color entirely"
+            options: ["scheme-tonal-spot", "scheme-vibrant", "scheme-content",
+                      "scheme-expressive", "scheme-fidelity", "scheme-neutral",
+                      "scheme-monochrome", "scheme-fruit-salad", "scheme-rainbow"]
+            value: Config.matugenScheme
+            store: Config.data; key: "matugenScheme"; defaults: Defaults.config
         }
-        SettingText {
-            label: "Cor preferida"
-            hint: "Qual candidata vence quando a imagem tem várias: "
-                + "darkness · lightness · saturation · less-saturation · value"
-            text: Config.matugenPrefer
-            onCommit: v => Config.data.matugenPrefer = v
+        SettingChoice {
+            label: "Preferred source color"
+            hint: "Which candidate wins when the image has several. This "
+                + "changes the palette MORE than the scheme does"
+            options: ["saturation", "less-saturation", "darkness",
+                      "lightness", "value", "closest-to-fallback"]
+            value: Config.matugenPrefer
+            store: Config.data; key: "matugenPrefer"; defaults: Defaults.config
         }
     }
 
     SettingGroup {
-        title: "Programas externos"
+        title: "External apps"
 
         SettingText {
-            label: "Rede"
-            hint: "Aberto pelo ícone do widget de rede"
+            label: "Network"
+            hint: "Opened from the network detail screen"
             text: Config.networkApp
-            onCommit: v => Config.data.networkApp = v
+            store: Config.data; key: "networkApp"; defaults: Defaults.config
         }
         SettingText {
             label: "Bluetooth"
             text: Config.bluetoothApp
-            onCommit: v => Config.data.bluetoothApp = v
+            store: Config.data; key: "bluetoothApp"; defaults: Defaults.config
         }
     }
 
     SettingGroup {
         title: "Backlight"
-        // sysfs não emite inotify, então a shell relê por polling
+        // sysfs emits no inotify, so the shell re-reads it by polling
 
         SettingText {
-            label: "Arquivo de brilho"
+            label: "Brightness file"
             text: Config.backlightFile
-            onCommit: v => Config.data.backlightFile = v
+            store: Config.data; key: "backlightFile"; defaults: Defaults.config
         }
         SettingText {
-            label: "Arquivo de máximo"
+            label: "Maximum file"
             text: Config.backlightMaxFile
-            onCommit: v => Config.data.backlightMaxFile = v
+            store: Config.data; key: "backlightMaxFile"; defaults: Defaults.config
         }
         SettingSlider {
-            label: "Intervalo de leitura"
-            hint: "Menor reage mais rápido ao brilho mudar por fora, "
-                + "e custa mais CPU à toa"
+            label: "Poll interval"
+            hint: "Lower reacts faster when brightness changes elsewhere, "
+                + "and costs more CPU for nothing"
             value: Config.backlightPollMs
             from: 50; to: 2000; step: 50; suffix: "ms"
-            onCommit: v => Config.data.backlightPollMs = v
+            store: Config.data; key: "backlightPollMs"; defaults: Defaults.config
         }
     }
 
     SettingGroup {
-        title: "Onde isto tudo é gravado"
+        title: "Where all this is written"
 
         SettingRow {
-            label: "Pasta de estado"
-            hint: "theme · motion · island · config (configuração, dá "
-                + "pra copiar pra outra máquina) e state (a shell "
-                + "escreve sozinha)"
+            label: "State folder"
+            hint: "theme · motion · island · config are configuration and "
+                + "can be copied to another machine; state is what the "
+                + "shell writes on its own. Factory values live in the "
+                + "source (Config/Defaults.qml) and are hand-edited only"
             controlWidth: 240
 
             Text {
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
+                width: parent.width
+                horizontalAlignment: Text.AlignRight
                 text: Paths.stateDir
                 color: Theme.textMuted
                 elide: Text.ElideLeft
-                width: parent.width
-                horizontalAlignment: Text.AlignRight
                 font { family: Theme.fontMono; pixelSize: 11 }
             }
         }

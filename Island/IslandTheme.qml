@@ -90,19 +90,19 @@ Singleton {
             id: d
 
             // coreografia do morph
-            property int faceFadeOut: 90
-            property int morphDuration: 340
-            property int faceFadeInDelay: 200
-            property int faceFadeIn: 160
-            property real faceScaleOut: 0.94
-            property real faceScaleIn: 0.92
+            property int faceFadeOut: Defaults.island.faceFadeOut
+            property int morphDuration: Defaults.island.morphDuration
+            property int faceFadeInDelay: Defaults.island.faceFadeInDelay
+            property int faceFadeIn: Defaults.island.faceFadeIn
+            property real faceScaleOut: Defaults.island.faceScaleOut
+            property real faceScaleIn: Defaults.island.faceScaleIn
 
             // geometria (radius é derivado do Theme — não entra aqui)
-            property real marginTop: 6
-            property real width: 100
-            property real height: 32
-            property real wideWidth: 150
-            property real wideHeight: 32
+            property real marginTop: Defaults.island.marginTop
+            property real width: Defaults.island.width
+            property real height: Defaults.island.height
+            property real wideWidth: Defaults.island.wideWidth
+            property real wideHeight: Defaults.island.wideHeight
         }
     }
 }

@@ -3,66 +3,66 @@ import ".."
 import "../../Config"
 
 SettingsPage {
-    title: "Dashboard"
+    title: "Control Center"
     icon: "󰕮"
 
     SettingGroup {
-        title: "Grade"
+        title: "Grid"
 
         SettingSlider {
-            label: "Largura"
+            label: "Width"
             value: Theme.dashWidth
             from: 300; to: 1200; step: 10; suffix: "px"
-            onCommit: v => Theme.data.dashWidth = v
+            store: Theme.data; key: "dashWidth"; defaults: Defaults.theme
         }
         SettingSlider {
-            label: "Altura do card"
-            hint: "Vale pros toggles e sliders; o card de mídia vale dois"
+            label: "Card height"
+            hint: "Applies to toggles and sliders; the media card is worth two"
             value: Theme.dashCell
             from: 24; to: 160; suffix: "px"
-            onCommit: v => Theme.data.dashCell = v
+            store: Theme.data; key: "dashCell"; defaults: Defaults.theme
         }
         SettingSlider {
-            label: "Vão entre células"
+            label: "Gap"
             value: Theme.dashGap
             from: 0; to: 32; suffix: "px"
-            onCommit: v => Theme.data.dashGap = v
+            store: Theme.data; key: "dashGap"; defaults: Defaults.theme
         }
     }
 
     SettingGroup {
-        title: "Aparência"
+        title: "Media"
 
         SettingSlider {
-            label: "Blur da capa"
-            hint: "A capa do álbum no fundo do widget de mídia"
+            label: "Artwork blur"
+            hint: "The album art behind the media card"
             value: Theme.widgetMediaBlur
             from: 0; to: 1; step: 0.05
-            onCommit: v => Theme.data.widgetMediaBlur = v
+            store: Theme.data; key: "widgetMediaBlur"; defaults: Defaults.theme
         }
     }
 
     SettingGroup {
-        title: "OSD e notificações"
+        title: "OSD and notifications"
 
         SettingSlider {
-            label: "Largura da barra do OSD"
-            hint: "Pixels por 1% de volume/brilho"
+            label: "OSD bar width"
+            hint: "Pixels per 1% of volume or brightness"
             value: Theme.osdPxPerPct
             from: 0.5; to: 6; step: 0.5
-            onCommit: v => Theme.data.osdPxPerPct = v
+            store: Theme.data; key: "osdPxPerPct"; defaults: Defaults.theme
         }
         SettingSlider {
-            label: "Altura do histórico"
+            label: "History height"
             value: Theme.notifHistoryMaxHeight
             from: 60; to: 600; step: 10; suffix: "px"
-            onCommit: v => Theme.data.notifHistoryMaxHeight = v
+            store: Theme.data; key: "notifHistoryMaxHeight"; defaults: Defaults.theme
         }
         SettingSlider {
-            label: "Largura do launcher"
+            label: "Launcher width"
             value: Theme.launcherWidth
             from: 300; to: 1000; step: 10; suffix: "px"
-            onCommit: v => Theme.data.launcherWidth = v
+            store: Theme.data; key: "launcherWidth"; defaults: Defaults.theme
         }
     }
 }

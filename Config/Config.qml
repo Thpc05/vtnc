@@ -2,6 +2,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "."
 
 // ═══════════════════════════════════════════
 //  CONFIG — Comportamento da shell (não-estético).
@@ -77,8 +78,8 @@ Singleton {
     readonly property string ipcToolsTarget: "tools"
     readonly property string ipcSessionTarget: "session"
     readonly property string ipcClipboardTarget: "clipboard"
-    // App de configuração (janela flutuante, não faz parte da shell)
-    readonly property string ipcConfigTarget: "config"
+    // App de settings (janela flutuante, não faz parte da shell)
+    readonly property string ipcSettingsTarget: "settings"
 
     // ════════════════════════════════════════
     //  OSD / NOTIFICAÇÕES
@@ -140,41 +141,41 @@ Singleton {
             id: d
 
             // comportamento
-            property int maxLauncherResults: 7
-            property int batteryWarnLevel: 20
-            property bool showTips: true
+            property int maxLauncherResults: Defaults.config.maxLauncherResults
+            property int batteryWarnLevel: Defaults.config.batteryWarnLevel
+            property bool showTips: Defaults.config.showTips
 
             // paths / programas externos
-            property string wallpaperPath: Paths.home + "/Pictures/Wallpapers"
-            property string networkApp: "nm-connection-editor"
-            property string bluetoothApp: "blueman-manager"
-            property string screenshotPath: Paths.home + "/Pictures/Screenshots"
-            property string recordingPath: Paths.home + "/Videos/Recordings"
+            property string wallpaperPath: Defaults.config.wallpaperPath
+            property string networkApp: Defaults.config.networkApp
+            property string bluetoothApp: Defaults.config.bluetoothApp
+            property string screenshotPath: Defaults.config.screenshotPath
+            property string recordingPath: Defaults.config.recordingPath
 
             // wallpaper / matugen
-            property string wallpaperTransition: "wipe"
-            property int wallpaperTransitionMs: 900
-            property bool wallpaperTintsShell: true
-            property string matugenScheme: "scheme-tonal-spot"
-            property string matugenPrefer: "saturation"
+            property string wallpaperTransition: Defaults.config.wallpaperTransition
+            property int wallpaperTransitionMs: Defaults.config.wallpaperTransitionMs
+            property bool wallpaperTintsShell: Defaults.config.wallpaperTintsShell
+            property string matugenScheme: Defaults.config.matugenScheme
+            property string matugenPrefer: Defaults.config.matugenPrefer
 
             // osd / notificações
-            property int osdTimeout: 2000
-            property bool osdShowPercent: false
-            property int notifyTimeout: 4500
-            property int maxNotifHistory: 20
-            property string backlightFile: "/sys/class/backlight/intel_backlight/brightness"
-            property string backlightMaxFile: "/sys/class/backlight/intel_backlight/max_brightness"
-            property int backlightPollMs: 300
+            property int osdTimeout: Defaults.config.osdTimeout
+            property bool osdShowPercent: Defaults.config.osdShowPercent
+            property int notifyTimeout: Defaults.config.notifyTimeout
+            property int maxNotifHistory: Defaults.config.maxNotifHistory
+            property string backlightFile: Defaults.config.backlightFile
+            property string backlightMaxFile: Defaults.config.backlightMaxFile
+            property int backlightPollMs: Defaults.config.backlightPollMs
 
             // autohide
-            property string autoHideAnim: "slide"
-            property bool alwaysAutoHide: false
-            property real autoHideRevealZone: 4
-            property bool autoHideShowOnApp: true
-            property bool autoHideShowOnDashboard: true
-            property bool autoHideShowOnOsd: true
-            property bool autoHideShowOnNotif: true
+            property string autoHideAnim: Defaults.config.autoHideAnim
+            property bool alwaysAutoHide: Defaults.config.alwaysAutoHide
+            property real autoHideRevealZone: Defaults.config.autoHideRevealZone
+            property bool autoHideShowOnApp: Defaults.config.autoHideShowOnApp
+            property bool autoHideShowOnDashboard: Defaults.config.autoHideShowOnDashboard
+            property bool autoHideShowOnOsd: Defaults.config.autoHideShowOnOsd
+            property bool autoHideShowOnNotif: Defaults.config.autoHideShowOnNotif
         }
     }
 }

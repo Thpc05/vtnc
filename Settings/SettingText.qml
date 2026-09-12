@@ -13,7 +13,7 @@ SettingRow {
     id: root
 
     property string text: ""
-    signal commit(string v)
+    currentValue: text
 
     controlWidth: 260
 
@@ -54,8 +54,8 @@ SettingRow {
                 }
             }
 
-            onAccepted: { root.commit(text); focus = false }
-            onActiveFocusChanged: if (!activeFocus) root.commit(text)
+            onAccepted: { root.apply(text); focus = false }
+            onActiveFocusChanged: if (!activeFocus) root.apply(text)
             Keys.onEscapePressed: { text = root.text; focus = false }
         }
     }

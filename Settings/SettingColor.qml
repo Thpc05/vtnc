@@ -14,7 +14,11 @@ SettingRow {
     id: root
 
     property color value: "#000000"
-    signal commit(string hex)
+    // Colors follow the wallpaper when matugen is on, so they sit
+    // permanently "changed" — the arrow would be lit forever and
+    // mean nothing. They keep their defaults (that is what seeds a
+    // fresh machine), they just do not advertise the difference
+    revertable: false
 
     controlWidth: 170
 
@@ -75,7 +79,7 @@ SettingRow {
 
                 function enviar() {
                     if (root._valido(text))
-                        root.commit(text.trim())
+                        root.apply(text.trim())
                     else
                         text = root.value.toString() // inválido: desfaz
                 }

@@ -4,81 +4,81 @@ import "../../Config"
 import "../../Island"
 
 SettingsPage {
-    title: "Ilha"
+    title: "Island"
     icon: "󰟾"
 
     SettingGroup {
-        title: "Tamanho"
+        title: "Size"
 
         SettingSlider {
-            label: "Largura (normal)"
+            label: "Width (normal)"
             value: IslandTheme.width
             from: 60; to: 400; suffix: "px"
-            onCommit: v => IslandTheme.data.width = v
+            store: IslandTheme.data; key: "width"; defaults: Defaults.island
         }
         SettingSlider {
-            label: "Altura"
-            hint: "Também é o teto útil do raio da ilha (metade dela)"
+            label: "Height"
+            hint: "Also the useful ceiling for the island radius (half of it)"
             value: IslandTheme.height
             from: 20; to: 80; suffix: "px"
-            onCommit: v => IslandTheme.data.height = v
+            store: IslandTheme.data; key: "height"; defaults: Defaults.island
         }
         SettingSlider {
-            label: "Largura (wide)"
-            hint: "Base do modo largo; workspaces e cluster somam a isto"
+            label: "Width (wide)"
+            hint: "Base of the wide mode; workspaces and cluster add to it"
             value: IslandTheme.wideWidth
             from: 60; to: 500; suffix: "px"
-            onCommit: v => IslandTheme.data.wideWidth = v
+            store: IslandTheme.data; key: "wideWidth"; defaults: Defaults.island
         }
         SettingSlider {
-            label: "Altura (wide)"
+            label: "Height (wide)"
             value: IslandTheme.wideHeight
             from: 20; to: 80; suffix: "px"
-            onCommit: v => IslandTheme.data.wideHeight = v
+            store: IslandTheme.data; key: "wideHeight"; defaults: Defaults.island
         }
         SettingSlider {
-            label: "Distância do topo"
+            label: "Distance from top"
             value: IslandTheme.marginTop
             from: 0; to: 40; suffix: "px"
-            onCommit: v => IslandTheme.data.marginTop = v
+            store: IslandTheme.data; key: "marginTop"; defaults: Defaults.island
         }
     }
 
     SettingGroup {
-        title: "Coreografia do morph"
+        title: "Morph choreography"
 
         SettingSlider {
-            label: "Conteúdo sai"
+            label: "Content leaves"
             value: IslandTheme.faceFadeOut
             from: 0; to: 400; step: 10; suffix: "ms"
-            onCommit: v => IslandTheme.data.faceFadeOut = v
+            store: IslandTheme.data; key: "faceFadeOut"; defaults: Defaults.island
         }
         SettingSlider {
-            label: "Ilha morfa"
+            label: "Island morphs"
             value: IslandTheme.morphDuration
             from: 80; to: 800; step: 10; suffix: "ms"
-            onCommit: v => IslandTheme.data.morphDuration = v
+            store: IslandTheme.data; key: "morphDuration"; defaults: Defaults.island
         }
         SettingSlider {
-            label: "Espera antes do conteúdo"
+            label: "Wait before content"
             value: IslandTheme.faceFadeInDelay
             from: 0; to: 600; step: 10; suffix: "ms"
-            onCommit: v => IslandTheme.data.faceFadeInDelay = v
+            store: IslandTheme.data; key: "faceFadeInDelay"; defaults: Defaults.island
         }
         SettingSlider {
-            label: "Conteúdo entra"
+            label: "Content enters"
             value: IslandTheme.faceFadeIn
             from: 0; to: 400; step: 10; suffix: "ms"
-            onCommit: v => IslandTheme.data.faceFadeIn = v
+            store: IslandTheme.data; key: "faceFadeIn"; defaults: Defaults.island
         }
 
-        // A invariante é fácil de furar mexendo nos sliders acima, e o
-        // sintoma (tamanho saltando no fim do morph) não é óbvio
+        // Easy to break with the four sliders above, and the symptom
+        // (size jumping at the end of the morph) does not name its cause
         SettingRow {
-            label: "Invariante"
-            hint: "morfar ≤ espera + entrar. Furada, o tamanho da ilha "
-                + "SALTA no fim do morph, porque os Behaviors dela já "
-                + "desligaram"
+            label: "Invariant"
+            hint: "morph ≤ wait + enter. Broken, the island's size JUMPS at "
+                + "the end of the morph, because its Behaviors already "
+                + "switched off"
             controlWidth: 130
 
             readonly property bool ok:
@@ -89,9 +89,10 @@ SettingsPage {
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 text: parent.ok
-                    ? "ok (folga " + (IslandTheme.faceFadeInDelay
-                        + IslandTheme.faceFadeIn - IslandTheme.morphDuration) + "ms)"
-                    : "FURADA"
+                    ? "ok (" + (IslandTheme.faceFadeInDelay
+                        + IslandTheme.faceFadeIn - IslandTheme.morphDuration)
+                        + "ms spare)"
+                    : "BROKEN"
                 color: parent.ok ? Theme.textMuted : Theme.danger
                 font { family: Theme.fontMono; pixelSize: 12 }
             }
@@ -99,21 +100,21 @@ SettingsPage {
     }
 
     SettingGroup {
-        title: "Escala do conteúdo"
+        title: "Content scale"
 
         SettingSlider {
-            label: "Quem sai encolhe até"
+            label: "Leaving shrinks to"
             value: IslandTheme.faceScaleOut
             from: 0.5; to: 1; step: 0.01
-            onCommit: v => IslandTheme.data.faceScaleOut = v
+            store: IslandTheme.data; key: "faceScaleOut"; defaults: Defaults.island
         }
         SettingSlider {
-            label: "Quem entra nasce em"
-            hint: "Abaixo de 1 o conteúdo parece estar DENTRO da ilha "
-                + "que se move, em vez de piscar por cima dela"
+            label: "Entering starts at"
+            hint: "Below 1 the content looks like it is INSIDE the island "
+                + "that moves, instead of blinking on top of it"
             value: IslandTheme.faceScaleIn
             from: 0.5; to: 1; step: 0.01
-            onCommit: v => IslandTheme.data.faceScaleIn = v
+            store: IslandTheme.data; key: "faceScaleIn"; defaults: Defaults.island
         }
     }
 }

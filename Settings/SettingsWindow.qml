@@ -5,7 +5,7 @@ import "../Config"
 import "../Ui"
 
 // ═══════════════════════════════════════════
-//  SETTINGS WINDOW — O app de configuração.
+//  SETTINGS WINDOW — O app de settings.
 //
 //  Janela FLUTUANTE normal, não layer-shell: ela é uma janela como
 //  qualquer outra, com barra de título do compositor, e não faz parte
@@ -20,12 +20,12 @@ import "../Ui"
 //  Registrar uma página = criar em Pages/ + 1 linha na lista abaixo.
 //  Mesmo padrão de Island ↔ IslandFace.
 //
-//  Abrir:  qs ipc -t config -c toggle
+//  Abrir:  qs ipc -t settings -c toggle
 // ═══════════════════════════════════════════
 FloatingWindow {
     id: root
 
-    title: "vtnc — configuração"
+    title: "vtnc — settings"
     implicitWidth: 860
     implicitHeight: 620
     minimumSize.width: 640

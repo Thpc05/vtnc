@@ -15,7 +15,7 @@ SettingRow {
     id: root
 
     property bool checked: false
-    signal commit(bool v)
+    currentValue: checked
 
     controlWidth: 52
 
@@ -48,7 +48,7 @@ SettingRow {
 
             TapHandler {
                 gesturePolicy: TapHandler.ReleaseWithinBounds
-                onTapped: root.commit(!root.checked)
+                onTapped: root.apply(!root.checked)
             }
         }
     }

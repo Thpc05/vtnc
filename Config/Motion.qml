@@ -2,6 +2,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "."
 
 // ═══════════════════════════════════════════
 //  MOTION — A escala de movimento da shell. UM lugar.
@@ -126,13 +127,13 @@ Singleton {
         adapter: JsonAdapter {
             id: d
 
-            property int instant: 120
-            property int quick: 150
-            property int standard: 320
-            property int track: 140
-            property real overshoot: 1.0
-            property int hoverDelay: 350
-            property int hoverGrace: 450
+            property int instant: Defaults.motion.instant
+            property int quick: Defaults.motion.quick
+            property int standard: Defaults.motion.standard
+            property int track: Defaults.motion.track
+            property real overshoot: Defaults.motion.overshoot
+            property int hoverDelay: Defaults.motion.hoverDelay
+            property int hoverGrace: Defaults.motion.hoverGrace
         }
     }
 }

@@ -3,126 +3,144 @@ import ".."
 import "../../Config"
 
 SettingsPage {
-    title: "Aparência"
+    title: "Appearance"
     icon: "󰏘"
 
     SettingGroup {
-        title: "Cores"
+        title: "Colors"
+        // No revert arrows here on purpose — see SettingColor
 
         SettingColor {
-            label: "Destaque"
-            hint: "Foco, seleção e o que está ativo"
+            label: "Accent"
+            hint: "Focus, selection, and whatever is active"
             value: Theme.accent
-            onCommit: hex => Theme.data.accent = hex
+            store: Theme.data; key: "accent"; defaults: Defaults.theme
         }
         SettingColor {
             label: "Card"
-            hint: "O degrau acima do preto. O FUNDO principal é fixo em "
-                + "#000000 e não se configura — a ilha é preta, ponto"
+            hint: "The step above black. The main background is fixed at "
+                + "#000000 and is not configurable — the island is black"
             value: Theme.card
-            onCommit: hex => Theme.data.card = hex
+            store: Theme.data; key: "card"; defaults: Defaults.theme
         }
         SettingColor {
-            label: "Borda hairline"
-            hint: "1px no contorno dos cards. Alfa baixo — é luz de "
-                + "borda, não linha. Opaco demais vira moldura"
+            label: "Hairline border"
+            hint: "1px around every card. Keep the alpha low — it is edge "
+                + "light, not a line. Opaque turns it into a frame"
             value: Theme.border
-            onCommit: hex => Theme.data.border = hex
+            store: Theme.data; key: "border"; defaults: Defaults.theme
         }
         SettingColor {
-            label: "Superfície"
-            hint: "Fundo de capa sem arte e trilha do progresso"
+            label: "Recessed surface"
+            hint: "Slider tracks and artwork that failed to load"
             value: Theme.surface
-            onCommit: hex => Theme.data.surface = hex
+            store: Theme.data; key: "surface"; defaults: Defaults.theme
         }
         SettingColor {
-            label: "Mira do hover"
-            hint: "O fundo de TODO alvo apontado. Use alfa (#2effffff)"
+            label: "Hover layer"
+            hint: "Behind every pointed target. Needs alpha (#2effffff) — "
+                + "it stacks on top of whatever is underneath"
             value: Theme.hoverLayer
-            onCommit: hex => Theme.data.hoverLayer = hex
+            store: Theme.data; key: "hoverLayer"; defaults: Defaults.theme
         }
         SettingColor {
-            label: "Separador"
+            label: "Separator"
             value: Theme.separator
-            onCommit: hex => Theme.data.separator = hex
+            store: Theme.data; key: "separator"; defaults: Defaults.theme
         }
         SettingColor {
-            label: "Sombra"
+            label: "Shadow"
             value: Theme.shadow
-            onCommit: hex => Theme.data.shadow = hex
+            store: Theme.data; key: "shadow"; defaults: Defaults.theme
         }
         SettingColor {
-            label: "Perigo"
-            hint: "Excluir, desligar, bateria crítica"
+            label: "Danger"
+            hint: "Delete, power off, critical battery"
             value: Theme.danger
-            onCommit: hex => Theme.data.danger = hex
+            store: Theme.data; key: "danger"; defaults: Defaults.theme
         }
     }
 
     SettingGroup {
-        title: "Texto"
+        title: "Text"
 
         SettingColor {
-            label: "Primário"
+            label: "Primary"
             value: Theme.textPrimary
-            onCommit: hex => Theme.data.textPrimary = hex
+            store: Theme.data; key: "textPrimary"; defaults: Defaults.theme
         }
         SettingColor {
-            label: "Secundário"
+            label: "Secondary"
             value: Theme.textSecondary
-            onCommit: hex => Theme.data.textSecondary = hex
+            store: Theme.data; key: "textSecondary"; defaults: Defaults.theme
         }
         SettingColor {
-            label: "Apagado"
+            label: "Muted"
             value: Theme.textMuted
-            onCommit: hex => Theme.data.textMuted = hex
+            store: Theme.data; key: "textMuted"; defaults: Defaults.theme
         }
         SettingText {
-            label: "Fonte de texto"
+            label: "Display font"
             text: Theme.fontDisplay
-            onCommit: v => Theme.data.fontDisplay = v
+            store: Theme.data; key: "fontDisplay"; defaults: Defaults.theme
         }
         SettingText {
-            label: "Fonte monoespaçada"
-            hint: "Relógio e números"
+            label: "Monospace font"
+            hint: "Clock and numbers"
             text: Theme.fontMono
-            onCommit: v => Theme.data.fontMono = v
+            store: Theme.data; key: "fontMono"; defaults: Defaults.theme
         }
         SettingText {
-            label: "Fonte de ícones"
+            label: "Icon font"
             text: Theme.fontIcon
-            onCommit: v => Theme.data.fontIcon = v
+            store: Theme.data; key: "fontIcon"; defaults: Defaults.theme
         }
     }
 
     SettingGroup {
-        title: "Raio"
+        title: "Corner radius"
 
         SettingSlider {
-            label: "Ilha"
-            hint: "Teto prático: metade da altura da barra. Acima disso "
-                + "o canto volta a variar com a altura"
+            label: "Island"
+            hint: "Practical ceiling is half the bar height. Above that "
+                + "the corner starts varying with height again"
             value: Theme.radiusIsland
             from: 0; to: 40; suffix: "px"
-            onCommit: v => Theme.data.radiusIsland = v
+            store: Theme.data; key: "radiusIsland"; defaults: Defaults.theme
         }
         SettingSlider {
             label: "Card"
-            hint: "Raiz da cadeia concêntrica — o chip deriva daqui"
+            hint: "Root of the concentric chain — the chip derives from it"
             value: Theme.radiusCard
             from: 0; to: 40; suffix: "px"
-            onCommit: v => Theme.data.radiusCard = v
+            store: Theme.data; key: "radiusCard"; defaults: Defaults.theme
         }
         SettingSlider {
-            label: "Cantos da tela"
+            label: "Screen corners"
             value: Theme.radiusScreen
             from: 0; to: 60; suffix: "px"
-            onCommit: v => Theme.data.radiusScreen = v
+            store: Theme.data; key: "radiusScreen"; defaults: Defaults.theme
         }
+
+        SettingRow {
+            label: "List row"
+            hint: "DERIVED: island − content padding. Not editable — it is "
+                + "what keeps a row concentric with the island it sits in"
+            controlWidth: 60
+
+            Text {
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                text: Math.round(Theme.radiusRow) + " px"
+                color: Theme.textMuted
+                font { family: Theme.fontMono; pixelSize: 12 }
+            }
+        }
+
         SettingRow {
             label: "Chip"
-            hint: "DERIVADO: card − respiro do card. Não se edita — é o "
-                + "que mantém os cantos concêntricos"
+            hint: "DERIVED: card − card padding. Not editable — it is what "
+                + "keeps the corners concentric"
             controlWidth: 60
 
             Text {
@@ -136,20 +154,21 @@ SettingsPage {
     }
 
     SettingGroup {
-        title: "Espaçamento"
+        title: "Spacing"
 
         SettingSlider {
-            label: "Respiro do conteúdo"
+            label: "Content padding"
+            hint: "Also sets the list row radius"
             value: Theme.contentPadding
             from: 0; to: 30; suffix: "px"
-            onCommit: v => Theme.data.contentPadding = v
+            store: Theme.data; key: "contentPadding"; defaults: Defaults.theme
         }
         SettingSlider {
-            label: "Respiro do card"
-            hint: "Também define o raio do chip"
+            label: "Card padding"
+            hint: "Also sets the chip radius"
             value: Theme.cardPadding
             from: 0; to: 30; suffix: "px"
-            onCommit: v => Theme.data.cardPadding = v
+            store: Theme.data; key: "cardPadding"; defaults: Defaults.theme
         }
     }
 }

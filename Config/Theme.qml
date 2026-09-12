@@ -2,6 +2,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "."
 
 // ═══════════════════════════════════════════
 //  THEME — Estética geral da shell.
@@ -189,42 +190,42 @@ Singleton {
             // que o config app edita de qualquer jeito, e o QML
             // converte string→color sozinho nos bindings acima.
             // (bg fica de fora: é fixo)
-            property string accent: "#3dd1b0"
-            property string surface: "#1f1f23"
-            property string textPrimary: "#ffffff"
-            property string textSecondary: "#a0a0a0"
-            property string textMuted: "#555a64"
-            property string danger: "#ff5555"
-            property string separator: "#16ffffff"
-            property string shadow: "#cc000000"
-            property string card: "#141416"
-            property string border: "#14ffffff"
-            property string hoverLayer: "#2effffff"
+            property string accent: Defaults.theme.accent
+            property string surface: Defaults.theme.surface
+            property string textPrimary: Defaults.theme.textPrimary
+            property string textSecondary: Defaults.theme.textSecondary
+            property string textMuted: Defaults.theme.textMuted
+            property string danger: Defaults.theme.danger
+            property string separator: Defaults.theme.separator
+            property string shadow: Defaults.theme.shadow
+            property string card: Defaults.theme.card
+            property string border: Defaults.theme.border
+            property string hoverLayer: Defaults.theme.hoverLayer
 
             // fontes
-            property string fontDisplay: "SF Pro Display"
-            property string fontMono: "SF Mono"
-            property string fontIcon: "JetBrainsMono Nerd Font Propo"
+            property string fontDisplay: Defaults.theme.fontDisplay
+            property string fontMono: Defaults.theme.fontMono
+            property string fontIcon: Defaults.theme.fontIcon
 
             // conteúdo
-            property real contentPadding: 14
-            property real cardPadding: 12
-            property real dashWidth: 600
-            property real launcherWidth: 520
+            property real contentPadding: Defaults.theme.contentPadding
+            property real cardPadding: Defaults.theme.cardPadding
+            property real dashWidth: Defaults.theme.dashWidth
+            property real launcherWidth: Defaults.theme.launcherWidth
 
             // raio (radiusChip é derivado — não entra aqui)
-            property real radiusIsland: 24
-            property real radiusCard: 18
-            property real radiusScreen: 22
+            property real radiusIsland: Defaults.theme.radiusIsland
+            property real radiusCard: Defaults.theme.radiusCard
+            property real radiusScreen: Defaults.theme.radiusScreen
 
             // dashboard
-            property real dashCell: 64
-            property real dashGap: 8
-            property real widgetMediaBlur: 0.6
+            property real dashCell: Defaults.theme.dashCell
+            property real dashGap: Defaults.theme.dashGap
+            property real widgetMediaBlur: Defaults.theme.widgetMediaBlur
 
             // osd / notificações
-            property real osdPxPerPct: 2
-            property real notifHistoryMaxHeight: 180
+            property real osdPxPerPct: Defaults.theme.osdPxPerPct
+            property real notifHistoryMaxHeight: Defaults.theme.notifHistoryMaxHeight
         }
     }
 }
