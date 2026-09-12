@@ -29,6 +29,12 @@ Singleton {
     //  CORES
     // ════════════════════════════════════════
     readonly property color accent: d.accent
+    // SUPERFÍCIE RECUADA: o trilho de uma barra, o fundo de uma capa
+    // que não carregou. Um degrau ACIMA do card, não abaixo — é onde
+    // algo está encaixado dentro de outra coisa.
+    // Era #1f2735, um azul-acinzentado de antes do fundo preto, que
+    // destoava do card neutro. O matugen a mapeia de
+    // surface_container_high, que também é um degrau acima do card
     readonly property color surface: d.surface
     readonly property color textPrimary: d.textPrimary
     readonly property color textSecondary: d.textSecondary
@@ -40,6 +46,15 @@ Singleton {
     // É uma CAMADA (branco com alfa), feita pra somar sobre o que
     // estiver embaixo — não serve de cor de superfície
     readonly property color hoverLayer: d.hoverLayer
+
+    // Borda HAIRLINE: 1px translúcido no contorno de todo card. É o
+    // detalhe do iOS que parece não fazer diferença e faz — sem ela o
+    // card "derrete" no fundo preto; com ela ele tem aresta sem virar
+    // um contorno desenhado. Branco com alfa BAIXO de propósito: é
+    // luz de borda, não linha. Por isso também fica FORA do matugen,
+    // como a mira do hover — trocar por cor opaca vira moldura
+    readonly property color border: d.border
+    readonly property real borderWidth: 1
 
     // Superfície de card: o degrau acima do preto. Usar a hoverLayer
     // aqui era o erro que deixava os cards cinza-claro demais — ela é
@@ -113,6 +128,12 @@ Singleton {
     // DERIVADO: não vai pro adapter. Salvar o chip separado deixaria
     // guardar um estado que contradiz a regra concêntrica
     readonly property real radiusChip: Math.max(0, radiusCard - cardPadding)
+    // Linha de lista (launcher, clipboard, grade de wallpapers). ESTA
+    // sim é concêntrica com a ILHA, não com o card: a linha mora
+    // direto dentro da ilha, separada dela pelo contentPadding. Os
+    // valores soltos que estavam aqui (10, 12, 14) já orbitavam este
+    // número — a regra só ficou explícita
+    readonly property real radiusRow: Math.max(0, radiusIsland - contentPadding)
     // Fora da cadeia: a tela não mora dentro de nada
     readonly property real radiusScreen: d.radiusScreen
 
@@ -169,7 +190,7 @@ Singleton {
             // converte string→color sozinho nos bindings acima.
             // (bg fica de fora: é fixo)
             property string accent: "#3dd1b0"
-            property string surface: "#1f2735"
+            property string surface: "#1f1f23"
             property string textPrimary: "#ffffff"
             property string textSecondary: "#a0a0a0"
             property string textMuted: "#555a64"
@@ -177,6 +198,7 @@ Singleton {
             property string separator: "#16ffffff"
             property string shadow: "#cc000000"
             property string card: "#141416"
+            property string border: "#14ffffff"
             property string hoverLayer: "#2effffff"
 
             // fontes

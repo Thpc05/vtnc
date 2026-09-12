@@ -23,6 +23,13 @@ SettingsPage {
             onCommit: hex => Theme.data.card = hex
         }
         SettingColor {
+            label: "Borda hairline"
+            hint: "1px no contorno dos cards. Alfa baixo — é luz de "
+                + "borda, não linha. Opaco demais vira moldura"
+            value: Theme.border
+            onCommit: hex => Theme.data.border = hex
+        }
+        SettingColor {
             label: "Superfície"
             hint: "Fundo de capa sem arte e trilha do progresso"
             value: Theme.surface

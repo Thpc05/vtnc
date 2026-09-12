@@ -148,11 +148,13 @@ IslandFace {
 
                 width: appsList.width
                 height: 50
-                radius: 12
+                radius: Theme.radiusRow
 
                 readonly property bool isSelected: ListView.isCurrentItem
 
-                color: isSelected ? Theme.surface : "transparent"
+                // hoverLayer, não surface: seleção é a MESMA linguagem
+                // em toda a shell (ver Tools e Session)
+                color: isSelected ? Theme.hoverLayer : "transparent"
                 Behavior on color { ColorAnimation { duration: Motion.instant } }
 
                 function executeApp() {

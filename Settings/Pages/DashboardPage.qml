@@ -17,7 +17,7 @@ SettingsPage {
         }
         SettingSlider {
             label: "Altura do card"
-            hint: "O card de mídia vale dois; os sliders, 0.72"
+            hint: "Vale pros toggles e sliders; o card de mídia vale dois"
             value: Theme.dashCell
             from: 24; to: 160; suffix: "px"
             onCommit: v => Theme.data.dashCell = v

@@ -27,6 +27,8 @@ Column {
         height: linhas.implicitHeight + Theme.cardPadding * 2
         radius: Theme.radiusCard
         color: Theme.card
+        border.width: Theme.borderWidth
+        border.color: Theme.border
 
         Column {
             id: linhas

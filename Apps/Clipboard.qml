@@ -440,7 +440,7 @@ IslandFace {
                     NumberAnimation { duration: 240; easing.type: Easing.OutQuart }
                 }
 
-                radius: 12
+                radius: Theme.radiusRow
                 // Fundo bg (preto) nos DOIS estados; seleção fala
                 // pelo accent do ícone e pela própria expansão
                 color: Theme.bg

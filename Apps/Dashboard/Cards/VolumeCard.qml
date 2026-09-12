@@ -11,6 +11,8 @@ import "../../../Config"
 SliderCard {
     id: root
 
+    label: "Som"
+
     readonly property var sink: Pipewire.defaultAudioSink
     readonly property real vol: sink?.audio?.volume ?? 0
 

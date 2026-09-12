@@ -13,8 +13,8 @@ Rectangle {
     property string source: ""
     property int glyphSize: 20
 
-    radius: 8
-    color: Theme.surface
+    radius: Theme.radiusChip
+    color: Theme.card
     clip: true
 
     Image {

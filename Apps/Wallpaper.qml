@@ -137,8 +137,8 @@ IslandFace {
                 Rectangle {
                     anchors.fill: parent
                     anchors.margins: 4
-                    radius: 14
-                    color: Theme.surface
+                    radius: Theme.radiusRow
+                    color: Theme.card
                     // Borda accent no selecionado
                     border.width: cell.isSelected ? 2 : 0
                     border.color: Theme.accent
@@ -160,7 +160,7 @@ IslandFace {
                     Rectangle {
                         id: thumbMask
                         anchors.fill: thumbImg
-                        radius: 12
+                        radius: Theme.radiusChip
                         layer.enabled: true
                         visible: false
                     }

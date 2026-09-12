@@ -10,20 +10,19 @@ import "../../Ui"
 //  drag nem pin. Card tem TAMANHO FIXO e posição declarada no
 //  Dashboard.qml — quem quer ver mais abre o detalhe.
 //
-//  Isso apagou o solver de colisão, o empurrão-em-sombra e a
-//  persistência de layout. Aquilo resolvia um problema que a própria
-//  dashboard criava: peças que mudavam de tamanho sozinhas e
-//  precisavam se desviar. Sem tamanho variável, não há o que desviar.
+//  O CARD NÃO ACENDE INTEIRO. A primeira versão pintava o card todo de
+//  accent quando ligado, e o resultado foi um bloco de cor gritando no
+//  meio de uma shell preta. Quem acende é o ÍCONE (ver ToggleCard): o
+//  card continua escuro e o estado mora num círculo de 34px. O
+//  contraste fica no lugar certo e a superfície continua calma.
 //
-//  `lit` é o estado LIGADO (Wi-Fi ligado, BT ligado): o card inteiro
-//  vira accent, como no Control Center. É diferente do hover, que só
-//  clareia a mira.
+//  A BORDA de 1px é o detalhe que parece não fazer diferença e faz:
+//  sem ela o card derrete no fundo preto; com ela ele tem aresta sem
+//  virar contorno desenhado.
 // ═══════════════════════════════════════════
 Rectangle {
     id: card
 
-    // Ligado = card em accent. Desligado = card escuro
-    property bool lit: false
     // Abre o detalhe (lista de redes, dispositivos, saídas de áudio).
     // Vazio = o card não tem detalhe e nem mostra o chevron
     property string detail: ""
@@ -35,25 +34,21 @@ Rectangle {
 
     readonly property bool hovered: mira.hovered
 
-    // Cor do conteúdo — todo card lê isto em vez de escolher sozinho,
-    // senão o texto some quando o fundo vira accent
-    readonly property color ink: lit ? Theme.bg : Theme.textPrimary
-    readonly property color inkSoft: lit ? Qt.rgba(0, 0, 0, 0.55)
-                                         : Theme.textSecondary
-
     radius: Theme.radiusCard
-    color: lit ? Theme.accent : Theme.card
-    Behavior on color { ColorAnimation { duration: Motion.instant } }
+    color: Theme.card
+    border.width: Theme.borderWidth
+    border.color: Theme.border
     clip: true
 
     HoverHandler { id: mira }
 
-    // Clarear no hover SEM brigar com o accent: uma camada por cima,
-    // não uma segunda cor de fundo. Assim vale nos dois estados
+    // A mira é uma CAMADA por cima, não uma segunda cor de fundo:
+    // assim ela soma sobre qualquer coisa que o card esteja mostrando
+    // (inclusive a capa borrada do MediaCard)
     Rectangle {
         anchors.fill: parent
         radius: parent.radius
-        color: card.hovered ? Qt.rgba(1, 1, 1, 0.06) : "transparent"
+        color: card.hovered ? Theme.hoverLayer : "transparent"
         Behavior on color { ColorAnimation { duration: Motion.instant } }
     }
 
@@ -71,19 +66,22 @@ Rectangle {
     // ── CHEVRON: abre o detalhe. Alvo próprio, porque tocar o CORPO
     //  do card é o toggle — os dois gestos não podem se confundir ──
     Hoverable {
+        id: chevron
+
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.margins: 4
-        width: 24
-        height: 24
+        width: 22
+        height: 22
         visible: card.detail !== ""
         onTapped: card.detailRequested(card.detail)
 
         Text {
             anchors.centerIn: parent
             text: "󰅂"
-            color: card.inkSoft
-            font { family: Theme.fontIcon; pixelSize: 12 }
+            color: chevron.hovered ? Theme.textSecondary : Theme.textMuted
+            font { family: Theme.fontIcon; pixelSize: 11 }
+            Behavior on color { ColorAnimation { duration: Motion.instant } }
         }
     }
 }

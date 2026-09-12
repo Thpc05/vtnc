@@ -157,7 +157,7 @@ Reveal {
                     // Mira
                     Rectangle {
                         anchors.fill: parent
-                        radius: 6
+                        radius: Theme.radiusChip
                         visible: !entryItem.isSep
                         color: entryHover.hovered && entryItem.enabled
                             ? Theme.hoverLayer

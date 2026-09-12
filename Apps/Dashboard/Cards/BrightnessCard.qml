@@ -11,6 +11,8 @@ import "../../../Services"
 SliderCard {
     id: root
 
+    label: "Brilho"
+
     icon: {
         const p = OsdService.brightnessPct
         if (p >= 66) return "󰃠"

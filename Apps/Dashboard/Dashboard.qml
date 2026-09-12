@@ -154,18 +154,17 @@ IslandFace {
         }
 
         // ── LINHA 2 e 3: os sliders, largura cheia ──
-        // Mais baixos que os cards de toggle de propósito: um slider
-        // não tem duas linhas de texto pra acomodar, e deixá-lo da
-        // mesma altura faria o Control Center parecer só uma pilha de
-        // blocos iguais
+        // Mesma altura dos toggles: agora eles têm rótulo EM CIMA do
+        // trilho, então precisam das duas faixas. Encolher aqui
+        // espremeria o trilho contra o texto
         BrightnessCard {
             width: parent.width
-            height: root.unidade * 0.72
+            height: root.unidade
         }
 
         VolumeCard {
             width: parent.width
-            height: root.unidade * 0.72
+            height: root.unidade
             detail: "audio"
             onDetailRequested: nome => root.detail = nome
         }
