@@ -9,7 +9,7 @@
 
 # ── Git ──
 # Ignora o próprio .gitignore, para não gerar conflito de merge
-.gitignore/
+.gitignore
 
 # ── Qt / QML ──
 # Bytecode e cache que o motor gera ao lado do fonte
