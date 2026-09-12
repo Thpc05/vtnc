@@ -7,6 +7,10 @@
 #  em ConfigValues/Defaults.qml, que é fonte, não estado.
 # ═══════════════════════════════════════════
 
+# ── Git ──
+# Ignora o próprio .gitignore, para não gerar conflito de merge
+.gitignore/
+
 # ── Qt / QML ──
 # Bytecode e cache que o motor gera ao lado do fonte
 *.qmlc
