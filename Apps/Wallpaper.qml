@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Io
 import "../Config"
 import "../Island"
+import "../Services"
 import "../Ui"
 
 // ═══════════════════════════════════════════
@@ -28,49 +29,27 @@ IslandFace {
     readonly property real cellW: 240
     readonly property real cellH: 138
 
-    property var walls: []
+    // A lista, a troca e a paleta moram no WallpaperService: este app
+    // é só a grade que escolhe. Antes ele listava com `sh -c` e
+    // aplicava com hyprpaper por conta própria, o que deixava o IPC
+    // `wallpaper random` ter que alcançar a INSTÂNCIA viva do app no
+    // monitor certo pra funcionar
+    readonly property var walls: WallpaperService.list
     readonly property int shownRows: Math.max(1, Math.min(gridRows, walls.length))
 
     // Margens simétricas: a grade respira igual em todos os lados
     contentWidth: visibleColumns * cellW + Theme.contentPadding * 2 + 8
     contentHeight: Theme.contentPadding * 2 + 32 + shownRows * cellH
 
-    // ─── LISTA DE ARQUIVOS ───
-    Process {
-        id: lister
-        command: ["sh", "-c",
-            `ls -1 '${Config.wallpaperPath}' | grep -iE '\\.(jpe?g|png|webp)$'`]
-        stdout: StdioCollector {
-            onStreamFinished: root.walls = text.trim().split("\n").filter(f => f !== "")
-        }
-    }
-    Component.onCompleted: lister.running = true
-
     // ─── AÇÕES ───
-    // hyprpaper 0.8.4: `wallpaper` já carrega a imagem sozinho
-    // (não existe mais preload/reload) e precisa do monitor explícito
-    function setWall(file) {
-        const path = Config.wallpaperPath + "/" + file
-        for (const s of Quickshell.screens)
-            Quickshell.execDetached(["hyprctl", "hyprpaper", "wallpaper",
-                s.name + "," + path])
-    }
-
     function apply(file) {
-        setWall(file)
+        WallpaperService.apply(file)
         root.closeRequested()
     }
 
-    function randomWall() {
-        if (walls.length === 0) return
-        setWall(walls[Math.floor(Math.random() * walls.length)])
-    }
-
-    // (IPC do wallpaper vive no shell.qml, roteado pro monitor focado)
-
     onActiveChanged: {
         if (active) {
-            lister.running = true // re-lê a pasta a cada abertura
+            WallpaperService.refresh() // re-lê a pasta a cada abertura
             grid.currentIndex = 0
             focusTimer.restart()
         }

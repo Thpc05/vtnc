@@ -59,6 +59,9 @@ Singleton {
 
             // Modo da ilha (normal ↔ wide)
             property bool wideBar: false
+            // Caminho do papel de parede em uso — restaurado no boot,
+            // senão um restart do awww-daemon deixa a tela vazia
+            property string wallpaper: ""
         }
     }
 }

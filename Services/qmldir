@@ -6,3 +6,4 @@ singleton NotifServer 1.0 NotifServer.qml
 singleton OsdService 1.0 OsdService.qml
 singleton Persist 1.0 Persist.qml
 singleton SessionService 1.0 SessionService.qml
+singleton WallpaperService 1.0 WallpaperService.qml

@@ -299,16 +299,10 @@ ShellRoot {
     IpcHandler {
         target: Config.ipcWallpaperTarget
         function toggle(): void { AppService.toggle("wallpaper") }
-        // AÇÃO da face, não estado: precisa alcançar a instância viva.
-        // Único resto do roteamento por monitor — some quando o
-        // wallpaper virar service (a troca é global, como o resto)
-        function random(): void {
-            const insts = windows.instances
-            if (!insts || insts.length === 0)
-                return
-            const mon = Hyprland.focusedMonitor
-            const hit = mon ? insts.find(w => w.screen?.name === mon.name) : null
-            ;(hit ?? insts[0]).island.faceByName("wallpaper")?.randomWall()
-        }
+        // Virou service: a troca é global, como sempre deveria ter
+        // sido. Este handler era o ÚLTIMO resto de roteamento por
+        // monitor — ele vasculhava as instâncias vivas da janela pra
+        // achar a face do monitor focado e chamar um método nela
+        function random(): void { WallpaperService.random() }
     }
 }

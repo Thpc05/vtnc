@@ -40,6 +40,24 @@ Singleton {
     readonly property string recordingPath: d.recordingPath
 
     // ════════════════════════════════════════
+    //  PAPEL DE PAREDE (awww) E CORES (matugen)
+    // ════════════════════════════════════════
+    // none · simple · fade · left · right · top · bottom · wipe ·
+    // wave · grow · center · any · outer · random
+    readonly property string wallpaperTransition: d.wallpaperTransition
+    readonly property int wallpaperTransitionMs: d.wallpaperTransitionMs
+    // Trocar o papel de parede re-tinge a shell pela paleta dele.
+    // O FUNDO não entra nisso: Theme.bg é fixo #000000
+    readonly property bool wallpaperTintsShell: d.wallpaperTintsShell
+    // scheme-tonal-spot · scheme-vibrant · scheme-content ·
+    // scheme-expressive · scheme-fidelity · scheme-neutral ·
+    // scheme-monochrome · scheme-fruit-salad · scheme-rainbow
+    readonly property string matugenScheme: d.matugenScheme
+    // Qual cor candidata vence quando a imagem tem várias:
+    // darkness · lightness · saturation · less-saturation · value
+    readonly property string matugenPrefer: d.matugenPrefer
+
+    // ════════════════════════════════════════
     //  IPC TARGETS — NÃO são configuráveis, e de propósito.
     //  Estes nomes são CONTRATO EXTERNO: os binds do Hyprland chamam
     //  `qs ipc -t launcher -c toggle`. Um slider no config app que
@@ -132,6 +150,13 @@ Singleton {
             property string bluetoothApp: "blueman-manager"
             property string screenshotPath: Paths.home + "/Pictures/Screenshots"
             property string recordingPath: Paths.home + "/Videos/Recordings"
+
+            // wallpaper / matugen
+            property string wallpaperTransition: "wipe"
+            property int wallpaperTransitionMs: 900
+            property bool wallpaperTintsShell: true
+            property string matugenScheme: "scheme-tonal-spot"
+            property string matugenPrefer: "saturation"
 
             // osd / notificações
             property int osdTimeout: 2000

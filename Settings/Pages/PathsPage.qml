@@ -27,6 +27,47 @@ SettingsPage {
     }
 
     SettingGroup {
+        title: "Papel de parede e cores"
+
+        SettingText {
+            label: "Transição"
+            hint: "none · simple · fade · left · right · top · bottom · "
+                + "wipe · wave · grow · center · any · outer · random"
+            text: Config.wallpaperTransition
+            onCommit: v => Config.data.wallpaperTransition = v
+        }
+        SettingSlider {
+            label: "Duração da transição"
+            value: Config.wallpaperTransitionMs
+            from: 0; to: 4000; step: 100; suffix: "ms"
+            onCommit: v => Config.data.wallpaperTransitionMs = v
+        }
+        SettingToggle {
+            label: "Cores seguem o papel de parede"
+            hint: "O matugen extrai a paleta da imagem. O FUNDO fica de "
+                + "fora e continua #000000 — e a mira do hover também, "
+                + "porque ela é camada com alfa, não cor"
+            checked: Config.wallpaperTintsShell
+            onCommit: v => Config.data.wallpaperTintsShell = v
+        }
+        SettingText {
+            label: "Esquema"
+            hint: "scheme-tonal-spot · scheme-vibrant · scheme-content · "
+                + "scheme-expressive · scheme-fidelity · scheme-neutral · "
+                + "scheme-monochrome · scheme-fruit-salad · scheme-rainbow"
+            text: Config.matugenScheme
+            onCommit: v => Config.data.matugenScheme = v
+        }
+        SettingText {
+            label: "Cor preferida"
+            hint: "Qual candidata vence quando a imagem tem várias: "
+                + "darkness · lightness · saturation · less-saturation · value"
+            text: Config.matugenPrefer
+            onCommit: v => Config.data.matugenPrefer = v
+        }
+    }
+
+    SettingGroup {
         title: "Programas externos"
 
         SettingText {
