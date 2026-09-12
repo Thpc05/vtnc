@@ -105,7 +105,7 @@ QtObject {
     //  da altura da barra (Pill_Theme.height / 2 = 16). Acima disso a
     //  barra baixa clampa sozinha e o canto volta a variar com a
     //  altura — que é exatamente o que não queremos aqui.
-    readonly property real radiusIsland: 16
+    readonly property real radiusIsland: 24
 
     //  Raiz da cadeia do conteúdo. O clamp não é decoração: a cadeia
     //  subtrai, então baixar o card abaixo do cardPadding levaria o

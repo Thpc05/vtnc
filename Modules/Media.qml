@@ -58,7 +58,7 @@ Row {
             }
 
             // Seletor de fonte: clique CICLA entre os players (só >1)
-            Item {
+            Hoverable {
                 id: srcChip
                 width: 20
                 height: 16
@@ -66,26 +66,14 @@ Row {
                 anchors.verticalCenter: parent.verticalCenter
                 opacity: MediaService.hasChoice ? 1 : 0
                 visible: opacity > 0
-
-                Rectangle {
-                    anchors.fill: parent
-                    radius: Theme.radiusChip
-                    color: chipHover.hovered ? Theme.hoverLayer : "transparent"
-                    Behavior on color { ColorAnimation { duration: Motion.instant } }
-                }
+                onTapped: MediaService.cycle()
 
                 Text {
                     anchors.centerIn: parent
                     text: MediaService.sourceIcon(MediaService.active)
-                    color: chipHover.hovered ? Theme.textPrimary : Theme.textMuted
+                    color: srcChip.hovered ? Theme.textPrimary : Theme.textMuted
                     font { family: Theme.fontIcon; pixelSize: 12 }
                     Behavior on color { ColorAnimation { duration: Motion.instant } }
-                }
-
-                HoverHandler { id: chipHover }
-                TapHandler {
-                    gesturePolicy: TapHandler.ReleaseWithinBounds
-                    onTapped: MediaService.cycle()
                 }
             }
         }

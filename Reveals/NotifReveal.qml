@@ -85,34 +85,24 @@ Reveal {
 
         // "Limpar" no TOPO: embaixo ele dançava quando a última
         // notificação expandia no hover — impossível de clicar
-        Item {
+        Hoverable {
+            id: clearChip
+
             anchors.top: parent.top
             anchors.right: parent.right
             width: clearText.implicitWidth + 14
             height: 18
             visible: root.count > 0
-
-            Rectangle {
-                anchors.fill: parent
-                radius: Theme.radiusChip
-                color: clearHover.hovered ? Theme.hoverLayer : "transparent"
-                Behavior on color { ColorAnimation { duration: Motion.instant } }
-            }
+            onTapped: NotifServer.clearHistory()
 
             Text {
                 id: clearText
 
                 anchors.centerIn: parent
                 text: "Limpar"
-                color: clearHover.hovered ? Theme.textPrimary : Theme.textMuted
+                color: clearChip.hovered ? Theme.textPrimary : Theme.textMuted
                 font { family: Theme.fontDisplay; pixelSize: 11 }
                 Behavior on color { ColorAnimation { duration: Motion.instant } }
-            }
-
-            HoverHandler { id: clearHover }
-            TapHandler {
-                gesturePolicy: TapHandler.ReleaseWithinBounds
-                onTapped: NotifServer.clearHistory()
             }
         }
 
@@ -204,31 +194,21 @@ Reveal {
                     }
 
                     // X pra excluir — aparece embaixo da hora ao mirar
-                    Item {
+                    Hoverable {
+                        id: xChip
+
                         anchors.right: parent.right
                         width: 18
                         height: 16
                         visible: histItem.hov
-
-                        Rectangle {
-                            anchors.fill: parent
-                            radius: Theme.radiusChip
-                            color: xHover.hovered ? Theme.hoverLayer : "transparent"
-                            Behavior on color { ColorAnimation { duration: Motion.instant } }
-                        }
+                        onTapped: NotifServer.history.remove(histItem.index)
 
                         Text {
                             anchors.centerIn: parent
                             text: "󰅖"
-                            color: xHover.hovered ? Theme.danger : Theme.textMuted
+                            color: xChip.hovered ? Theme.danger : Theme.textMuted
                             font { family: Theme.fontIcon; pixelSize: 11 }
                             Behavior on color { ColorAnimation { duration: Motion.instant } }
-                        }
-
-                        HoverHandler { id: xHover }
-                        TapHandler {
-                            gesturePolicy: TapHandler.ReleaseWithinBounds
-                            onTapped: NotifServer.history.remove(histItem.index)
                         }
                     }
                 }

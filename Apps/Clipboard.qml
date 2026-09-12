@@ -335,31 +335,24 @@ PillFace {
             }
 
             // Limpar TUDO (botão de texto padrão)
-            Item {
+            Hoverable {
+                id: wipeChip
+
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 width: wipeText.implicitWidth + 14
                 height: 20
-
-                Rectangle {
-                    anchors.fill: parent
-                    radius: Theme.radiusChip
-                    color: wipeHover.hovered ? Theme.hoverLayer : "transparent"
-                    Behavior on color { ColorAnimation { duration: Motion.instant } }
-                }
+                onTapped: root.wipeAll()
 
                 Text {
                     id: wipeText
 
                     anchors.centerIn: parent
                     text: "Limpar"
-                    color: wipeHover.hovered ? Theme.textPrimary : Theme.textMuted
+                    color: wipeChip.hovered ? Theme.textPrimary : Theme.textMuted
                     font { family: Theme.fontDisplay; pixelSize: 11 }
                     Behavior on color { ColorAnimation { duration: Motion.instant } }
                 }
-
-                HoverHandler { id: wipeHover }
-                TapHandler { onTapped: root.wipeAll() }
             }
         }
 
@@ -508,59 +501,39 @@ PillFace {
                         anchors.top: parent.top
                         spacing: 2
 
-                        Item {
+                        // O Hoverable usa ReleaseWithinBounds, que toma
+                        // grab: sem isso o tap do CORPO também dispararia
+                        Hoverable {
+                            id: copyChip
+
                             width: 22
                             height: 20
-
-                            Rectangle {
-                                anchors.fill: parent
-                                radius: Theme.radiusChip
-                                color: copyHover.hovered ? Theme.hoverLayer : "transparent"
-                                Behavior on color { ColorAnimation { duration: Motion.instant } }
-                            }
+                            onTapped: root.copyItem(box.modelData)
 
                             Text {
                                 anchors.centerIn: parent
                                 text: "󰆏"
-                                color: copyHover.hovered ? Theme.accent : Theme.textMuted
+                                color: copyChip.hovered ? Theme.accent : Theme.textMuted
                                 font { family: Theme.fontIcon; pixelSize: 12 }
                                 Behavior on color { ColorAnimation { duration: Motion.instant } }
                             }
-
-                            HoverHandler { id: copyHover }
-                            TapHandler {
-                                // Grab exclusivo: sem isso o tap do CORPO
-                                // também dispara (TapHandler é passivo)
-                                gesturePolicy: TapHandler.ReleaseWithinBounds
-                                onTapped: root.copyItem(box.modelData)
-                            }
                         }
 
-                        Item {
+                        // Grab do Hoverable: excluir NÃO pode acionar o
+                        // copiar-e-fechar do corpo por baixo
+                        Hoverable {
+                            id: delChip
+
                             width: 22
                             height: 20
-
-                            Rectangle {
-                                anchors.fill: parent
-                                radius: Theme.radiusChip
-                                color: delHover.hovered ? Theme.hoverLayer : "transparent"
-                                Behavior on color { ColorAnimation { duration: Motion.instant } }
-                            }
+                            onTapped: root.deleteItem(box.modelData, false)
 
                             Text {
                                 anchors.centerIn: parent
                                 text: "󰅖"
-                                color: delHover.hovered ? Theme.danger : Theme.textMuted
+                                color: delChip.hovered ? Theme.danger : Theme.textMuted
                                 font { family: Theme.fontIcon; pixelSize: 12 }
                                 Behavior on color { ColorAnimation { duration: Motion.instant } }
-                            }
-
-                            HoverHandler { id: delHover }
-                            TapHandler {
-                                // Grab exclusivo: excluir NÃO pode acionar
-                                // o copiar-e-fechar do corpo por baixo
-                                gesturePolicy: TapHandler.ReleaseWithinBounds
-                                onTapped: root.deleteItem(box.modelData, false)
                             }
                         }
                     }

@@ -78,7 +78,7 @@ Reveal {
             Repeater {
                 model: ws.list
 
-                Item {
+                Hoverable {
                     id: wsRow
 
                     required property var modelData
@@ -88,14 +88,7 @@ Reveal {
 
                     width: wsCol.width
                     height: 24
-
-                    // Mira
-                    Rectangle {
-                        anchors.fill: parent
-                        radius: Theme.radiusChip
-                        color: rowHover.hovered ? Theme.hoverLayer : "transparent"
-                        Behavior on color { ColorAnimation { duration: Motion.instant } }
-                    }
+                    onTapped: Hyprland.dispatch("workspace " + wsRow.modelData.id)
 
                     // Número (accent = focado)
                     Text {
@@ -126,7 +119,7 @@ Reveal {
                         Repeater {
                             model: wsRow.wins
 
-                            Item {
+                            Hoverable {
                                 id: winItem
 
                                 required property var modelData
@@ -135,13 +128,9 @@ Reveal {
 
                                 width: 18
                                 height: 18
-
-                                Rectangle {
-                                    anchors.fill: parent
-                                    radius: Theme.radiusChip
-                                    color: winHover.hovered ? Theme.hoverLayer : "transparent"
-                                    Behavior on color { ColorAnimation { duration: Motion.instant } }
-                                }
+                                onTapped: Hyprland.dispatch(
+                                    "focuswindow address:"
+                                    + winItem.modelData.lastIpcObject.address)
 
                                 IconImage {
                                     anchors.centerIn: parent
@@ -162,13 +151,6 @@ Reveal {
                                     font { family: Theme.fontIcon; pixelSize: 10 }
                                 }
 
-                                HoverHandler { id: winHover }
-                                TapHandler {
-                                    gesturePolicy: TapHandler.ReleaseWithinBounds
-                                    onTapped: Hyprland.dispatch(
-                                        "focuswindow address:"
-                                        + winItem.modelData.lastIpcObject.address)
-                                }
                             }
                         }
                     }
@@ -184,10 +166,6 @@ Reveal {
                         font { family: Theme.fontDisplay; pixelSize: 10 }
                     }
 
-                    HoverHandler { id: rowHover }
-                    TapHandler {
-                        onTapped: Hyprland.dispatch("workspace " + wsRow.modelData.id)
-                    }
                 }
             }
         }
