@@ -69,6 +69,14 @@ PanelWindow {
         }
     }
 
+    // `qs -c vtnc ipc call shell perf on`: this window's frame rate in the log
+    Loader {
+        active: Runtime.perf
+        sourceComponent: PerfMeter {
+            name: window.screen?.name ?? ""
+        }
+    }
+
     // caffeine (the inhibitor needs a visible window)
     IdleInhibitor {
         window: window

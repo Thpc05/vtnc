@@ -34,6 +34,9 @@ Singleton {
     }
 
 
+    // the frame-rate meter in the log (`qs -c vtnc ipc call shell perf on`; island/PerfMeter.qml)
+    property bool perf: false
+
     // emitted when an app that is already open is opened again with new args
     // (e.g. `launcher search <text>` while the launcher is open)
     signal reopened(string appId, var args)

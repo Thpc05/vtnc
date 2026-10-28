@@ -22,7 +22,8 @@ import qs.services
 //                 names the cases)
 //  media          playPause · next · previous
 //  preset         list · active · apply <name> · save · revert
-//  shell          reload · resetState · status
+//  shell          reload · resetState · status · perf <on|off|toggle>   (each island window's frame rate
+//                 in `qs log -c vtnc`, island/PerfMeter.qml)
 //  battery        warn <level>   (a battery warning's notification, to preview it: services/BatteryWarnings.qml)
 Scope {
     id: root
@@ -368,6 +369,10 @@ Scope {
             Runtime.showTransient(Hypr.focusedScreen, kind || "debug", {
                 text: kind || "debug"
             }, ms > 0 ? ms : 2000);
+        }
+        function perf(state: string): string {
+            Runtime.perf = state === "toggle" ? !Runtime.perf : state === "on";
+            return "perf " + (Runtime.perf ? "on" : "off");
         }
         function status(): string {
             return JSON.stringify({
