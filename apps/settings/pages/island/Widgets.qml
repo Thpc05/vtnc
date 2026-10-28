@@ -42,6 +42,12 @@ Page {
     // chip being dragged (its entry), shared by the drop areas for the indicator
     property var dragEntry: null
 
+    // write the edited list back, keeping the entries whose id this shell doesn't know (a widget from a
+    // newer config or a removed one): `widgets` hides them, but an edit must not delete them
+    function save(list: var) {
+        Store.island.widgets = list.concat((Store.island.widgets ?? []).filter(w => !WidgetRegistry.has(w.id)));
+    }
+
     function inSection(section: string): var {
         return widgets.filter(w => w.section === section);
     }
@@ -58,7 +64,7 @@ Page {
             return;
         const rest = widgets.filter(w => w.uid !== uid).map(w => Object.assign({}, w));
         if (section === "off" && isCopy(moved)) {
-            Store.island.widgets = rest;
+            save(rest);
             return;
         }
         const target = rest.filter(w => w.section === section);
@@ -67,17 +73,17 @@ Page {
         target.splice(Math.max(0, Math.min(index, target.length)), 0, Object.assign({}, moved, {
             section: section
         }));
-        Store.island.widgets = others.concat(target);
+        save(others.concat(target));
     }
 
     // mode: "compact" | "expanded"; style: a style id or WidgetRegistry.hidden
     function setStyle(uid: string, mode: string, style: string) {
-        Store.island.widgets = widgets.map(w => {
+        save(widgets.map(w => {
             const copy = Object.assign({}, w);
             if (w.uid === uid)
                 copy[mode] = style;
             return copy;
-        });
+        }));
     }
 
     // a copy of entry `uid` right after it (uid `<id>-2`, `-3`…), selected; never in Off (it keeps one
@@ -96,7 +102,7 @@ Page {
         });
         const list = widgets.map(x => Object.assign({}, x));
         list.splice(i + 1, 0, copy);
-        Store.island.widgets = list;
+        save(list);
         selectedUid = copy.uid;
     }
 
