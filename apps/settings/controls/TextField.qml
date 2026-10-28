@@ -4,7 +4,8 @@ import qs.theme
 import qs.dwidgets.quick.panels
 import qs.kit as K
 
-// Single-line text input; `edited` fires on Enter or when focus leaves.
+// Single-line text input; `edited` fires on Enter or when focus leaves, `typed` on every keystroke
+// (for a button that depends on what is being typed).
 Rectangle {
     id: root
 
@@ -13,6 +14,7 @@ Rectangle {
     property bool mono: false
 
     signal edited(string value)
+    signal typed(string value)
 
     // the apps' look (R1.5, 2026-10-17): the idle fill, strong text
     readonly property PanelColors c: PanelColors {
@@ -39,6 +41,7 @@ Rectangle {
         font.family: root.mono ? Tokens.font.mono : Tokens.font.family
         font.pixelSize: Tokens.font.small
         text: root.value
+        onTextEdited: root.typed(text)
         onEditingFinished: {
             if (text !== root.value)
                 root.edited(text);

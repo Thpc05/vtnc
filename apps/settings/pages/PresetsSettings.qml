@@ -86,7 +86,8 @@ Page {
                             implicitWidth: 140
                             placeholder: "Preset name"
                             value: page.newName
-                            onEdited: v => {
+                            // on every keystroke: Save is enabled as soon as there is a name
+                            onTyped: v => {
                                 page.newName = v;
                                 page.newError = "";
                             }
