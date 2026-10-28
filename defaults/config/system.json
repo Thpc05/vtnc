@@ -1,0 +1,52 @@
+{
+  "version": 5,
+  "wallpapers": {
+    "dir": "~/Pictures/Wallpapers",
+    "transition": "grow"
+  },
+  "tools": {
+    "screenshotsDir": "~/Pictures/Screenshots",
+    "recordingsDir": "~/Videos/Recordings",
+    "ocrLang": "eng",
+    "recordFps": 60
+  },
+  "audio": {
+    "maxVolume": 150
+  },
+  "media": {
+    "enableFirefoxPlayer": true
+  },
+  "nightLight": {
+    "temp": 4500
+  },
+  "hints": {
+    "tools": true,
+    "session": true
+  },
+  "alerts": {
+    "battery": true
+  },
+  "apps": {
+    "notifications": {
+      "historySize": 100,
+      "persist": true,
+      "maxAgeDays": 0,
+      "groupByApp": true
+    },
+    "clipboard": {
+      "maxItems": 750,
+      "images": true,
+      "previewLines": 1
+    },
+    "notes": {
+      "format": "markdown",
+      "font": "ui",
+      "fontSize": 14,
+      "dir": "~/.local/share/vtnc/notes",
+      "openPreview": false
+    },
+    "dino": {
+      "speed": "normal"
+    }
+  }
+}

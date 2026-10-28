@@ -1,0 +1,228 @@
+{
+  "dashboard": {
+    "cell": 64,
+    "expandMode": "over",
+    "gap": 12,
+    "widgets": [
+      {
+        "id": "media",
+        "idle": {
+          "size": "3x3",
+          "style": "shapes"
+        },
+        "off": false,
+        "options": {},
+        "uid": "media",
+        "x": 5,
+        "y": 1
+      },
+      {
+        "id": "quick",
+        "idle": {
+          "size": "4x1",
+          "style": "shapes"
+        },
+        "off": false,
+        "options": {
+          "items": [
+            "dnd",
+            "mixer",
+            "nightLight",
+            "caffeine",
+            "powerProfile",
+            "lightMode"
+          ]
+        },
+        "uid": "quick",
+        "x": 4,
+        "y": 0
+      },
+      {
+        "id": "calendar",
+        "idle": {
+          "size": "3x3",
+          "style": "shapes"
+        },
+        "off": false,
+        "options": {},
+        "uid": "calendar",
+        "x": 0,
+        "y": 1
+      },
+      {
+        "id": "sliders",
+        "idle": {
+          "size": "2x3",
+          "style": "shapes"
+        },
+        "off": false,
+        "options": {
+          "items": [
+            "brightness",
+            "volume"
+          ]
+        },
+        "uid": "sliders",
+        "x": 3,
+        "y": 1
+      },
+      {
+        "id": "mixer",
+        "idle": {
+          "size": "2x1",
+          "style": "shapes"
+        },
+        "off": true,
+        "options": {},
+        "uid": "mixer",
+        "x": 3,
+        "y": 1
+      },
+      {
+        "id": "wifi",
+        "idle": {
+          "size": "2x1",
+          "style": "shapes"
+        },
+        "off": false,
+        "options": {},
+        "uid": "wifi",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "id": "bluetooth",
+        "idle": {
+          "size": "2x1",
+          "style": "shapes"
+        },
+        "off": false,
+        "options": {},
+        "uid": "bluetooth",
+        "x": 2,
+        "y": 0
+      },
+      {
+        "id": "notifications",
+        "idle": {
+          "size": "3x3",
+          "style": "shapes"
+        },
+        "off": true,
+        "options": {},
+        "uid": "notifications",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "id": "clipboard",
+        "idle": {
+          "size": "3x3",
+          "style": "shapes"
+        },
+        "off": true,
+        "options": {},
+        "uid": "clipboard",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "id": "notes",
+        "idle": {
+          "size": "3x3",
+          "style": "shapes"
+        },
+        "off": true,
+        "options": {},
+        "uid": "notes",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "id": "dino",
+        "idle": {
+          "size": "3x3",
+          "style": "shapes"
+        },
+        "off": true,
+        "options": {},
+        "uid": "dino",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "id": "colorScheme",
+        "idle": {
+          "size": "2x1",
+          "style": "shapes"
+        },
+        "off": true,
+        "options": {},
+        "uid": "colorScheme",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "id": "powerProfile",
+        "idle": {
+          "size": "2x1",
+          "style": "shapes"
+        },
+        "off": true,
+        "options": {},
+        "uid": "powerProfile",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "id": "wallpaper",
+        "idle": {
+          "size": "2x1",
+          "style": "shapes"
+        },
+        "off": true,
+        "options": {},
+        "uid": "wallpaper",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "id": "image",
+        "idle": {
+          "size": "2x2",
+          "style": "image"
+        },
+        "off": true,
+        "options": {},
+        "uid": "image",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "id": "clock",
+        "idle": {
+          "size": "3x2",
+          "style": "shapes"
+        },
+        "off": true,
+        "options": {},
+        "uid": "clock",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "id": "visualizer",
+        "idle": {
+          "size": "4x2",
+          "style": "bars"
+        },
+        "off": true,
+        "options": {},
+        "uid": "visualizer",
+        "x": 0,
+        "y": 0
+      }
+    ]
+  },
+  "version": 5
+}

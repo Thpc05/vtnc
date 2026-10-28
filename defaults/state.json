@@ -1,0 +1,16 @@
+{
+  "version": 5,
+  "controls": {
+    "nightLight": false,
+    "caffeine": false,
+    "gameMode": false,
+    "dnd": false
+  },
+  "player": {
+    "pinned": ""
+  },
+  "presets": {
+    "active": ""
+  },
+  "apps": {}
+}

@@ -1,0 +1,40 @@
+{
+  "frame": {
+    "enabled": true,
+    "roundCorners": true,
+    "rounding": 25,
+    "thickness": 10
+  },
+  "theme": {
+    "anim": {
+      "bounce": true,
+      "pageScale": false
+    },
+    "appStyle": "shapes",
+    "card": "neutral",
+    "colors": {
+      "dark": {},
+      "light": {}
+    },
+    "font": "",
+    "light": false,
+    "monoFont": "CaskaydiaCove NF",
+    "scale": {
+      "anim": 1,
+      "font": 1,
+      "padding": 1,
+      "rounding": 1,
+      "spacing": 1
+    },
+    "scheme": "scheme-tonal-spot",
+    "transparency": {
+      "base": 0.85,
+      "enabled": false,
+      "layers": 0.4
+    }
+  },
+  "version": 5,
+  "wallpaper": {
+    "current": ""
+  }
+}

@@ -1,0 +1,318 @@
+{
+  "island": {
+    "anchors": {
+      "compact": {
+        "anchorCenter": false,
+        "between": 8,
+        "center": {
+          "card": false
+        },
+        "gap": 8,
+        "left": {
+          "card": false
+        },
+        "right": {
+          "card": false
+        }
+      },
+      "expanded": {
+        "anchorCenter": false,
+        "between": 8,
+        "center": {
+          "card": false
+        },
+        "gap": 8,
+        "left": {
+          "card": false
+        },
+        "right": {
+          "card": false
+        }
+      }
+    },
+    "autohide": false,
+    "autohide_delay": 0,
+    "autohide_nv": 2,
+    "autohide_px": 4,
+    "autohide_show_delay": 500,
+    "autohide_width": -15,
+    "battery": {
+      "color": "primary",
+      "compact": {
+        "show": "both"
+      },
+      "expanded": {
+        "show": "both"
+      },
+      "hideAbove": 0
+    },
+    "clock": {
+      "background": "none",
+      "color": "default",
+      "font": "",
+      "letterSpacing": 0,
+      "rounding": -1,
+      "roundness": 25,
+      "size": 0,
+      "timeFormat": "HH:mm",
+      "weight": 600
+    },
+    "collapseDelay": 600,
+    "date": {
+      "background": "none",
+      "color": "variant",
+      "font": "",
+      "format": "ddd, dd MMM",
+      "letterSpacing": 0,
+      "rounding": -1,
+      "roundness": 25,
+      "size": 0,
+      "weight": 500
+    },
+    "dock": {
+      "compact": {
+        "content": "open",
+        "scope": "workspace"
+      },
+      "expanded": {
+        "content": "dock",
+        "scope": "workspace"
+      },
+      "pinned": []
+    },
+    "expandOnHover": true,
+    "flash": {
+      "duration": 2500,
+      "media": true
+    },
+    "height": 34,
+    "heightExpanded": 34,
+    "hoverDelay": 120,
+    "margin": 6,
+    "media": {
+      "compact": {
+        "artistWeight": 500,
+        "controls": false,
+        "showArt": true,
+        "showArtist": false,
+        "showTitle": true,
+        "showWave": false,
+        "titleWeight": 700,
+        "width": 0
+      },
+      "expanded": {
+        "artistWeight": 500,
+        "controls": true,
+        "showArt": true,
+        "showArtist": true,
+        "showTitle": true,
+        "showWave": true,
+        "titleWeight": 700,
+        "width": 0
+      },
+      "visibility": "noMedia"
+    },
+    "minWidth": 90,
+    "minWidthExpanded": 150,
+    "notifications": {
+      "animation": "slide",
+      "color": "primary",
+      "compact": "transient",
+      "expand": "hover",
+      "expanded": "widget",
+      "maxWidth": 720,
+      "minWidth": 260,
+      "presentation": "replace",
+      "style": "shapes",
+      "duration": 5,
+      "useAppTimeout": true
+    },
+    "padding": 14,
+    "quick": {
+      "color": "primary",
+      "gap": 4,
+      "items": [
+        "dnd",
+        "caffeine",
+        "nightLight",
+        "lightMode"
+      ],
+      "weight": 0
+    },
+    "reserveSpace": false,
+    "rounding": -1,
+    "style": "notch",
+    "tray": {
+      "compact": {
+        "fold": "off"
+      },
+      "expanded": {
+        "fold": "off"
+      },
+      "tintColor": "primary"
+    },
+    "visualizer": {
+      "alwaysShow": false,
+      "color": "primary",
+      "compact": {
+        "bars": 12,
+        "maxHeight": 20,
+        "minHeight": 2,
+        "width": 0
+      },
+      "dotThreshold": 33,
+      "expanded": {
+        "bars": 24,
+        "maxHeight": 20,
+        "minHeight": 2,
+        "width": 0
+      },
+      "hideDelay": 1,
+      "source": "music",
+      "shapeThreshold": 0
+    },
+    "volume": {
+      "compact": {
+        "icon": true,
+        "percent": true
+      },
+      "expanded": {
+        "icon": true,
+        "percent": true
+      },
+      "wavy": true
+    },
+    "widgets": [
+      {
+        "compact": "hidden",
+        "expanded": "tones",
+        "id": "workspaces",
+        "section": "left",
+        "uid": "workspaces"
+      },
+      {
+        "compact": "hidden",
+        "expanded": "slider",
+        "id": "volume",
+        "section": "off",
+        "uid": "volume"
+      },
+      {
+        "compact": "shapes",
+        "expanded": "shapes",
+        "id": "battery",
+        "section": "off",
+        "uid": "battery"
+      },
+      {
+        "compact": "hidden",
+        "expanded": "icons",
+        "id": "tray",
+        "section": "right",
+        "uid": "tray"
+      },
+      {
+        "compact": "hidden",
+        "expanded": "bell",
+        "id": "notifications",
+        "section": "right",
+        "uid": "notifications"
+      },
+      {
+        "compact": "hidden",
+        "expanded": "hidden",
+        "id": "media",
+        "section": "center",
+        "uid": "media"
+      },
+      {
+        "compact": "hidden",
+        "expanded": "default",
+        "id": "date",
+        "section": "center",
+        "uid": "date"
+      },
+      {
+        "compact": "time",
+        "expanded": "time",
+        "id": "clock",
+        "section": "center",
+        "uid": "clock"
+      },
+      {
+        "compact": "dot",
+        "expanded": "dot",
+        "id": "recording",
+        "section": "center",
+        "uid": "recording"
+      },
+      {
+        "compact": "shapes",
+        "expanded": "shapes",
+        "id": "quick",
+        "section": "off",
+        "uid": "quick"
+      },
+      {
+        "compact": "bars",
+        "expanded": "bars",
+        "id": "visualizer",
+        "section": "off",
+        "uid": "visualizer"
+      },
+      {
+        "compact": "icon",
+        "expanded": "icon",
+        "id": "window",
+        "section": "off",
+        "uid": "window"
+      },
+      {
+        "compact": "hidden",
+        "expanded": "icons",
+        "id": "dock",
+        "section": "off",
+        "uid": "dock"
+      }
+    ],
+    "window": {
+      "compact": {
+        "maxWidth": 180,
+        "showIcon": true,
+        "text": "both",
+        "weight": 600
+      },
+      "expanded": {
+        "maxWidth": 280,
+        "showIcon": true,
+        "text": "both",
+        "weight": 600
+      },
+      "idle": {
+        "image": "~/.face",
+        "show": "text",
+        "text": "Desktop"
+      }
+    },
+    "workspaces": {
+      "compactCount": 0,
+      "expandedCount": 0,
+      "focus": "pill",
+      "label": "number",
+      "windows": {
+        "compact": "off",
+        "expanded": "icons",
+        "max": 3
+      }
+    }
+  },
+  "osd": {
+    "duration": 1500,
+    "enabled": true,
+    "fitIsland": false,
+    "pxPerPercent": 1.4,
+    "skipWithVolumeWidget": true,
+    "volumeWidget": false
+  },
+  "version": 5
+}
