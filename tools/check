@@ -1,0 +1,3 @@
+#!/bin/sh
+# The shell's check (check.py): tests, forbidden patterns, the layer lint, a live reload + log diff.
+exec python3 -I "$(dirname "$0")/check.py" "$@"
