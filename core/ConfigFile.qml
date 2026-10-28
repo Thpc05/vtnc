@@ -65,6 +65,20 @@ Scope {
         file.setText(factory.text());
     }
 
+    // the load handlers' own rewrites (a fix-up, the factory text): a setText inside the FileView's
+    // load is dropped mid-operation (the file is written, but neither the text nor the adapter
+    // change), so it runs after it; its echo is skipped and onSaved validates the new content
+    property bool rewriting: false
+
+    function rewrite(text: string) {
+        saveTimer.stop();
+        rewriting = true;
+        Qt.callLater(() => {
+            lastSelfWrite = Date.now();
+            file.setText(text);
+        });
+    }
+
     function validate() {
         let parsed;
         try {
@@ -75,19 +89,24 @@ Scope {
                 return;
             }
             console.warn("[Store]", root.path, "is not valid JSON, backing up and restoring defaults:", e);
-            Quickshell.execDetached(["cp", "-f", root.path, root.path + ".bak"]);
-            root.resetToFactory();
+            // the factory text only once the copy is done, so the .bak keeps the broken file
+            backup.exec(["cp", "-f", root.path, root.path + ".bak"]);
             return;
         }
 
         const merged = Merge.merge(parsed, root.defaults);
         if (Merge.canonical(merged) !== Merge.canonical(parsed)) {
             console.info("[Store] completing/fixing", root.path, "from defaults");
-            file.setText(JSON.stringify(merged, null, 2) + "\n");
+            root.rewrite(JSON.stringify(merged, null, 2) + "\n");
             return;
         }
         root.json = parsed;
         root.ready = true;
+    }
+
+    Process {
+        id: backup
+        onExited: root.rewrite(factory.text())
     }
 
     FileView {
@@ -131,6 +150,11 @@ Scope {
             Qt.callLater(() => loading = false);
         }
         onSaved: {
+            if (root.rewriting) {
+                root.rewriting = false;
+                root.validate();
+                return;
+            }
             try {
                 root.json = JSON.parse(text());
             } catch (e) {}
@@ -141,7 +165,7 @@ Scope {
             if (err === FileViewError.FileNotFound && root.ready)
                 root.writeNow();
             else if (err === FileViewError.FileNotFound)
-                root.resetToFactory();
+                root.rewrite(factory.text());
             else
                 console.error("[Store] failed to load", root.path, FileViewError.toString(err));
         }
