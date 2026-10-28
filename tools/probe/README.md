@@ -4,8 +4,8 @@ Renders parts of the shell to PNGs without touching the running shell or its fil
 built in a temporary folder loads the real `kit/`, `components/`, `dwidgets/` and `iwidgets/` (symlinks, read only)
 on stubs (the user's matugen palette, a read-only Store, fake player / battery / audio).
 
-It lives on the `dev` branch (the worktree `~/.local/src/vtnc-dev`) and reads the live shell at `$VTNC`
-(default `~/.config/quickshell/vtnc`).
+It lives on the `dev` branch (`~/.config/quickshell/vtnc-dev`) and renders the shell around it, or the one
+in `$VTNC`.
 
 ## Run
 
@@ -28,7 +28,7 @@ them and vulkan hangs offscreen.
 
 | Variable | Default | What |
 |---|---|---|
-| `VTNC` | `~/.config/quickshell/vtnc` | the shell rendered |
+| `VTNC` | the shell around `tools/` | the shell rendered |
 | `PROBE_DIR` | `$XDG_RUNTIME_DIR/vtnc-probe` | where the probes are built; refused inside the shell's code |
 | `PROBE_WIDGETS` | `battery tray volume` | Iwidgets kept in the probe's WidgetRegistry (others may need more stubs) |
 | `PROBE_ISLAND` | `{}` | JSON for `Store.island` (a widget's options, e.g. `{"battery":{"compact":{"show":"both"}}}`) |

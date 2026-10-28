@@ -4,7 +4,7 @@
 #   1. tests     every tests/*.test.js with node
 #   2. patterns  forbidden code (PATTERNS below): "fail" ones fail the check, "warn" ones only report
 #   3. layers    the layer lint (tools/layers.py); reports only until R2 C4 (--strict-layers fails on it)
-#   4. live      reloads the running shell (`qs -c vtnc ipc call shell reload`) and reads the log lines
+#   4. live      reloads the running shell (`qs -c <config> ipc call shell reload`) and reads the log lines
 #                after it: a new ERROR, a "WARN scene" line, a binding loop or a "caused by" fails, unless
 #                tools/known-log.txt lists it (each entry says which step removes it)
 #
@@ -15,7 +15,10 @@
 # Exit 0 = pass.
 import glob, os, re, subprocess, sys, time
 
-VTNC = os.path.realpath(os.environ.get("VTNC") or os.path.expanduser("~/.config/quickshell/vtnc"))
+# the shell the tools sit in (the dev worktree), unless VTNC names another
+VTNC = os.path.realpath(os.environ.get("VTNC") or os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+# its Quickshell config name: ~/.config/quickshell/<name> (vtnc-dev for the dev worktree)
+CONFIG = os.environ.get("QS_CONFIG") or os.path.basename(VTNC)
 TOOLS = os.path.dirname(os.path.abspath(__file__))
 ANSI = re.compile(r"\x1b\[[0-9;]*m")
 
@@ -52,7 +55,7 @@ def patterns():
     head("patterns")
     hits = 0
     for d, dirs, names in os.walk(VTNC):
-        dirs[:] = [x for x in dirs if not x.startswith(".") and x != "tests"]
+        dirs[:] = [x for x in dirs if not x.startswith(".") and x not in ("tests", "tools")]
         for n in names:
             if not n.endswith((".qml", ".js")):
                 continue
@@ -76,7 +79,7 @@ def layers(strict):
 
 
 def log_lines():
-    r = subprocess.run(["qs", "log", "-c", "vtnc"], capture_output=True, text=True)
+    r = subprocess.run(["qs", "log", "-c", CONFIG], capture_output=True, text=True)
     return [ANSI.sub("", l) for l in (r.stdout + r.stderr).splitlines()]
 
 
@@ -92,16 +95,16 @@ def known():
 def live(restart):
     head("live (restart)" if restart else "live (reload)")
     if restart:
-        subprocess.run(["qs", "kill", "-c", "vtnc"], capture_output=True)
+        subprocess.run(["qs", "kill", "-c", CONFIG], capture_output=True)
         time.sleep(1)
-        subprocess.run(["qs", "-c", "vtnc", "-d"], capture_output=True)
+        subprocess.run(["qs", "-c", CONFIG, "-d"], capture_output=True)
         start = 0
     else:
         start = len(log_lines())
-        r = subprocess.run(["qs", "-c", "vtnc", "ipc", "call", "shell", "reload"], capture_output=True, text=True)
+        r = subprocess.run(["qs", "-c", CONFIG, "ipc", "call", "shell", "reload"], capture_output=True, text=True)
         if r.returncode:
             failed.append("live")
-            print(f"FAIL no running shell to reload: {r.stderr.strip()}")
+            print(f"FAIL no running `qs -c {CONFIG}` to reload (start it, or QS_CONFIG=vtnc): {r.stderr.strip()}")
             return
     # wait for the load's result, then a moment for the warnings that come after it
     new = []
@@ -138,7 +141,7 @@ def live(restart):
 
 def main():
     sys.stdout.reconfigure(line_buffering=True)
-    print(f"vtnc check: {VTNC}")
+    print(f"vtnc check: {VTNC} (qs -c {CONFIG})")
     tests()
     patterns()
     layers("--strict-layers" in sys.argv)

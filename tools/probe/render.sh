@@ -3,15 +3,15 @@
 #
 #   tools/probe/render.sh <gallery.qml> [out prefix]
 #
-# Env: VTNC (the shell, default ~/.config/quickshell/vtnc), PROBE_DIR (where the probes are built; default $XDG_RUNTIME_DIR/vtnc-probe or /tmp/vtnc-probe;
+# Env: VTNC (the shell, default the one around tools/), PROBE_DIR (where the probes are built; default $XDG_RUNTIME_DIR/vtnc-probe or /tmp/vtnc-probe;
 # must be outside the shell), PROBE_WIDGETS (Iwidgets for mkisland.py, space separated), plus the stubs'
 # PROBE_ISLAND / PROBE_BATT / PROBE_ART / PROBE_PAUSED. Writes <out prefix>-dark.png and -light.png
 # (default prefix: the gallery's name, next to it in PROBE_DIR).
 set -eu
 
 HERE=$(cd "$(dirname "$0")" && pwd)
-# the live shell (the tools live on the dev branch, outside it)
-VTNC=$(cd "${VTNC:-$HOME/.config/quickshell/vtnc}" && pwd)
+# the shell the tools sit in (the dev worktree), unless VTNC names another
+VTNC=$(cd "${VTNC:-$HERE/../..}" && pwd)
 ROOT=${PROBE_DIR:-${XDG_RUNTIME_DIR:-/tmp}/vtnc-probe}
 
 [ $# -ge 1 ] || { echo "usage: render.sh <gallery.qml> [out prefix]" >&2; exit 2; }

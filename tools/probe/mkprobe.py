@@ -10,8 +10,8 @@
 # render.sh, which also calls mkisland.py (the island stubs). See README.md.
 import json, os, re, sys
 
-# the live shell (the tools live on the dev branch, outside it)
-VTNC = os.path.realpath(os.environ.get("VTNC") or os.path.expanduser("~/.config/quickshell/vtnc"))
+# the shell the tools sit in (the dev worktree), unless VTNC names another
+VTNC = os.path.realpath(os.environ.get("VTNC") or os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 MARK = ".vtnc-probe"
 
 if len(sys.argv) < 2:

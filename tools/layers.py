@@ -8,14 +8,15 @@
 # not import another feature. Today's folders (before the R2 move) are mapped onto the same layers, so the
 # first runs list the backlog of R2 phase C steps 4–5.
 #
-#   python3 -I tools/layers.py [--strict] [-v]        (VTNC = the shell, default ~/.config/quickshell/vtnc)
+#   python3 -I tools/layers.py [--strict] [-v]        (VTNC = the shell, default the one around tools/)
 #
 # Prints the violations grouped by "from area → to area"; -v lists every import line. --strict exits 1
 # when there is any violation or unmapped file (tools/check uses it once the move is done).
 import os, re, sys
 
-VTNC = os.path.realpath(os.environ.get("VTNC") or os.path.expanduser("~/.config/quickshell/vtnc"))
-SKIP = {".git", ".claude", "assets", "defaults", "scripts", "tests"}
+# the shell the tools sit in (the dev worktree), unless VTNC names another
+VTNC = os.path.realpath(os.environ.get("VTNC") or os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+SKIP = {".git", ".claude", "assets", "defaults", "scripts", "tests", "tools"}
 
 LAYERS = ["core", "theme", "kit", "services", "common", "feature", "shell"]
 

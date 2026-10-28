@@ -1,0 +1,29 @@
+#!/bin/sh
+# Releases the dev shell into main, the express version: merges dev into main's worktree
+# (~/.config/quickshell/vtnc) and leaves tools/ out. Both worktrees must be clean.
+#
+#   tools/release ["commit message"]
+set -eu
+
+DEV=$(cd "$(dirname "$0")/.." && pwd)
+[ "$(git -C "$DEV" branch --show-current)" = dev ] || { echo "run it from the dev worktree" >&2; exit 1; }
+MAIN=$(git -C "$DEV" worktree list --porcelain | awk '/^worktree /{w=$2} $0=="branch refs/heads/main"{print w}')
+[ -n "$MAIN" ] || { echo "no worktree on main" >&2; exit 1; }
+[ -z "$(git -C "$DEV" status --porcelain)" ] || { echo "dev has uncommitted changes" >&2; exit 1; }
+[ -z "$(git -C "$MAIN" status --porcelain)" ] || { echo "main ($MAIN) has uncommitted changes" >&2; exit 1; }
+[ "$(git -C "$MAIN" rev-list --count main..dev)" -gt 0 ] || { echo "main already has everything of dev"; exit 0; }
+
+cd "$MAIN"
+if ! git merge --no-ff --no-commit dev >/dev/null 2>&1; then
+    # only tools/ may conflict: main deleted it, dev changed it
+    other=$(git diff --name-only --diff-filter=U | grep -v '^tools/' || true)
+    if [ -n "$other" ]; then
+        git merge --abort
+        printf 'conflicts outside tools/, merge by hand:\n%s\n' "$other" >&2
+        exit 1
+    fi
+fi
+git rm -rq --ignore-unmatch tools
+rm -rf tools
+git commit -q -m "${1:-Release dev into main}"
+git log --oneline -1
