@@ -4,7 +4,7 @@ import qs.kit as K
 
 // Hosts one Iwidget in one style, for the island (island/WidgetSlot.qml) and the settings preview
 // (apps/settings/pages/island/WidgetPreview.qml): a card variant (iwidgets/catalog.js, "<base>Card")
-// draws the island card behind it (Kit.islandCard, Appearance → Colors → Cards) and the widget
+// draws the island card behind it (Kit.islandCard, Appearance → General → Cards) and the widget
 // only gets the base style. The widget also gets, when it declares them, `pal` (the card's palette,
 // or Kit.bare without one), `mode` (compact / expanded), `growing` and `screen`.
 Item {

@@ -3,7 +3,7 @@ import qs.kit as K
 
 // The card behind a Dwidget's Card variant (2026-10-11), the dashboard's IwidgetFrame: the island
 // card's look at dashboard scale: the most rounded it can be (a pill one row tall, else
-// rounding.extraLarge), the card colour (Kit.card, Appearance → Colors → Cards) and a compact
+// rounding.extraLarge), the card colour (Kit.card, Appearance → General → Cards) and a compact
 // padding. `pal` is what to draw with on it (Kit.bare without the card); `pad` the inset for the content.
 Item {
     id: root

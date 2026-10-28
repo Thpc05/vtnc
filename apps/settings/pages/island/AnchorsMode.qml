@@ -61,7 +61,7 @@ Section {
         SettingRow {
             required property var modelData
             label: modelData.title
-            description: "A card behind the whole section (the cards' color, Appearance → Colors → Cards); its widgets' own cards merge into it"
+            description: "A card behind the whole section (the cards' color, Appearance → General → Cards); its widgets' own cards merge into it"
             Switch {
                 checked: modeSection.options[modelData.name].card
                 onToggled: c => modeSection.options[modelData.name].card = c

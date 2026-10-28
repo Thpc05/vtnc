@@ -280,7 +280,7 @@ Page {
     }
 
     // a style's short label (an eye for single-style widgets, an eye-slash when hidden); bare like the
-    // style itself, or a little pill in the cards' colour (Appearance → Colors → Cards) for a Card variant
+    // style itself, or a little pill in the cards' colour (Appearance → General → Cards) for a Card variant
     component ModeMark: Rectangle {
         id: mark
 

@@ -186,7 +186,7 @@ Singleton {
     //   faint (the two-tone styles: the accent at 55 % / 20 %).
     // A Dwidget picks `card ? K.Kit.card : K.Kit.bare`, an Iwidget gets `K.Kit.islandCard` or `K.Kit.bare`
     // from its frame (iwidgets/IwidgetFrame.qml). One colour for both since 2026-10-11 (user): Settings →
-    // Appearance → Colors → Cards (`theme.card`); islandCard is the same palette.
+    // Appearance → General → Cards (`theme.card`); islandCard is the same palette.
     readonly property CardPalette card: CardPalette {
         kind: Store.theme?.card || "neutral"
     }
