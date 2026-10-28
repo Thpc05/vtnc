@@ -23,7 +23,7 @@ if ! git merge --no-ff --no-commit dev >/dev/null 2>&1; then
         exit 1
     fi
 fi
-git rm -rq --ignore-unmatch tools
+git rm -rqf --ignore-unmatch tools
 rm -rf tools
 git commit -q -m "${1:-Release dev into main}"
 git log --oneline -1
