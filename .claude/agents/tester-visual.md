@@ -11,9 +11,12 @@ Obsidian vault is created, changed or deleted by you. Everything you write (gall
 folder, outside the code.
 
 Context, if you need it: the shell's docs live in `/home/thpc/Obsidian/Projects/vtnc/vtnc shell/` (start with
-`shell (vtnc).md`: Setup and Conventions and pitfalls; the look rules are in `definitions/`, e.g.
+`vtnc shell.md`: Setup and Conventions and pitfalls; the look rules are in `definitions/`, e.g.
 `visual style.md`, `minimal sizing.md`, `no card by default.md`). Read only; the vault rules are in
-`/home/thpc/Obsidian/AGENTS.md`. The probe tooling is documented in `tools/probe/README.md`.
+`/home/thpc/Obsidian/AGENTS.md`. The probe tooling is in the shell's `dev` branch, checked out as a worktree at
+`/home/thpc/.local/src/vtnc-dev` (`main`, the shell that runs, has no `tools/`); it reads the live shell at
+`$VTNC` (default `~/.config/quickshell/vtnc`). Its docs: `/home/thpc/.local/src/vtnc-dev/tools/probe/README.md`.
+Below, `TOOLS=/home/thpc/.local/src/vtnc-dev/tools`; if that folder is missing, report it and stop.
 
 ## 1. What to test
 
@@ -29,9 +32,9 @@ Context, if you need it: the shell's docs live in `/home/thpc/Obsidian/Projects/
 
 The probe is a tiny Quickshell config in a temporary folder that loads the real `kit/`, `components/`,
 `dwidgets/` and `iwidgets/` (symlinks, read only) on stubs:
-- `tools/probe/mkprobe.py <dir> [dark|light]`: base stubs (`theme/Colors.qml` with the user's matugen palette,
+- `$TOOLS/probe/mkprobe.py <dir> [dark|light]`: base stubs (`theme/Colors.qml` with the user's matugen palette,
   the real Tokens / Icons, a read-only `core/Store.qml`, a fake player in `services/MprisController.qml`);
-- `tools/probe/mkisland.py <dir> [widget id ...]`: island stubs (`core/WidgetRegistry.qml` trimmed to the
+- `$TOOLS/probe/mkisland.py <dir> [widget id ...]`: island stubs (`core/WidgetRegistry.qml` trimmed to the
   Iwidgets asked for, default `battery tray volume`; `core/Runtime.qml`; `services/Battery.qml`;
   `services/Audio.qml`).
 
@@ -54,7 +57,7 @@ to `PROBE_WIDGETS` fails to load, report that instead of patching anything.
 ## 3. Write a gallery (in the probe folder, never in the repo)
 
 A gallery is a `ShellRoot` with a `FloatingWindow` that, after a moment, grabs its content to
-`Quickshell.env("OUT")` and quits. Model: `tools/probe/examples/battery.qml` (use it as is when it covers the
+`Quickshell.env("OUT")` and quits. Model: `$TOOLS/probe/examples/battery.qml` (use it as is when it covers the
 request). Write new ones with Bash in `$PROBE_DIR` (e.g. `$PROBE_DIR/galleries/<name>.qml`):
 
 ```sh
@@ -94,8 +97,8 @@ EOF
 ## 4. Render
 
 ```sh
-cd /home/thpc/.config/quickshell/vtnc
-PROBE_DIR=... PROBE_ISLAND='...' tools/probe/render.sh "$PROBE_DIR/galleries/<name>.qml" "$PROBE_DIR/<name>"
+TOOLS=/home/thpc/.local/src/vtnc-dev/tools
+PROBE_DIR=... PROBE_ISLAND='...' "$TOOLS/probe/render.sh" "$PROBE_DIR/galleries/<name>.qml" "$PROBE_DIR/<name>"
 ```
 
 It prints the PNG paths (`<prefix>-dark.png`, `<prefix>-light.png`). It runs offscreen with
