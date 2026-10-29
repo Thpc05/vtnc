@@ -5,8 +5,7 @@ import qs.services
 // Feeds this screen's island with the OSD transient (osd.*):
 //  - volume / mic: on the focused monitor
 //  - brightness: on the monitor that changed (with "Sync brightness" every monitor reports its own)
-// Startup / wake reads aren't changes: nothing shows for a moment after creation, nor before
-// SuspendManager.wakeReady. Nor while this screen's island has the dashboard open (its sliders
+// Startup reads aren't changes: nothing shows for a moment after creation. Nor while this screen's island has the dashboard open (its sliders
 // already show the level). The volume one is skipped while the volume Iwidget shows in the
 // island's current mode (osd.skipWithVolumeWidget: placed in a section and not hidden in compact /
 // expanded, whichever the island is in); an OSD already up keeps updating. With osd.volumeWidget the
@@ -33,7 +32,7 @@ Item {
     readonly property bool volumeWidgetPlaced: (Store.island.widgets ?? []).some(w => w.id === "volume" && w.section !== "off")
 
     function show(type: string, value: real, muted: bool) {
-        if (!armed || !Store.osd.enabled || !SuspendManager.wakeReady)
+        if (!armed || !Store.osd.enabled)
             return;
         if (Runtime.activeApp === "dashboard" && Runtime.activeScreen === screenName)
             return;
@@ -53,7 +52,7 @@ Item {
             // open over the island (the widget isn't there) or no volume widget placed → the slider
             const appHere = Runtime.activeApp !== "" && Runtime.activeScreen === root.screenName;
             if (Store.osd.volumeWidget && root.volumeWidgetPlaced && !appHere && !root.osdUp) {
-                if (root.armed && Store.osd.enabled && SuspendManager.wakeReady)
+                if (root.armed && Store.osd.enabled)
                     Runtime.flashVolume(root.screenName);
                 return;
             }

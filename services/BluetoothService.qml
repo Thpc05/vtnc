@@ -23,40 +23,6 @@ Singleton {
     property var pendingInfoUpdates: []
     property bool isProcessingInfoQueue: false
     property bool isUpdating: false
-    property bool wasEnabledBeforeSleep: false
-
-    property var suspendConnections: Connections {
-        target: SuspendManager
-        function onPreparingForSleep() {
-            root.wasEnabledBeforeSleep = root.enabled;
-            if (discovering) {
-                root.stopDiscovery();
-            }
-            scanTimer.stop();
-            infoQueueTimer.stop();
-        }
-        function onWakingUp() {
-            // Re-sync status after wake
-            wakeSyncTimer.restart();
-
-            // Restore state if it was enabled
-            if (root.wasEnabledBeforeSleep) {
-                root.setEnabled(true);
-            }
-        }
-    }
-
-    property var wakeSyncTimer: Timer {
-        id: wakeSyncTimer
-        interval: 3000
-        repeat: false
-        onTriggered: {
-            root.updateStatus();
-            if (root.enabled) {
-                root.updateDevices();
-            }
-        }
-    }
 
     function updateFriendlyList() {
         friendlyDeviceList = [...devices].sort((a, b) => {
@@ -102,11 +68,7 @@ Singleton {
         interval: 50  // 50ms between each info request
         running: false
         repeat: false
-        onTriggered: {
-            if (!SuspendManager.isSuspending) {
-                root.processNextInfoUpdate();
-            }
-        }
+        onTriggered: root.processNextInfoUpdate()
     }
 
     Component {
@@ -148,7 +110,6 @@ Singleton {
 
     // Control functions
     function setEnabled(value: bool): void {
-        if (SuspendManager.isSuspending) return;
         isUpdating = true;
         runAsync(["bluetoothctl", "power", value ? "on" : "off"]).then(() => {
             updateStatus();
@@ -164,7 +125,7 @@ Singleton {
     }
 
     function startDiscovery(): void {
-        if (enabled && !SuspendManager.isSuspending) {
+        if (enabled) {
             discovering = true;
             runAsync(["bluetoothctl", "scan", "on"]).then(() => {
                 scanTimer.restart();
@@ -247,7 +208,7 @@ Singleton {
         id: updateTimer
         interval: 5000
         // Only poll when interface is visible
-        running: root.enabled && !SuspendManager.isSuspending && (Runtime.activeApp === "dashboard" || Runtime.activeApp === "launcher")
+        running: root.enabled && (Runtime.activeApp === "dashboard" || Runtime.activeApp === "launcher")
         repeat: true
         onTriggered: root.updateDevices()
     }

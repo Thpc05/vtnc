@@ -53,7 +53,7 @@ QtObject {
 
     property Timer timer: Timer {
         interval: root.timeout
-        running: root.popup && interval > 0 && !Notifications.timersPaused && !SuspendManager.isSuspending
+        running: root.popup && interval > 0 && !Notifications.timersPaused
         onTriggered: root.popup = false
     }
 

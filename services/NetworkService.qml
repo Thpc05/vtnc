@@ -17,19 +17,6 @@ Singleton {
     property var lastScanTime: 0
     property bool wifiConnecting: isUpdating && wifiStatus === "connecting"
     property bool isUpdating: false
-    property bool wasEnabledBeforeSleep: false
-
-    property var suspendConnections: Connections {
-        target: SuspendManager
-        function onPreparingForSleep() {
-            root.wasEnabledBeforeSleep = root.wifiEnabled;
-        }
-        function onWakingUp() {
-            if (root.wasEnabledBeforeSleep) {
-                root.enableWifi(true);
-            }
-        }
-    }
 
     property WifiAccessPoint wifiConnectTarget: null
     readonly property list<WifiAccessPoint> wifiNetworks: []
