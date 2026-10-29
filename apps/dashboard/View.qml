@@ -16,8 +16,6 @@ FocusScope {
     function expand(uid: string, on: bool) {
         if (on && grid.expandedUid === uid || !on && grid.expandedUid !== uid)
             return;
-        // the curve direction first: the cells' Behaviors read it when the rects change
-        grid.growing = on;
         grid.expandedUid = on ? uid : "";
     }
 

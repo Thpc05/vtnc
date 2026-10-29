@@ -21,8 +21,6 @@ Item {
     // under it fade out)
     property string lastExpandedUid: ""
     property Item raisedCell: null
-    // direction of the current layout change (the Dwidgets' `growing`)
-    property bool growing: true
     // settings preview: triggers off, Dwidgets render only
     property bool editing: false
     // every cell as a simple box (DwidgetFace) instead of the real Dwidget

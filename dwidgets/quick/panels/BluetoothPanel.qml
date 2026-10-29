@@ -91,8 +91,6 @@ Item {
 
             width: ListView.view.width
             look: root.look
-            position: index
-            count: ListView.view.count
             current: device?.connected ?? false
             open: !!device && root.openAddress === device.address
             icon: device?.connected ? "bluetooth_connected" : "bluetooth"

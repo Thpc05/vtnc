@@ -56,13 +56,6 @@ Singleton {
         return out;
     }
 
-    readonly property var modes: Catalog.MODES
-    readonly property var triggers: Catalog.TRIGGERS
-
-    function has(id: string): bool {
-        return widgets[id] !== undefined;
-    }
-
     function component(id: string): Component {
         return widgets[id]?.component ?? null;
     }

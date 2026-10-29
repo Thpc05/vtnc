@@ -49,7 +49,6 @@ Singleton {
     readonly property QtObject font: QtObject {
         readonly property string family: Store.theme.font || root.defaultFamily
         readonly property string mono: Store.theme.monoFont
-        readonly property string icon: Icons.font
         readonly property int base: Math.round(14 * root.scale.font)
 
         readonly property int small: base - 2

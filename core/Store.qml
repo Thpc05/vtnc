@@ -32,9 +32,6 @@ Singleton {
     // true once every file was loaded and validated at least once
     readonly property bool ready: islandFile.ready && dashboardFile.ready && appearanceFile.ready && systemFile.ready && stateFile.ready
 
-    // every file's factory defaults in one object
-    readonly property var defaults: Object.assign({}, islandFile.defaults, dashboardFile.defaults, appearanceFile.defaults, systemFile.defaults, stateFile.defaults)
-
     // island.json
     property alias island: islandAdapter.island
     property alias osd: islandAdapter.osd
@@ -59,11 +56,6 @@ Singleton {
     property alias player: stateAdapter.player
     property alias presets: stateAdapter.presets
     property alias apps: stateAdapter.apps
-
-    function save() {
-        for (const k in files)
-            files[k].save();
-    }
 
     function resetToDefaults() {
         console.info("[Store] restoring factory defaults");
@@ -175,21 +167,6 @@ Singleton {
             if (code !== 0)
                 console.error("[Store] bootstrap failed with code", code);
             root.open();
-        }
-    }
-
-    // JsonAdapter doesn't report reassigned `var` properties inside nested JsonObjects
-    // (the widgets arrays), so save them explicitly
-    Connections {
-        target: islandAdapter.island
-        function onWidgetsChanged() {
-            islandFile.changed();
-        }
-    }
-    Connections {
-        target: dashboardAdapter.dashboard
-        function onWidgetsChanged() {
-            dashboardFile.changed();
         }
     }
 

@@ -299,7 +299,6 @@ independent, so one Dwidget can look completely different on two dashboards.
 | `expanded` | Whether this entry is the expanded one. |
 | `expandable` | Whether the entry has an expand event (not `none`). |
 | `trigger` | The entry's expand event (`DwidgetRegistry.trigger`): click · doubleclick · hover · none. |
-| `growing` | The direction of the current layout change (no Dwidget reads it since the cells moved to `K.Anim`). |
 | `options` | The entry's options. Read-only; write them back through the state. |
 | `editing` | True in a settings preview: render only, no service writes, no side effects. |
 
@@ -317,7 +316,7 @@ A Dwidget must **fill whatever rect it gets**: the rect animates between sizes, 
    - The Dwidget's own `expandRequest(on)` fires when `expandable` (the Quick configs panels).
 2. `DashboardGrid.expandRequest(uid, on)` reaches `View.expand(uid, on)`. At most one entry is expanded.
    Expanding another one collapses the first.
-3. `View.expand` sets `grid.growing` **first**, then `expandedUid`.
+3. `View.expand` sets `expandedUid`.
 4. The engine re-solves. Every cell animates x/y/width/height on the island body's curve (`K.Anim`
    DefaultSpatial, both ways), the grid's implicit size changes, and the island body follows with its morph.
    (The raised cell's jelly was removed on 2026-10-27, with the island's.)

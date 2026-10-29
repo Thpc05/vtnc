@@ -27,11 +27,6 @@ Scope {
         }
     }
 
-    function save() {
-        saveTimer.stop();
-        writeNow();
-    }
-
     // Our own writes also trigger the file watcher. Reloading then would put the file's
     // (older) values back into memory and undo edits made in the meantime, so the
     // watcher ignores changes shortly after we wrote.
@@ -115,8 +110,7 @@ Scope {
         blockLoading: true
     }
 
-    // JsonAdapter doesn't report reassigned `var` properties inside nested JsonObjects
-    // (the widgets arrays): the Store calls this for them
+    // an edit (the adapter reports every assignment, nested `var`s too): saved 300 ms later
     function changed() {
         if (!file.loading && root.ready)
             saveTimer.restart();

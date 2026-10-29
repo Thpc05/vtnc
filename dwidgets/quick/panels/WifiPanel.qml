@@ -96,8 +96,6 @@ Item {
 
             width: ListView.view.width
             look: root.look
-            position: index
-            count: ListView.view.count
             open: root.openKey !== "" && root.openKey === network.bssid
             icon: root.strengthIcon(network.strength)
             title: network.ssid || "Hidden network"

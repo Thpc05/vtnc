@@ -20,8 +20,6 @@ Item {
     // that event: click · doubleclick · hover · none (a Dwidget whose own click acts, like a toggle,
     // handles click / double click itself)
     property string trigger: "none"
-    // direction of the current layout change (true = growing), for ContentAnim
-    property bool growing: true
     // the entry's options (dashboard.widgets[i].options); read only here
     property var options: ({})
     // true inside the settings preview: render only, no service writes, no side effects

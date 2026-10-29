@@ -70,7 +70,6 @@ Item {
 
                 width: parent.width
                 look: root.look
-                position: index
                 usable: modelData.value !== PowerProfile.Performance || PowerProfiles.hasPerformanceProfile
                 icon: modelData.icon
                 title: modelData.title

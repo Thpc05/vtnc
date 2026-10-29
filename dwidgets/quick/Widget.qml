@@ -215,7 +215,6 @@ Dwidget {
             id: header
             width: parent.width
             look: root.look
-            qwidget: root.models[root.panelId] ?? null
             onBack: root.closePanel()
         }
 

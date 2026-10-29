@@ -142,7 +142,6 @@ Item {
             item.expanded = Qt.binding(() => cell.expanded);
             item.expandable = Qt.binding(() => cell.expandable);
             item.trigger = Qt.binding(() => cell.trigger);
-            item.growing = Qt.binding(() => cell.grid.growing);
             item.options = Qt.binding(() => cell.entry.options ?? ({}));
             item.editing = Qt.binding(() => cell.grid.editing);
             // the entry's uid, for a Dwidget that keeps something of its own (the Image's folder pick)

@@ -78,7 +78,6 @@ Item {
 
                     width: parent.width
                     look: root.look
-                    position: index
                     current: modelData === Store.theme.scheme
                     icon: current ? "check" : "palette"
                     title: root.title(modelData)

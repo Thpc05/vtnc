@@ -10,9 +10,6 @@ Item {
     id: row
 
     property var look: null
-    // kept for the callers (the list's place)
-    property int position: 0
-    property int count: 1
     property bool current: false
     property bool open: false
     property bool usable: true

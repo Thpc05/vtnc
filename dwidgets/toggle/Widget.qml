@@ -201,7 +201,6 @@ Dwidget {
             width: parent.width
             visible: !root.panelFace
             look: root.look
-            qwidget: root.q
             onBack: root.expandRequest(false)
         }
         // a panel taller than the rect scrolls (its implicitHeight; the ones with their own list fill it)

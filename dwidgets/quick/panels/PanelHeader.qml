@@ -7,7 +7,6 @@ import qs.kit as K
 Item {
     id: root
 
-    required property QtObject qwidget
     // the look of the Dwidget that opened the panel (look.panel)
     property var look: null
     // the back arrow (an expanded Dwidget going back); off when the panel is the Dwidget's look
