@@ -116,17 +116,31 @@ def live(restart):
     time.sleep(4)
     new = log_lines()[start:]
     rules = known()
-    bad, seen = {}, {}
+    bad, seen, teardown = {}, {}, {}
+    # on a reload the old generation is torn down after the new one loaded: its context is gone, so
+    # every binding it still re-evaluates yields undefined (even `x ?? 0`), and no guard can help.
+    # Those lines are listed, not failed; a --restart (no teardown) is the strict run
+    loaded = False
     for l in new:
+        if "Configuration Loaded" in l:
+            loaded = True
         if not re.search(r"ERROR|WARN scene|binding loop|caused by", l):
             continue
         key = re.sub(r"0x[0-9a-f]+", "0x…", l.strip())
         if any(rx.search(l) for rx in rules):
             seen[key] = seen.get(key, 0) + 1
+        elif not restart and loaded and "Unable to assign [undefined]" in l:
+            teardown[key] = teardown.get(key, 0) + 1
         else:
             bad[key] = bad.get(key, 0) + 1
     for l, n in seen.items():
         print(f"known ×{n}  {l}")
+    if teardown:
+        print(f"teardown: {sum(teardown.values())} 'Unable to assign [undefined]' from the old generation "
+              f"in {len(teardown)} places (-v lists them; --restart to be sure)")
+        if "-v" in sys.argv:
+            for l, n in teardown.items():
+                print(f"teardown ×{n}  {l}")
     for l, n in bad.items():
         print(f"NEW   ×{n}  {l}")
     if not any("Configuration Loaded" in l for l in new):
@@ -136,7 +150,8 @@ def live(restart):
         failed.append("live")
         if any("Unable to assign [undefined]" in l for l in bad):
             print("(a new enum / singleton member? run with --restart)")
-    print(f"{len(new)} new log lines, {sum(seen.values())} known, {sum(bad.values())} new")
+    print(f"{len(new)} new log lines, {sum(seen.values())} known, {sum(teardown.values())} teardown, "
+          f"{sum(bad.values())} new")
 
 
 def main():
