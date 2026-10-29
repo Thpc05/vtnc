@@ -14,9 +14,14 @@ Singleton {
     signal brightnessChanged(real value, var screen)
 
     property var ddcMonitors: []
-    readonly property list<BrightnessMonitor> monitors: Quickshell.screens.map(screen => monitorComp.createObject(root, {
-            screen
-        }))
+    // vtnc: one per screen, kept while its screen stays and destroyed when it goes (a binding that
+    // created new ones on every screen change leaked the old ones on each hotplug)
+    readonly property var monitors: monitorVariants.instances
+    Variants {
+        id: monitorVariants
+        model: Quickshell.screens
+        BrightnessMonitor {}
+    }
 
     property bool syncBrightness: StateService.get("syncBrightness", false)
 
@@ -160,14 +165,11 @@ Singleton {
         onExited: root.ddcMonitorsChanged()
     }
 
-    Process {
-        id: setProc
-    }
-
     component BrightnessMonitor: QtObject {
         id: monitor
 
-        required property ShellScreen screen
+        required property ShellScreen modelData
+        readonly property ShellScreen screen: modelData
         readonly property int monitorIndex: root.monitors.indexOf(this)
         readonly property bool useBrightnessctl: root.isInternalScreen(screen)
         readonly property var ddcEntry: {
@@ -329,10 +331,7 @@ Singleton {
             id: setTimer
             interval: 200
             repeat: true
-            onTriggered: {
-                if (setProc.running) return;
-                syncBrightness();
-            }
+            onTriggered: syncBrightness()
         }
         // Stops the periodic trailing writes 200ms after the last activity
         // so we don't keep writing to the hardware every 200ms forever
@@ -343,14 +342,29 @@ Singleton {
             onTriggered: monitor.setTimer.stop()
         }
 
+        // vtnc: one write at a time per monitor (the guard used a shared detached process, whose
+        // `running` is never true); a value set while one runs is written when it ends, so the last
+        // one always lands
+        property bool writePending: false
+        readonly property Process writer: Process {
+            onExited: if (monitor.writePending) {
+                monitor.writePending = false;
+                monitor.syncBrightness();
+            }
+        }
+
         function syncBrightness() {
             if (isDdc && !busNum)
                 return;
+            if (writer.running) {
+                writePending = true;
+                return;
+            }
             monitor.lastUserWriteAt = Date.now();
             monitor.lastUserWriteValue = monitor.brightness;
             const rounded = Math.round(monitor.brightness * monitor.rawMaxBrightness);
-            setProc.command = isDdc ? ["ddcutil", "-b", busNum, "setvcp", "10", rounded] : ["brightnessctl", "--class", "backlight", "s", rounded, "--quiet"];
-            setProc.startDetached();
+            writer.command = isDdc ? ["ddcutil", "-b", busNum, "setvcp", "10", rounded] : ["brightnessctl", "--class", "backlight", "s", rounded, "--quiet"];
+            writer.running = true;
         }
 
         function setBrightness(value: real): void {
@@ -362,7 +376,7 @@ Singleton {
                 // Leading edge: first call after a pause writes immediately
                 // for snappy single-press feedback, then arms the periodic
                 // trailing timer.
-                if (!setProc.running) syncBrightness();
+                syncBrightness();
                 monitor.setTimer.start();
             }
             // Re-arm the watchdog that stops the trailing timer 200ms after
@@ -410,12 +424,6 @@ Singleton {
         onBusNumChanged: {
             initialize();
         }
-    }
-
-    Component {
-        id: monitorComp
-
-        BrightnessMonitor {}
     }
 
     IpcHandler {
