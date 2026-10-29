@@ -4,7 +4,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import qs.compat
+import qs.core
 
 Singleton {
     id: root
@@ -247,7 +247,7 @@ Singleton {
         id: updateTimer
         interval: 5000
         // Only poll when interface is visible
-        running: root.enabled && !SuspendManager.isSuspending && (GlobalStates.dashboardOpen || GlobalStates.launcherOpen || GlobalStates.overviewOpen)
+        running: root.enabled && !SuspendManager.isSuspending && (Runtime.activeApp === "dashboard" || Runtime.activeApp === "launcher")
         repeat: true
         onTriggered: root.updateDevices()
     }

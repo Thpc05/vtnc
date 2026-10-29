@@ -5,7 +5,6 @@ import qs.core
 import qs.theme
 import qs.services
 import qs.components
-import qs.compat
 import qs.kit as K
 
 Item {
@@ -25,7 +24,7 @@ Item {
     property bool notchHovered: false
     property bool parentHoverActive: false
 
-    readonly property bool expandedState: notchHovered || parentHoverActive || Visibilities.playerMenuOpen
+    readonly property bool expandedState: notchHovered || parentHoverActive
 
     // Computed dimensions
     // vtnc: the row width comes from the widget sections (they animate their own width)

@@ -78,15 +78,6 @@ Singleton {
     readonly property string errorContainer: resolveToken("errorContainer")
     readonly property string overErrorContainer: resolveToken("overErrorContainer")
 
-    // Extra tokens used by the compat-based code
-    readonly property color green: "#b7d085"
-    readonly property color red: "#ffb4ab"
-    readonly property color yellow: "#dec56e"
-    readonly property color warning: yellow
-    readonly property color success: green
-    readonly property color criticalText: "#FF6B08"
-    readonly property color criticalRed: "#FF0028"
-
     // Transparency (Appearance → Transparency; caelestia's Colours.layer, ported). Off: every
     // color is opaque. On: the page (layer 0) takes `base` alpha, and each layer above takes
     // `layers` alpha, lifted (darkened in light mode) so it still reads over the blurred page; the
@@ -119,11 +110,6 @@ Singleton {
         if (!transparency.enabled)
             return c;
         return layer === 0 ? Qt.alpha(c, transparency.base) : lift(c, transparency.layers, layer ?? 1);
-    }
-
-    // Color with alpha, e.g. Colors.alpha(Colors.primary, 0.2)
-    function alpha(c: color, a: real): color {
-        return Qt.rgba(c.r, c.g, c.b, a);
     }
 
     FileView {

@@ -42,7 +42,6 @@ MAP = {
     "kit": ("kit", None),
     "components": ("kit", None),
     "services": ("services", None),
-    "compat": ("services", None),
     "iwidgets": ("feature", "island"),
     "dwidgets": ("feature", "dashboard"),
     "apps/dashboard": ("feature", "dashboard"),

@@ -26,7 +26,7 @@ ANSI = re.compile(r"\x1b\[[0-9;]*m")
 PATTERNS = [
     (r"\|\|=|&&=|\?\?=", "fail", "logical assignment: write a = a || b"),
     (r"Object\.fromEntries", "fail", "Object.fromEntries is missing in Quickshell's JS"),
-    (r"\bqs\.compat\b", "warn", "compat/ is deleted in R2 C3"),
+    (r"\bqs\.compat\b", "fail", "compat/ was deleted in R2 C3"),
     # once per-island config lands (R2 C9): (r"\bStore\.island\.", "fail", "read the island's cfg"),
 ]
 
