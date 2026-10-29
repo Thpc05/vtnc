@@ -22,6 +22,15 @@ FocusScope {
     readonly property int rowHeight: 56
     readonly property int headerHeight: 32
     readonly property int visibleHeight: 400
+    // the rows' ages ("now", "5m"…), redrawn every minute while the app is shown
+    property int minute: 0
+    Timer {
+        interval: 60000
+        repeat: true
+        running: root.visible
+        onTriggered: root.minute++
+    }
+
     readonly property bool grouped: Store.appOptions.notifications?.groupByApp ?? true
 
     readonly property PanelColors c: PanelColors {
@@ -340,7 +349,7 @@ FocusScope {
                     anchors.right: parent.right
                     anchors.rightMargin: Tokens.spacing.m
                     anchors.baseline: summary.baseline
-                    text: row.entry ? Notifications.age(row.entry.time) : ""
+                    text: row.entry ? (root.minute, Notifications.age(row.entry.time)) : ""
                     font.family: K.Kit.family
                     font.variableAxes: K.Kit.axes
                     font.pixelSize: 11
