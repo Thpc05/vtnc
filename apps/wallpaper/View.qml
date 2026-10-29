@@ -22,7 +22,8 @@ FocusScope {
     readonly property PanelColors c: PanelColors {
         look: K.Kit.appLook
     }
-    readonly property string schemeName: Store.theme.scheme.replace("scheme-", "").split("-").map(w => w[0].toUpperCase() + w.slice(1)).join(" ")
+    // "scheme-tonal-spot" → "Tonal Spot" (an empty or odd scheme gives "", not a TypeError)
+    readonly property string schemeName: (Store.theme.scheme ?? "").replace("scheme-", "").split("-").filter(w => w !== "").map(w => w[0].toUpperCase() + w.slice(1)).join(" ")
 
     readonly property var filtered: {
         const q = input.text.trim().toLowerCase();
