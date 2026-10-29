@@ -59,14 +59,19 @@ QtObject {
         notes = sorted(notes);
     }
 
-    // the open note was saved: its title and time in the list
+    // the open note was saved: its title and time in the list. Not re-sorted (the note being typed in
+    // would jump to the top on every save), and the list is only replaced when the title changed; it
+    // is sorted again when the files are next read (refresh)
     function touched(file: string, text: string) {
         const title = (text.split("\n")[0] ?? "").replace(/^#+\s*/, "").trim();
-        notes = sorted(notes.map(n => n.file === file ? {
-                file: n.file,
-                mtime: Date.now() / 1000,
-                title: title
-            } : n));
+        const note = notes.find(n => n.file === file);
+        if (!note)
+            return;
+        note.mtime = Date.now() / 1000;
+        if (note.title !== title)
+            notes = notes.map(n => n.file === file ? Object.assign({}, n, {
+                    title: title
+                }) : n);
     }
 
     function run(cmd: var) {
