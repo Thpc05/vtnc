@@ -65,11 +65,18 @@ FocusScope {
     implicitWidth: 1080
     implicitHeight: 660
 
+    // a tab's own opened() runs when it loads (the body's onLoaded: on creation and on a tab change);
+    // here only for the tab already shown when the open Helper is opened again
+    property bool created: false
+
     function opened(args) {
         const t = args?.tab ?? "";
+        const before = tab;
         if (tabs.some(x => x.id === t))
             select(t);
-        Qt.callLater(() => body.item?.opened?.());
+        if (created && tab === before)
+            Qt.callLater(() => body.item?.opened?.());
+        created = true;
     }
 
     function select(id: string) {
