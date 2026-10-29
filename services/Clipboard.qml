@@ -141,8 +141,10 @@ Singleton {
     }
 
     // thumbnails --------------------------------------------------------------
-    // the decoded image's path ("" until it's there; asks for it once)
-    property var thumbs: ({})
+    // the decoded image's path ("" until it's there; asks for it once). The states are changed in place,
+    // with no change signal: thumb() runs inside bindings, and reassigning what a binding reads is a
+    // binding loop; the consumers re-read on `thumbsVersion`
+    readonly property var thumbs: ({})
     function thumb(entry: var): string {
         if (!entry?.image)
             return "";
@@ -151,9 +153,7 @@ Singleton {
         if (state === "ready")
             return "file://" + path;
         if (state === undefined) {
-            const t = Object.assign({}, thumbs);
-            t[entry.id] = "pending";
-            thumbs = t;
+            thumbs[entry.id] = "pending";
             const proc = decoder.createObject(root, {
                 entryId: entry.id,
                 command: ["sh", "-c", 'mkdir -p "$2" && [ -s "$3" ] || printf "%s" "$1" | cliphist decode > "$3"', "sh", entry.line, cacheDir, path]
@@ -168,9 +168,7 @@ Singleton {
             id: proc
             property string entryId
             onExited: code => {
-                const t = Object.assign({}, root.thumbs);
-                t[proc.entryId] = code === 0 ? "ready" : "failed";
-                root.thumbs = t;
+                root.thumbs[proc.entryId] = code === 0 ? "ready" : "failed";
                 root.thumbsVersion++;
                 proc.destroy();
             }
