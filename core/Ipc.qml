@@ -137,24 +137,26 @@ Scope {
     AppTarget {
         target: "tools"
 
+        // through Actions, like the Tools app: each runs once the island closed, so it isn't in the capture
+        // (mode: region / screen; record also audio; anything else is the screen, as before)
         function screenshot(mode: string): void {
-            ScreenTools.screenshot(mode, Hypr.focusedScreen);
+            Actions.runTool(mode === "region" ? "shot-region" : "shot-screen");
         }
         // starts a recording, or stops the current one
         function record(mode: string): void {
             if (ScreenTools.recording)
-                ScreenTools.stopRecording();
+                Actions.runTool("stop");
             else
-                ScreenTools.startRecording(mode, Hypr.focusedScreen);
+                Actions.runTool(mode === "region" || mode === "audio" ? "rec-" + mode : "rec-screen");
         }
         function stop(): void {
-            ScreenTools.stopRecording();
+            Actions.runTool("stop");
         }
         function pickColor(): void {
-            ScreenTools.pickColor();
+            Actions.runTool("picker");
         }
         function ocr(): void {
-            ScreenTools.ocr();
+            Actions.runTool("ocr");
         }
     }
 
@@ -162,22 +164,22 @@ Scope {
         target: "session"
 
         function lock(): void {
-            Session.run("lock");
+            Actions.runSession("lock");
         }
         function suspend(): void {
-            Session.run("suspend");
+            Actions.runSession("suspend");
         }
         function hibernate(): void {
-            Session.run("hibernate");
+            Actions.runSession("hibernate");
         }
         function logout(): void {
-            Session.run("logout");
+            Actions.runSession("logout");
         }
         function reboot(): void {
-            Session.run("reboot");
+            Actions.runSession("reboot");
         }
         function poweroff(): void {
-            Session.run("poweroff");
+            Actions.runSession("poweroff");
         }
     }
 
