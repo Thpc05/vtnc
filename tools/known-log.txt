@@ -1,5 +1,3 @@
 # Log lines tools/check accepts after a reload (regexes, one per line). Each is known noise with the step
 # that removes it; delete the line with the fix, so the check catches it coming back.
 
-# M3Shape radii() on reload (R2 C2, log noise)
-M3Shape\.qml\[30:-1\]: TypeError

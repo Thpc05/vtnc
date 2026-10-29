@@ -24,6 +24,10 @@ Shape {
 
     // the outline's radii (0…1 of the half size) for `name`, one per sample angle
     function radii(name: string): var {
+        // a shape being destroyed (a page or delegate torn down) can still get a new `shape`; its
+        // context is gone by then, even `Math` (the TypeErrors on load and reload)
+        if (typeof Math === "undefined")
+            return [];
         const out = [];
         let max = 0;
         for (let i = 0; i < samples; i++) {
