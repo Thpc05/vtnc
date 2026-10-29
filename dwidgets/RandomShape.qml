@@ -1,5 +1,4 @@
 import QtQuick
-import qs.core
 import qs.dwidgets
 
 // A random M3 shape for the Dwidgets' Shapes look (2026-10-16, user): each time the dashboard opens every

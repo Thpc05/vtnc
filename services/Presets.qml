@@ -235,6 +235,15 @@ Singleton {
             scanner.running = true;
     }
 
+    // from outside the Presets page (IPC): the folder is read again first, so a preset file changed or
+    // replaced since the last scan applies as it is on disk (2026-10-29: the old list applied a preset's
+    // previous content)
+    property string pendingApply: ""
+    function applyFresh(name: string) {
+        pendingApply = name;
+        scan();
+    }
+
     function snapshot(withWallpaper: bool): var {
         const s = JSON.parse(JSON.stringify(current));
         if (!withWallpaper && s.appearance)
@@ -320,6 +329,12 @@ Singleton {
                 }
                 out.sort((a, b) => a.name.localeCompare(b.name));
                 root.saved = out;
+                if (root.pendingApply !== "") {
+                    const name = root.pendingApply;
+                    root.pendingApply = "";
+                    if (!root.apply(name))
+                        console.warn("[Presets] no preset", name);
+                }
                 const paths = out.map(p => root.wallpaperOf(p)).filter(p => p !== "");
                 if (paths.length > 0) {
                     missingCheck.command = ["sh", "-c", 'for f; do [ -f "$f" ] || printf "%s\\n" "$f"; done', "sh", ...paths];

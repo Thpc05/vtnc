@@ -11,10 +11,11 @@ Both share the shell id `vtnc` (its state and config in `~/.config/vtnc`): run o
 
 | Tool | What |
 |---|---|
-| `check` | before every commit: the node tests, forbidden patterns, the layer lint, a live reload + log diff (`--no-live`, `--restart`, `--strict-layers`, `-v`); `known-log.txt` = accepted log noise; the old generation's teardown lines after a reload are listed, not failed |
+| `check` | before every commit: the node tests, forbidden patterns, the layer lint, a live reload + log diff (`--no-live`, `--restart`, `--strict-layers`, `-v`, `--apps`: opens every app, Settings page and Helper tab on screen, ask Theo first); `known-log.txt` = accepted log noise; the old generation's teardown lines after a reload are listed, not failed |
 | `layers.py` | the layer lint of the folder layout "by surface" (`-v` every import, `--strict`) |
 | `jitter.py <video>` | the island's body and a text tracked frame by frame in a recording: stutter, rest wobble, tremor |
 | `probe/` | the offscreen probe: renders components to PNGs on stubs (tester-visual uses it) |
+| `probe/loadall.py` | compiles every QML file offscreen without creating anything (the check runs it): missing types or properties, broken imports, syntax |
 | `release` | dev → main: merges dev into the main worktree, leaving `tools/` out |
 
 The frame-rate meter is in the shell itself: `qs -c vtnc-dev ipc call shell perf on`, then

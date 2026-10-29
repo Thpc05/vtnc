@@ -1,6 +1,5 @@
 import QtQuick
 import Quickshell.Services.UPower
-import qs.kit as K
 
 // Power profile (2026-10-16, the "hero" panel): the current profile on top (its icon, name and what it
 // does), the others under "Profiles"; a click picks one.

@@ -1,7 +1,7 @@
 import QtQuick
 import qs.kit as K
 
-// The panel header's switch, in the look's colours (2026-10-16; K.Switch is primary-only): a pill track,
+// The panel header's switch, in the look's colours (2026-10-16; the kit had only a primary switch): a pill track,
 // the accent when on and the idle fill with an outline when off, a thumb sliding across. Tone has no
 // solid fills: a tint of the tone and a tone thumb.
 Item {

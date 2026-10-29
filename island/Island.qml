@@ -6,7 +6,6 @@ import Quickshell
 import qs.core
 import qs.services
 import qs.theme
-import qs.components
 import qs.kit as K
 import qs.apps
 import "transient" as Transient
@@ -163,7 +162,6 @@ Item {
     onMorphingChanged: {
         if (morphing)
             root.resetHover();
-        notchContainer.updateChildHover();
     }
 
     function resetHover() {
@@ -335,7 +333,6 @@ Item {
         id: hover
         enabled: !root.morphing && !root.appOpen && !root.pageTransient
         onHoveredChanged: {
-            notchContainer.isHovered = hovered;
             if (hovered) {
                 collapseTimer.stop();
                 expandTimer.restart();
@@ -452,25 +449,6 @@ Item {
         property var stackView: stackViewInternal
         // visible height of the notch body (retracts into the edge when hidden, notch style)
         readonly property real bodyHeight: Math.max(0, implicitHeight - root.hiddenAmount)
-        property bool isExpanded: stackViewInternal.depth > 1
-        property bool parentHovered: false
-        property bool isHovered: false
-
-        onParentHoveredChanged: updateChildHover()
-        onIsHoveredChanged: updateChildHover()
-
-        function updateChildHover() {
-            if (stackViewInternal.currentItem) {
-                const h = !root.morphing && (isHovered || parentHovered);
-                if (stackViewInternal.currentItem.hasOwnProperty("notchHovered")) {
-                    stackViewInternal.currentItem.notchHovered = h;
-                }
-                if (stackViewInternal.currentItem.hasOwnProperty("parentHoverActive")) {
-                    stackViewInternal.currentItem.parentHoverActive = h;
-                }
-            }
-        }
-
         // app padding / minimum width / big radius: only while the app itself is shown
         readonly property bool screenNotchOpen: root.showingApp
         // big radius: an app, a transient page that asks for it (`islandRoomy`, e.g. a card) or an
@@ -493,10 +471,6 @@ Item {
                 root.hopUp();
             lastDefaultHeight = defaultHeight;
         }
-        property int islandHeight: defaultHeight
-
-        readonly property string position: "top"
-
         // Corner size calculation for dynamic width (only for default theme)
         // the body's rounding: the island's own (Island → General → Shape → Rounding) or the theme's (2026-10-28)
         readonly property int roundness: (Store.island.rounding ?? -1) >= 0 ? Math.round(16 * Store.island.rounding) : Tokens.roundness
@@ -507,7 +481,7 @@ Item {
         // narrower island to its minimum
         readonly property real bodyTargetWidth: Math.max(stackContainer.width, screenNotchOpen ? 290 - totalCornerWidth : 0, root.transientAttached ? (attachmentLoader.item?.minIslandWidth ?? 0) : 0)
         implicitWidth: bodyTargetWidth + totalCornerWidth
-        implicitHeight: root.notchTheme === "default" ? defaultHeight : (root.notchTheme === "island" ? islandHeight : defaultHeight)
+        implicitHeight: defaultHeight
 
         // vtnc: the size also animates in idle (compact ↔ expanded, widgets appearing), with the
         // kit's expressive spatial curve (its overshoot is the bounce; stage 8, was ambxst's OutBack).
@@ -542,13 +516,7 @@ Item {
             height: notchContainer.bodyHeight
             clip: true
 
-            property int defaultRadius: notchContainer.pill ? Math.round(notchContainer.defaultHeight / 2) : (notchContainer.roundness > 0 ? (notchContainer.roomy ? notchContainer.roundness + 20 : notchContainer.roundness + 4) : 0)
             property int islandRadius: notchContainer.pill ? Math.round(notchContainer.defaultHeight / 2) : (notchContainer.roundness > 0 ? (notchContainer.roomy ? notchContainer.roundness + 20 : notchContainer.roundness + 4) : 0)
-
-            property int topLeftRadius: root.notchTheme === "default" ? (notchContainer.position === "bottom" ? defaultRadius : 0) : islandRadius
-            property int topRightRadius: root.notchTheme === "default" ? (notchContainer.position === "bottom" ? defaultRadius : 0) : islandRadius
-            property int bottomLeftRadius: root.notchTheme === "island" ? islandRadius : (notchContainer.position === "top" ? defaultRadius : 0)
-            property int bottomRightRadius: root.notchTheme === "island" ? islandRadius : (notchContainer.position === "top" ? defaultRadius : 0)
 
             // size the island morphs to: the current page (+ padding while an app is open)
             Item {
@@ -563,8 +531,6 @@ Item {
                 id: stackViewInternal
                 anchors.fill: parent
                 initialItem: defaultView
-                fullHeight: notchContainer.implicitHeight
-                targetHeight: notchContainer.pageHeight
                 restHeight: notchContainer.idleHeight
                 appMargin: 16
                 pageScale: Store.theme.anim.pageScale
@@ -577,7 +543,6 @@ Item {
                 snapX: Math.round(root.x + root.bodyLeft) - (root.x + root.bodyLeft)
                 duration: K.Kit.anim.durations.expressiveDefaultSpatial
 
-                onCurrentItemChanged: notchContainer.updateChildHover()
             }
 
             // the attached notification ("grow"): under the page (idle or an app), as wide as the island's final width (the
@@ -764,7 +729,7 @@ Item {
             return;
         }
         if (shownKey !== "") {
-            stack.pop(null);
+            stack.back();
             shownKey = "";
         }
     }
@@ -774,7 +739,7 @@ Item {
         // still idle (an app or a new transient would have called applyPage, which stops this)
         onTriggered: {
             if (root.activeTransient === null && !root.appOpen && root.shownKey !== "") {
-                notchContainer.stackView.pop(null);
+                notchContainer.stackView.back();
                 root.shownKey = "";
             }
         }

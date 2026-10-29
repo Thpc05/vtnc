@@ -2,6 +2,7 @@ import QtQuick
 import qs.core
 import qs.services
 import qs.theme
+import qs.kit as K
 import "../../controls"
 
 // Appearance → General: light mode, scheme, shape, text and motion (the colors: Colors.qml).
@@ -35,26 +36,13 @@ Page {
 
                 SettingRow {
                     label: "Cards"
-                    description: "The fill of every card style, on the island and the dashboard: neutral (surface), container (primary container), tinted (surface with a primary tint) or primary"
-                    Segmented {
-                        options: [
-                            {
-                                value: "neutral",
-                                label: "Neutral"
-                            },
-                            {
-                                value: "container",
-                                label: "Container"
-                            },
-                            {
-                                value: "tinted",
-                                label: "Tinted"
-                            },
-                            {
-                                value: "primary",
-                                label: "Primary"
-                            }
-                        ]
+                    description: "The fill of every card style, on the island and the dashboard: neutral or tinted surfaces, a colour's container, or the colour itself. A card can have its own (its widget's options)"
+                    Cycler {
+                        width: 190
+                        options: K.Kit.cardKinds.map(k => ({
+                                    value: k,
+                                    label: K.Kit.cardTitles[k]
+                                }))
                         value: Store.theme.card
                         onSelected: v => Store.theme.card = v
                     }
@@ -154,7 +142,7 @@ Page {
                 }
                 SettingRow {
                     label: "Card opacity"
-                    description: "Cards are also lifted to stand out from the background"
+                    description: "See-through cards are also lifted to stand out from the background; at 100 % they keep their own colour"
                     opacity: Store.theme.transparency.enabled ? 1 : 0.5
                     Stepper {
                         value: Math.round(Store.theme.transparency.layers * 100)

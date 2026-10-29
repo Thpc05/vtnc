@@ -3,14 +3,13 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import "Migrate.js" as Migrate
 
 // Persistent settings and state (core/STATE.md):
 //  - ~/.config/vtnc/{island,dashboard,appearance,system}.json: what the user configures
 //    (island / dashboard / appearance are what a preset saves, services/Presets.qml)
 //  - ~/.local/state/vtnc/state.json: what the shell remembers (toggles, pinned player, apps' UI)
-// Factory defaults live in defaults/config/*.json and defaults/state.json. The old one-file state
-// (~/.local/state/vtnc/vtnc-state.json) is split into these on the first start (core/Migrate.js).
+// Factory defaults live in defaults/config/*.json and defaults/state.json; a missing file is created from
+// them (ConfigFile).
 Singleton {
     id: root
 
@@ -18,8 +17,6 @@ Singleton {
     readonly property string stateDir: (Quickshell.env("XDG_STATE_HOME") || Quickshell.env("HOME") + "/.local/state") + "/vtnc"
     readonly property string presetsDir: configDir + "/presets"
     readonly property string factoryDir: Quickshell.shellDir + "/defaults"
-    // the preset made from a migrated state
-    readonly property string migratedPreset: "My setup"
 
     readonly property var files: ({
             island: islandFile,
@@ -81,7 +78,7 @@ Singleton {
         stateAdapter.apps = apps;
     }
 
-    // bootstrap: directories, the migration (once), missing files from the factory, then load
+    // bootstrap: the directories, then the files load (each one missing is created from the factory)
     function open() {
         islandFile.path = configDir + "/island.json";
         dashboardFile.path = configDir + "/dashboard.json";
@@ -90,84 +87,14 @@ Singleton {
         stateFile.path = stateDir + "/state.json";
     }
 
-    function migrate(text: string) {
-        let old;
-        try {
-            old = JSON.parse(text);
-        } catch (e) {
-            console.warn("[Store] the old vtnc-state.json is not valid JSON, not migrating:", e);
-            install.running = true;
-            return;
-        }
-        console.info("[Store] migrating vtnc-state.json to", configDir);
-        const parts = Migrate.split(old);
-        const out = {};
-        for (const k in files)
-            out[k] = files[k].merged(parts[k]);
-        out.state.presets = {
-            active: migratedPreset
-        };
-        const now = new Date().toISOString();
-        const preset = {
-            name: migratedPreset,
-            created: now,
-            updated: now,
-            config: {
-                island: out.island,
-                dashboard: out.dashboard,
-                appearance: out.appearance
-            }
-        };
-        const json = v => JSON.stringify(v, null, 2) + "\n";
-        writeMigration.command = ["sh", "-c", 'set -e; cfg=$1; st=$2; w() { printf "%s" "$2" > "$1.tmp" && mv "$1.tmp" "$1"; }; w "$cfg/island.json" "$3"; w "$cfg/dashboard.json" "$4"; w "$cfg/appearance.json" "$5"; w "$cfg/system.json" "$6"; w "$st/state.json" "$7"; w "$cfg/presets/$9.json" "$8"; mv -f "$st/vtnc-state.json" "$st/vtnc-state.json.migrated"; rm -f "$st/vtnc-state-default.json"', "sh", configDir, stateDir, json(out.island), json(out.dashboard), json(out.appearance), json(out.system), json(out.state), json(preset), migratedPreset];
-        writeMigration.running = true;
-    }
-
     Process {
-        id: probe
         running: true
-        command: ["sh", "-c", 'mkdir -p "$1/presets" "$2" && { [ -e "$1/island.json" ] || [ ! -f "$2/vtnc-state.json" ] || cat "$2/vtnc-state.json"; }', "sh", root.configDir, root.stateDir]
-        stdout: StdioCollector {
-            id: probeOut
-        }
+        command: ["mkdir", "-p", root.presetsDir, root.stateDir]
         stderr: StdioCollector {
             onStreamFinished: if (text.trim() !== "")
                 console.error("[Store] bootstrap:", text.trim())
         }
-        onExited: code => {
-            if (code === 0 && probeOut.text.trim() !== "")
-                root.migrate(probeOut.text);
-            else
-                install.running = true;
-        }
-    }
-
-    Process {
-        id: writeMigration
-        stderr: StdioCollector {
-            onStreamFinished: if (text.trim() !== "")
-                console.error("[Store] migration:", text.trim())
-        }
-        onExited: code => {
-            if (code !== 0)
-                console.error("[Store] migration failed with code", code);
-            install.running = true;
-        }
-    }
-
-    // any missing file comes from the factory
-    Process {
-        id: install
-        command: ["sh", "-c", 'cfg=$1; st=$2; fac=$3; for f in island dashboard appearance system; do [ -f "$cfg/$f.json" ] || install -m 644 "$fac/config/$f.json" "$cfg/$f.json"; done; [ -f "$st/state.json" ] || install -m 644 "$fac/state.json" "$st/state.json"', "sh", root.configDir, root.stateDir, root.factoryDir]
-        stderr: StdioCollector {
-            onStreamFinished: if (text.trim() !== "")
-                console.error("[Store] bootstrap:", text.trim())
-        }
-        onExited: code => {
-            if (code !== 0)
-                console.error("[Store] bootstrap failed with code", code);
-            root.open();
-        }
+        onExited: root.open()
     }
 
     ConfigFile {

@@ -1067,6 +1067,35 @@ SplitPage {
                             })
                     }
                 }
+                // a Card variant: the card's own colour (options.cardColor, 2026-10-29); Global = Appearance → Cards
+                SettingRow {
+                    label: "Card colour"
+                    description: "Global: Appearance → General → Cards"
+                    visible: DwidgetRegistry.isCard(detail.entry?.id ?? "", detail.entry?.idle?.style ?? "")
+                    Cycler {
+                        width: 190
+                        options: [
+                            {
+                                value: "",
+                                label: "Global"
+                            }
+                        ].concat(K.Kit.cardKinds.map(k => ({
+                                        value: k,
+                                        label: K.Kit.cardTitles[k]
+                                    })))
+                        value: detail.entry?.options?.cardColor ?? ""
+                        onSelected: v => {
+                            const o = Object.assign({}, detail.entry?.options ?? {});
+                            if (v === "")
+                                delete o.cardColor;
+                            else
+                                o.cardColor = v;
+                            page.edit(detail.entry.uid, {
+                                options: o
+                            });
+                        }
+                    }
+                }
                 SettingRow {
                     label: "Size"
                     Segmented {

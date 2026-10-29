@@ -1,5 +1,4 @@
 import QtQuick
-import qs.theme
 import qs.kit as K
 
 // A card on the shell's surface ladder (caelestia's: surfaceContainer, rounding large);

@@ -79,6 +79,11 @@ Singleton {
         return Catalog.validMode(id, mode, fallback);
     }
 
+    // a Card variant (the style draws DwidgetCard)
+    function isCard(id: string, style: string): bool {
+        return Catalog.isCard(id, style);
+    }
+
     // whether Dwidget `id` expands (the catalog's `expand`)
     function expands(id: string): bool {
         return Catalog.expands(id);

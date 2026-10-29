@@ -61,9 +61,6 @@ Singleton {
         volumeFlashed(screenName);
     }
 
-    // a transient ended by an interruption (an app opened/closed, island IPC), not by its timer:
-    // e.g. an interrupted notification goes back to its queue
-    signal transientInterrupted(string screenName, string kind, var payload)
 
     function transientOn(screenName: string): var {
         return transients[screenName] ?? null;
@@ -74,7 +71,6 @@ Singleton {
     function showTransient(screenName: string, kind: string, payload: var, duration: int) {
         if (!screenName)
             return;
-        const old = transients[screenName];
         const m = Object.assign({}, transients);
         m[screenName] = {
             kind: kind,
@@ -83,8 +79,6 @@ Singleton {
             serial: ++transientSerial
         };
         transients = m;
-        if (old && old.kind !== kind)
-            transientInterrupted(screenName, old.kind, old.payload);
     }
 
     // kind "" ends whatever is showing there
@@ -113,8 +107,6 @@ Singleton {
         if (gone.length === 0)
             return;
         transients = kept;
-        for (const screenName of gone)
-            transientInterrupted(screenName, old[screenName].kind, old[screenName].payload);
     }
 
     // Follow the focused monitor while an app is open

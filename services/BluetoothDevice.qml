@@ -15,8 +15,6 @@ QtObject {
     property bool batteryAvailable: battery >= 0
     property bool connecting: false
 
-    signal infoUpdated()
-
     // Connect (auto-trust new devices)
     function connect() {
         connecting = true;
@@ -60,7 +58,6 @@ QtObject {
                         }
                     }
                 }
-                root.infoUpdated();
             });
         }).catch(e => {
             console.error(`Failed to get info for ${address}: ${e}`);

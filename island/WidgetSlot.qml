@@ -2,7 +2,6 @@ import QtQuick
 import Quickshell
 import qs.core
 import qs.theme
-import qs.components
 import qs.iwidgets
 import qs.kit as K
 
@@ -25,6 +24,8 @@ Item {
     property real gap: Tokens.spacing.s / 2
     // inside a section's card (island.anchors.<section>.card): the widget draws on the card's palette
     property bool inCard: false
+    // the widget's card colour (its entry's cardColor; "" = the global one)
+    property string cardColor: ""
     // whole pixels only while the island rests (K.Kit.snap)
     property bool snap: true
 
@@ -73,6 +74,7 @@ Item {
         width: root.fills ? Math.max(0, root.width - 2 * root.gap) : implicitWidth
         fillWidth: width
         widgetId: root.widgetId
+        cardColor: root.cardColor
         style: root.style
         mode: root.mode
         growing: root.growing

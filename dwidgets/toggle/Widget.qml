@@ -1,5 +1,4 @@
 import QtQuick
-import qs.theme
 import qs.dwidgets
 import qs.dwidgets.quick.qwidgets as Q
 import qs.dwidgets.quick.panels
@@ -107,6 +106,7 @@ Dwidget {
         // the popup panel (expanded) sits on a card; the panel as the face follows the style (2026-10-27,
         // user: the Dwidget's own panel is a Dwidget, not a popup)
         card: root.card || (root.showPanel && !root.panelFace)
+        cardColor: root.options?.cardColor ?? ""
         opacity: root.available || root.showPanel ? 1 : 0.5
     }
 

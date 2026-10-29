@@ -1,13 +1,13 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Controls as QQC
 import qs.theme
 import qs.kit as K
 import "../controls"
 
-// About → Components: every kit control in every state, to review the caelestia-inspired look
-// side by side with caelestia (plan stage 1). Nothing here is saved.
+// About → Examples: the controls the shell really uses, in their states (R2 C3, 2026-10-29: the kit parts
+// only this page used are gone): surfaces, type, the kit's buttons, the Settings controls, the slider, the
+// search bar and the shapes. Nothing here is saved.
 Page {
     id: page
 
@@ -175,18 +175,6 @@ Page {
                     text: "Round"
                     isRound: true
                 }
-                K.IconTextButton {
-                    type: textRow.modelData[1]
-                    icon: "add"
-                    text: "Icon + text"
-                }
-                K.IconTextButton {
-                    type: textRow.modelData[1]
-                    icon: "check"
-                    text: "Toggle"
-                    isToggle: true
-                    checked: true
-                }
                 K.TextButton {
                     type: textRow.modelData[1]
                     text: "Disabled"
@@ -197,70 +185,106 @@ Page {
     }
 
     Section {
-        title: "Selection"
+        title: "Settings controls"
 
         Line {
             Label {
                 text: "Switch"
             }
-            K.Switch {}
-            K.Switch {
-                checked: true
+            Switch {
+                onToggled: c => checked = c
             }
-            K.Switch {
-                disabled: true
-            }
-            K.Switch {
-                disabled: true
+            Switch {
                 checked: true
+                onToggled: c => checked = c
             }
         }
         Line {
             Label {
-                text: "Radio"
+                text: "Segmented"
             }
-            K.RadioButton {
-                text: "One"
-                checked: true
-            }
-            K.RadioButton {
-                text: "Two"
-            }
-            K.RadioButton {
-                text: "Three"
-            }
-        }
-        Line {
-            Label {
-                text: "Menu"
-            }
-            K.TextButton {
-                id: menuButton
-                type: K.ButtonBase.Tonal
-                text: menu.active?.text ?? "Open"
-                onClicked: menu.expanded = !menu.expanded
-            }
-            K.Menu {
-                id: menu
-                attachTo: menuButton
-                thisSideX: K.Menu.Left
-                attachSideX: K.Menu.Left
-                marginY: K.Kit.spacing.extraSmall
-                items: [
-                    K.MenuItem {
-                        text: "Automatic"
-                        icon: "auto_mode"
+            Segmented {
+                options: [
+                    {
+                        value: "auto",
+                        label: "Auto"
                     },
-                    K.MenuItem {
-                        text: "Light"
-                        icon: "light_mode"
+                    {
+                        value: "light",
+                        label: "Light"
                     },
-                    K.MenuItem {
-                        text: "Dark"
-                        icon: "dark_mode"
-                        trailingIcon: "check"
+                    {
+                        value: "dark",
+                        label: "Dark"
                     }
                 ]
+                value: "auto"
+                onSelected: v => value = v
+            }
+        }
+        Line {
+            Label {
+                text: "Stepper"
+            }
+            Stepper {
+                value: 40
+                to: 200
+                step: 5
+                suffix: " px"
+                onEdited: v => value = v
+            }
+            Stepper {
+                value: -5
+                from: -5
+                to: 200
+                step: 5
+                suffix: " %"
+                specialValueText: "Theme"
+                firstValue: 0
+                onEdited: v => value = v
+            }
+        }
+        Line {
+            Label {
+                text: "Cycler"
+            }
+            Cycler {
+                width: 150
+                options: ["grow", "center", "fade", "wipe"].map(t => ({
+                            value: t,
+                            label: t[0].toUpperCase() + t.slice(1)
+                        }))
+                value: "grow"
+                onSelected: v => value = v
+            }
+        }
+        Line {
+            Label {
+                text: "Buttons"
+            }
+            SmallButton {
+                text: "Button"
+            }
+            SmallButton {
+                text: "Accent"
+                accent: true
+            }
+            SmallButton {
+                text: "Danger"
+                danger: true
+            }
+            SmallButton {
+                text: "Disabled"
+                enabled: false
+            }
+        }
+        Line {
+            Label {
+                text: "Text field"
+            }
+            TextField {
+                implicitWidth: 200
+                placeholder: "Name"
             }
         }
     }
@@ -290,89 +314,12 @@ Page {
     }
 
     Section {
-        title: "Text fields"
+        title: "Search"
 
-        Line {
-            K.TextField {
-                width: 240
-                placeholderText: "Outlined"
-                supportingText: "Supporting text"
-            }
-            K.TextField {
-                width: 240
-                type: K.TextField.Filled
-                placeholderText: "Filled"
-                leadingIcon: "person"
-            }
-            K.TextField {
-                width: 240
-                placeholderText: "Numbers only"
-                trailingIcon: "tag"
-                validate: /^[0-9]+$/
-                errorText: "Only digits"
-            }
-        }
         Line {
             K.SearchBar {
                 width: 340
                 placeholderText: "Search"
-            }
-        }
-    }
-
-    Section {
-        title: "Elevation & scroll"
-
-        Line {
-            Repeater {
-                model: 6
-
-                Item {
-                    required property int index
-                    width: 64
-                    height: 64
-
-                    K.Elevation {
-                        anchors.fill: parent
-                        anchors.margins: 6
-                        radius: K.Kit.rounding.large
-                        level: parent.index
-                    }
-                    K.StyledRect {
-                        anchors.fill: parent
-                        anchors.margins: 6
-                        radius: K.Kit.rounding.large
-                        color: K.Kit.expressive.container
-
-                        K.StyledText {
-                            anchors.centerIn: parent
-                            text: parent.parent.index
-                        }
-                    }
-                }
-            }
-
-            K.StyledRect {
-                width: 200
-                height: 120
-                radius: K.Kit.rounding.large
-                color: K.Kit.expressive.container
-                clip: true
-
-                ListView {
-                    id: list
-                    anchors.fill: parent
-                    anchors.margins: K.Kit.padding.small
-                    model: 30
-                    delegate: K.StyledText {
-                        required property int index
-                        text: "Row " + (index + 1)
-                        height: 22
-                    }
-                    QQC.ScrollBar.vertical: K.ScrollBar {
-                        flickable: list
-                    }
-                }
             }
         }
     }

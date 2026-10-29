@@ -142,9 +142,11 @@ Singleton {
         }).catch(e => {});
     }
 
-    function connectDevice(address: string): void {
+    // the promise, for BluetoothDevice.connect (it was void: connecting a paired device threw and stayed
+    // "Connecting…")
+    function connectDevice(address: string): var {
         isUpdating = true;
-        runAsync(["bluetoothctl", "connect", address]).then(() => {
+        return runAsync(["bluetoothctl", "connect", address]).then(() => {
             updateDevices();
             isUpdating = false;
         }).catch(e => {

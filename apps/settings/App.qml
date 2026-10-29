@@ -1,11 +1,14 @@
 import QtQuick
 import qs.components
 import qs.theme
+import "tree.js" as Tree
 
 VtncApp {
     appId: "settings"
     title: "Settings"
     icon: Icons.gear
+    // every page's path (IPC `settings pages`)
+    readonly property var pages: Tree.leaves().map(l => l.path)
     view: Component {
         View {}
     }

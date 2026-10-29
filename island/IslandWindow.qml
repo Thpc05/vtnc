@@ -4,7 +4,6 @@ import Quickshell
 import Quickshell.Wayland
 import qs.core
 import qs.services
-import qs.components
 import qs.theme
 import qs.kit as K
 

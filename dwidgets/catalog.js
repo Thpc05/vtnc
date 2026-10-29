@@ -16,7 +16,7 @@
 
 var MODES = ["over", "push", "takeover"];
 // the Dwidgets' card colour (Kit.card)
-var CARDS = ["neutral", "container", "tinted", "primary"];
+var CARDS = ["neutral", "tinted", "container", "primary", "secondaryContainer", "secondary", "tertiaryContainer", "tertiary"];
 var TRIGGERS = ["click", "doubleclick", "hover", "none"];
 
 // the media's sizes (redone 2026-10-11): a strip (3x1…6x1), 2x2, the art at the left (3x2…6x2, 4x3,

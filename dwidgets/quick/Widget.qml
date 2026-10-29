@@ -1,8 +1,6 @@
 import QtQuick
-import qs.theme
 import qs.dwidgets
 import qs.kit as K
-import "qwidgets" as Q
 import "panels"
 import "qwidgets.js" as Catalog
 import "../catalog.js" as DCatalog
@@ -178,6 +176,7 @@ Dwidget {
         id: cardHost
         anchors.fill: parent
         card: root.card
+        cardColor: root.options?.cardColor ?? ""
     }
 
     // Qwidgets ---------------------------------------------------------------------

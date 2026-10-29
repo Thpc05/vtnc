@@ -1,7 +1,6 @@
 import QtQuick
 import Quickshell
 import Quickshell.Services.Mpris
-import qs.core
 import qs.theme
 import qs.services
 import qs.components

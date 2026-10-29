@@ -95,10 +95,14 @@ Singleton {
             return 0;
         return Math.sqrt(0.299 * (c.r ** 2) + 0.587 * (c.g ** 2) + 0.114 * (c.b ** 2));
     }
+    // the lift is for a see-through layer: it fades out as the layer gets opaque, so an opaque card keeps its
+    // own colour (2026-10-29, user: at card opacity 100 % the cards came out lighter). Full lift up to the
+    // factory 40 %, none at 100 %
     function lift(c: color, a: real, layer: int): color {
         const light = mode === "light";
         const lum = luminance(c);
-        const offset = (!light || layer == 1 ? 1 : -layer / 2) * (light ? 0.2 : 0.3) * (1 - transparency.base) * (1 + wallLuminance * (light ? (layer == 1 ? 3 : 1) : 2.5));
+        const seeThrough = Math.max(0, Math.min(1, (1 - a) / 0.6));
+        const offset = seeThrough * (!light || layer == 1 ? 1 : -layer / 2) * (light ? 0.2 : 0.3) * (1 - transparency.base) * (1 + wallLuminance * (light ? (layer == 1 ? 3 : 1) : 2.5));
         // pure black has no luminance to scale: lift it as a grey
         if (lum === 0)
             return Qt.rgba(Math.max(0, offset), Math.max(0, offset), Math.max(0, offset), a);

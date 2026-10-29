@@ -1,6 +1,5 @@
 import QtQuick
 import qs.core
-import qs.theme
 import qs.kit as K
 import "../../dwidgets/quick" as DQ
 import "../../dwidgets/quick/qwidgets.js" as Qw

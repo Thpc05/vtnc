@@ -4,7 +4,6 @@ import Quickshell.Hyprland
 import Quickshell.Widgets
 import qs.core
 import qs.services
-import qs.theme
 import qs.kit as K
 import qs.iwidgets.tray as Tray
 

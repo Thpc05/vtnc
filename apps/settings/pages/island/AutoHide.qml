@@ -1,6 +1,5 @@
 import QtQuick
 import qs.core
-import qs.theme
 import "../../controls"
 
 // Island → Auto hide: when the island slides away and how.

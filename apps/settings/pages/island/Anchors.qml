@@ -1,6 +1,4 @@
 import QtQuick
-import qs.core
-import qs.theme
 import "../../controls"
 
 // Island → Anchors: how the island's three sections (left / center / right, Island → Layout) sit, per

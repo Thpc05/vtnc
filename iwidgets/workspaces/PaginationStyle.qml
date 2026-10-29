@@ -1,8 +1,5 @@
 import QtQuick
-import qs.core
 import qs.services
-import qs.theme
-import qs.components
 import qs.kit as K
 
 // Workspaces "pagination" (C; M3 Expressive's page indicator): 1…N, a dot each (occupied in the accent,

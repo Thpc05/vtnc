@@ -1,5 +1,4 @@
 import QtQuick
-import qs.theme
 import qs.services
 import qs.kit as K
 

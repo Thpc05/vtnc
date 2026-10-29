@@ -122,6 +122,7 @@ Item {
                     required property var modelData
                     anchors.verticalCenter: parent.verticalCenter
                     widgetId: modelData.id
+                    cardColor: modelData.cardColor ?? ""
                     id: slot
                     gap: root.innerGap / 2
                     inCard: section.card

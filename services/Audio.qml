@@ -60,7 +60,6 @@ Singleton {
         StateService.set("volumeProtectionEnabled", enabled);
     }
 
-    signal sinkProtectionTriggered(string reason);
     signal volumeChanged(real volume, bool muted, var node);
     signal micVolumeChanged(real volume, bool muted, var node);
 
@@ -151,7 +150,6 @@ Singleton {
         // Limit excessive jumps
         if (jump > root.maxVolumeJump) {
             root.protectionTriggered = true;
-            root.sinkProtectionTriggered("Volume jump limited");
 
             // Reset trigger after delay
             protectionResetTimer.restart();

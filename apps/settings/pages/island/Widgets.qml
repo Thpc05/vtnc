@@ -4,7 +4,6 @@ import qs.components
 import qs.theme
 import qs.kit as K
 import "../../controls"
-import "../dashboard"
 import "../../../../dwidgets/quick/qwidgets.js" as Qw
 
 // Island widgets:
@@ -82,6 +81,20 @@ Page {
             const copy = Object.assign({}, w);
             if (w.uid === uid)
                 copy[mode] = style;
+            return copy;
+        }));
+    }
+
+    // the card's own colour of entry `uid` ("" = the global one)
+    function setCardColor(uid: string, kind: string) {
+        save(widgets.map(w => {
+            const copy = Object.assign({}, w);
+            if (w.uid === uid) {
+                if (kind === "")
+                    delete copy.cardColor;
+                else
+                    copy.cardColor = kind;
+            }
             return copy;
         }));
     }
@@ -587,6 +600,7 @@ Page {
                 widgetId: editor.widgetId
                 style: editor.value
                 mode: editor.mode
+                cardColor: page.selected?.cardColor ?? ""
             }
         }
 
@@ -729,6 +743,29 @@ Page {
                     widgetId: page.selectedId
                     uid: page.selectedUid
                     value: page.selected?.expanded ?? WidgetRegistry.hidden
+                }
+            }
+
+            // a Card variant in either mode: the card's own colour (the entry's cardColor, 2026-10-29); each copy
+            // has its own
+            SettingRow {
+                width: parent.width
+                label: "Card colour"
+                description: "Global: Appearance → General → Cards"
+                visible: !!page.selected && (WidgetRegistry.isCard(page.selectedId, page.selected.compact) || WidgetRegistry.isCard(page.selectedId, page.selected.expanded))
+                Cycler {
+                    width: 190
+                    options: [
+                        {
+                            value: "",
+                            label: "Global"
+                        }
+                    ].concat(K.Kit.cardKinds.map(k => ({
+                                    value: k,
+                                    label: K.Kit.cardTitles[k]
+                                })))
+                    value: page.selected?.cardColor ?? ""
+                    onSelected: v => page.setCardColor(page.selectedUid, v)
                 }
             }
 

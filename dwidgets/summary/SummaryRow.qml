@@ -1,6 +1,5 @@
 import QtQuick
 import Quickshell.Widgets
-import qs.theme
 import qs.kit as K
 
 // One item of a summary (2026-10-17): a 28 px lead (an app icon or a thumbnail, else a symbol on a

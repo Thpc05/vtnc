@@ -62,16 +62,14 @@ test("bad fields fall back", () => {
     const [e] = merged([{ id: "media", idle: { style: "zzz", size: "9x9" }, expanded: 5, x: -3, y: 2.7, expandOn: "wat", off: "yes", options: [] }]);
     assert.deepStrictEqual(e, { uid: "media", id: "media", idle: { style: "shapes", size: "4x2" }, x: 0, y: 2, off: false, options: {} });
 });
-test("migrates the old one-style shape; expanded looks and events are dropped", () => {
+test("an entry without its idle mode takes the catalog's; old keys and expanded looks are dropped", () => {
     const m = merged([
         { uid: "q", id: "quick", style: "row", size: "9x1", x: 1, y: 0, expandOn: "" },
-        { uid: "p", id: "placeholder", style: "tall", size: "1x3", expandOn: "hover" },
         { uid: "w", id: "wifi", idle: { style: "expressive", size: "2x1" }, expanded: { style: "expressive", size: "3x4" }, expandOn: "click" }
     ]);
     const q = m.find(e => e.uid === "q");
     assert.deepStrictEqual(q.idle, { style: "shapes", size: "4x1" });
     assert.ok(!("style" in q) && !("size" in q) && !("expanded" in q) && !("expandOn" in q));
-    assert.deepStrictEqual(m.find(e => e.uid === "p").idle, { style: "tall", size: "1x3" });
     assert.ok(!("expanded" in m.find(e => e.uid === "w")));
 });
 test("expandOn is kept only for a Dwidget that expands", () => {
@@ -80,8 +78,8 @@ test("expandOn is kept only for a Dwidget that expands", () => {
     assert.ok(!("expandOn" in m.find(e => e.uid === "m")));
     assert.ok(!("expandOn" in m.find(e => e.uid === "b")));
 });
-test("quick: old arrangement styles take the default look; options.layout goes", () => {
-    const [q] = merged([{ uid: "q", id: "quick", idle: { style: "tiles", size: "4x2" }, options: { items: ["dnd"], layout: "list" } }]);
+test("quick: an unknown style takes the default look; its options are kept", () => {
+    const [q] = merged([{ uid: "q", id: "quick", idle: { style: "tiles", size: "4x2" }, options: { items: ["dnd"] } }]);
     assert.deepStrictEqual(q.idle, { style: "shapes", size: "4x2" });
     assert.deepStrictEqual(q.options, { items: ["dnd"] });
     const [again] = merged([q]);

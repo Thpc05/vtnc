@@ -2,9 +2,6 @@
 import QtQuick
 import Quickshell
 import qs.core
-import qs.theme
-import qs.services
-import qs.components
 import qs.kit as K
 
 Item {
@@ -18,13 +15,6 @@ Item {
     property bool snap: true
     // widgets temporarily shown as "show" (media flash)
     property var flashedWidgets: []
-
-    // State
-    readonly property var activePlayer: MprisController.activePlayer
-    property bool notchHovered: false
-    property bool parentHoverActive: false
-
-    readonly property bool expandedState: notchHovered || parentHoverActive
 
     // Computed dimensions
     // vtnc: the row width comes from the widget sections (they animate their own width)
@@ -46,27 +36,6 @@ Item {
 
     implicitWidth: Math.round(idleView.targetWidth + 2 * sidePadding)
     implicitHeight: mainRowHeight
-
-    Keys.onPressed: event => {
-        if (expandedState && activePlayer) {
-            if (event.key === Qt.Key_Space) {
-                activePlayer.togglePlaying();
-                event.accepted = true;
-            } else if (event.key === Qt.Key_Left && activePlayer.canSeek) {
-                activePlayer.position = Math.max(0, activePlayer.position - 10);
-                event.accepted = true;
-            } else if (event.key === Qt.Key_Right && activePlayer.canSeek) {
-                activePlayer.position = Math.min(activePlayer.length, activePlayer.position + 10);
-                event.accepted = true;
-            } else if (event.key === Qt.Key_Up && activePlayer.canGoPrevious) {
-                activePlayer.previous();
-                event.accepted = true;
-            } else if (event.key === Qt.Key_Down && activePlayer.canGoNext) {
-                activePlayer.next();
-                event.accepted = true;
-            }
-        }
-    }
 
     Item {
         anchors.fill: parent

@@ -1,5 +1,4 @@
 import QtQuick
-import qs.theme
 
 // Shows the island's pages (the idle DefaultView and the app views) inside the animated body.
 // A switch is a "container transform": the pages never re-lay out while the island morphs;
@@ -9,14 +8,11 @@ import qs.theme
 // its size and the body's edges crop it. Fade through: the leaving page is gone before the
 // entering one appears.
 //
-// API close to StackView's (what Island used before): currentItem, depth, busy, push, replace, pop.
+// show(page) switches to a page, back() to the idle one (initialItem); currentItem, busy.
 Item {
     id: host
 
     required property Item initialItem
-    // animated height of the island and the height it's going to (idle page vertical centering)
-    property real fullHeight: height
-    property real targetHeight: height
     // the idle island's height (the idle page is centred in it)
     property real restHeight: height
     // inner margin of app pages (the idle page and pages with `islandCentered: true`, the
@@ -37,7 +33,6 @@ Item {
     readonly property real fadeInEnd: 0.8
 
     property Item currentItem: null
-    readonly property int depth: currentItem && currentItem !== initialItem ? 2 : 1
     readonly property bool busy: transition.running
 
     property real progress: 1
@@ -86,13 +81,7 @@ Item {
             leaving.release();
         }
     }
-    function push(page: Item) {
-        show(page);
-    }
-    function replace(page: Item) {
-        show(page);
-    }
-    function pop(item: Item) {
+    function back() {
         show(initialItem);
     }
 

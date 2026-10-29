@@ -1,6 +1,5 @@
 import QtQuick
 import qs.core
-import qs.components
 import qs.theme
 import qs.services
 import "../../controls"

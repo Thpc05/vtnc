@@ -1,7 +1,5 @@
 import QtQuick
-import qs.core
 import qs.services
-import qs.theme
 import qs.kit as K
 import qs.dwidgets.media as DMedia
 

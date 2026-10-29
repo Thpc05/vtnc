@@ -1,7 +1,6 @@
 import QtQuick
 import qs.core
 import qs.services
-import qs.kit as K
 
 // Color scheme (2026-10-27, user: every toggle has a panel): the scheme now on top with the mode (Dark /
 // Light) as one connected group, then every scheme matugen can build; a click picks one (the colours

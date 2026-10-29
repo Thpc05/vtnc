@@ -4,7 +4,7 @@ import qs.kit as K
 
 // Hosts one Iwidget in one style, for the island (island/WidgetSlot.qml) and the settings preview
 // (apps/settings/pages/island/WidgetPreview.qml): a card variant (iwidgets/catalog.js, "<base>Card")
-// draws the island card behind it (Kit.islandCard, Appearance → General → Cards) and the widget
+// draws the island card behind it (Kit.cardFor(cardColor), else Appearance → General → Cards) and the widget
 // only gets the base style. The widget also gets, when it declares them, `pal` (the card's palette,
 // or Kit.bare without one), `mode` (compact / expanded), `growing` and `screen`.
 Item {
@@ -23,6 +23,9 @@ Item {
     property bool inCard: false
 
     readonly property bool card: WidgetRegistry.isCard(widgetId, style) && !inCard
+    // the card's own colour (the entry's cardColor; "" = the global one); a section card is the global one
+    property string cardColor: ""
+    readonly property var cardPal: K.Kit.cardFor(cardColor)
     readonly property string base: WidgetRegistry.baseStyle(widgetId, style)
     readonly property Item widget: loader.item
     readonly property bool fills: widget?.fillsSlot ?? false
@@ -41,7 +44,7 @@ Item {
         anchors.fill: parent
         visible: root.card && root.widgetWidth > 0
         radius: height / 2
-        color: K.Kit.islandCard.fill
+        color: root.cardPal.fill
         Behavior on color {
             K.CAnim {}
         }
@@ -57,7 +60,7 @@ Item {
                 item.width = Qt.binding(() => Math.max(0, root.fillWidth - 2 * root.padX));
             item.style = Qt.binding(() => root.base);
             if (item.hasOwnProperty("pal"))
-                item.pal = Qt.binding(() => root.card || root.inCard ? K.Kit.islandCard : K.Kit.bare);
+                item.pal = Qt.binding(() => root.card ? root.cardPal : root.inCard ? K.Kit.islandCard : K.Kit.bare);
             if (item.hasOwnProperty("mode"))
                 item.mode = Qt.binding(() => root.mode);
             if (item.hasOwnProperty("growing"))

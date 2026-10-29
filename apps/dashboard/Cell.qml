@@ -1,8 +1,6 @@
 import QtQuick
 import qs.core
-import qs.theme
 import qs.kit as K
-import qs.components
 import qs.dwidgets
 
 // One dashboard entry: loads its Dwidget, places it at the rect the layout engine gave it and

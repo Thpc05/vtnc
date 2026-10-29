@@ -21,10 +21,8 @@
   file with `StateMerge.js`, complete, save 300 ms after a change). It exposes each top-level key as an alias:
   `Store.island`, `Store.theme`, `Store.controls`…
   - `Store.files.<name>` is the file itself (`json`, `defaults`, `replace()`, `signature()`).
-- **Migration:** the old one-file state (`~/.local/state/vtnc/vtnc-state.json`, schema ≤ 4) is split once by
-  `core/Migrate.js`:
-  - the result becomes the preset "My setup" (and the active one);
-  - the old file is kept as `vtnc-state.json.migrated`.
+- A missing file is created from its factory file; the old one-file state (`vtnc-state.json`, schema ≤ 4) is no
+  longer migrated (its split code went in R2 C3, 2026-10-29).
 
 ## Adding a setting
 1. Pick the file by the table above. Put the value in its factory JSON, and add the property to that file's

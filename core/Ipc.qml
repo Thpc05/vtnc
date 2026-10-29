@@ -110,14 +110,22 @@ Scope {
         }
     }
 
+    // the Settings pages' paths (apps/settings/tree.js), handed in by the shell (core doesn't import apps)
+    property var settingsPages: []
+
     AppTarget {
         target: "settings"
 
-        // open the settings on a page: island, layout, appearance, system, about
+        // open the settings on a page: a path ("island/autohide"), a sub-page's title ("Auto hide") or a
+        // top-level id / title ("island" = its first sub-page); case and spaces ignored
         function page(name: string): void {
             Runtime.openApp("settings", {
                 page: name
             });
+        }
+        // every page's path, one per line (what `page` takes)
+        function pages(): string {
+            return root.settingsPages.join("\n");
         }
     }
 
@@ -339,14 +347,18 @@ Scope {
     IpcHandler {
         target: "preset"
 
+        // the list as last read (the folder is read again on each call, for the next one)
         function list(): string {
+            Presets.scan();
             return Presets.list.map(p => p.name).join("\n");
         }
         function active(): string {
             return (Presets.active || "(none)") + (Presets.modified ? " (modified: " + Presets.modifiedParts.join(", ") + ")" : "");
         }
+        // reads the folder again, then applies (a missing name logs a warning)
         function apply(name: string): string {
-            return Presets.apply(name) ? "applied " + name : "no preset " + name;
+            Presets.applyFresh(name);
+            return "applying " + name;
         }
         function save(): string {
             return Presets.save() ? "saved " + Presets.active : "nothing to save (no active preset, or Default)";

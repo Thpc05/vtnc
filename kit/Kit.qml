@@ -184,13 +184,62 @@ Singleton {
     //   fill, the play button) · off / high (a control on the fill, one step up) · tonal / overTonal (a
     //   tonal button) · selected / overSelected (a list's current row) · track (a slider's rest) · weak /
     //   faint (the two-tone styles: the accent at 55 % / 20 %).
-    // A Dwidget picks `card ? K.Kit.card : K.Kit.bare`, an Iwidget gets `K.Kit.islandCard` or `K.Kit.bare`
-    // from its frame (iwidgets/IwidgetFrame.qml). One colour for both since 2026-10-11 (user): Settings →
-    // Appearance → General → Cards (`theme.card`); islandCard is the same palette.
-    readonly property CardPalette card: CardPalette {
-        kind: Store.theme?.card || "neutral"
+    // A Dwidget's card (dwidgets/DwidgetCard.qml) and an Iwidget's (iwidgets/IwidgetFrame.qml) take
+    // `cardFor(their own colour)`, `K.Kit.bare` without a card. One colour for every card (user, 2026-10-11):
+    // Settings → Appearance → General → Cards (`theme.card`), `card`; since 2026-10-29 a card may have its
+    // own (a Dwidget's options.cardColor, an Iwidget entry's cardColor; "" = the global one).
+    readonly property var cardKinds: ["neutral", "tinted", "container", "primary", "secondaryContainer", "secondary", "tertiaryContainer", "tertiary"]
+    readonly property var cardTitles: ({
+            neutral: "Neutral",
+            tinted: "Tinted",
+            container: "Primary container",
+            primary: "Primary",
+            secondaryContainer: "Secondary container",
+            secondary: "Secondary",
+            tertiaryContainer: "Tertiary container",
+            tertiary: "Tertiary"
+        })
+    // one palette per kind, made once
+    readonly property var cards: ({
+            neutral: cardNeutral,
+            tinted: cardTinted,
+            container: cardContainer,
+            primary: cardPrimary,
+            secondaryContainer: cardSecondaryContainer,
+            secondary: cardSecondary,
+            tertiaryContainer: cardTertiaryContainer,
+            tertiary: cardTertiary
+        })
+    readonly property CardPalette cardNeutral: CardPalette {
+        kind: "neutral"
     }
+    readonly property CardPalette cardTinted: CardPalette {
+        kind: "tinted"
+    }
+    readonly property CardPalette cardContainer: CardPalette {
+        kind: "container"
+    }
+    readonly property CardPalette cardPrimary: CardPalette {
+        kind: "primary"
+    }
+    readonly property CardPalette cardSecondaryContainer: CardPalette {
+        kind: "secondaryContainer"
+    }
+    readonly property CardPalette cardSecondary: CardPalette {
+        kind: "secondary"
+    }
+    readonly property CardPalette cardTertiaryContainer: CardPalette {
+        kind: "tertiaryContainer"
+    }
+    readonly property CardPalette cardTertiary: CardPalette {
+        kind: "tertiary"
+    }
+    readonly property CardPalette card: cards[Store.theme?.card] ?? cardNeutral
     readonly property CardPalette islandCard: card
+    // a card's palette: its own colour, or the global one ("" or unknown)
+    function cardFor(kind: string): CardPalette {
+        return cards[kind] ?? card;
+    }
     readonly property QtObject bare: QtObject {
         readonly property string kind: "bare"
         readonly property bool inverse: false

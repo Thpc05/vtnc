@@ -6,6 +6,7 @@ import Quickshell
 import qs.core
 import qs.frame
 import qs.island
+import qs.apps
 import qs.services
 import qs.dwidgets.visualizer as DashVisualizer
 import "island/transient" as Transient
@@ -13,7 +14,9 @@ import "island/transient" as Transient
 ShellRoot {
     id: root
 
-    Ipc {}
+    Ipc {
+        settingsPages: AppRegistry.get("settings")?.pages ?? []
+    }
 
     // when notification popups take over the island (the notification transient)
     Transient.NotificationPresenter {}

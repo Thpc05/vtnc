@@ -18,6 +18,8 @@ Rectangle {
     required property string style
     // the island mode this preview shows (widgets with per-mode options)
     property string mode: "compact"
+    // the card's own colour (the entry's cardColor; "" = the global one)
+    property string cardColor: ""
 
     readonly property bool hidden: style === WidgetRegistry.hidden
     // the look being rendered: the last visible style while fading out to hidden
@@ -68,6 +70,7 @@ Rectangle {
 
     IwidgetFrame {
         id: frame
+        cardColor: root.cardColor
         // only a preview: no clicks, hovers or wheel reach the widget (it would toggle, seek, switch
         // workspaces…)
         enabled: false

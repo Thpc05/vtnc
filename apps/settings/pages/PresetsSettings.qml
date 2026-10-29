@@ -1,6 +1,5 @@
 import QtQuick
 import Quickshell.Widgets
-import qs.core
 import qs.components
 import qs.theme
 import qs.kit as K

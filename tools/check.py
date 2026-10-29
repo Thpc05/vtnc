@@ -4,16 +4,24 @@
 #   1. tests     every tests/*.test.js with node
 #   2. patterns  forbidden code (PATTERNS below): "fail" ones fail the check, "warn" ones only report
 #   3. layers    the layer lint (tools/layers.py); reports only until R2 C4 (--strict-layers fails on it)
-#   4. live      reloads the running shell (`qs -c <config> ipc call shell reload`) and reads the log lines
+#   4. loadall   compiles every QML file offscreen without creating anything (tools/probe/loadall.py): a
+#                missing type or property, a broken import, a syntax error, also in what the live shell
+#                hasn't built (off Dwidgets, panels, Settings pages)
+#   5. live      reloads the running shell (`qs -c <config> ipc call shell reload`) and reads the log lines
 #                after it: a new ERROR, a "WARN scene" line, a binding loop or a "caused by" fails, unless
-#                tools/known-log.txt lists it (each entry says which step removes it)
+#                tools/known-log.txt lists it (each entry says which step removes it); after a reload the old
+#                generation's teardown lines are listed, not failed (-v shows them)
+#   6. apps      only with --apps: opens every app, Settings page and Helper tab on the live shell and reads
+#                the log the same way (it shows on screen: ask Theo first)
 #
-#   tools/check [--no-live] [--restart] [--strict-layers]
+#   tools/check [--no-live] [--restart] [--strict-layers] [--apps] [-v]
 #
 # --restart kills and restarts the shell instead of reloading: needed after a new enum value, shader or
 # singleton member, which a reload keeps stale (the old value logs "Unable to assign [undefined]").
 # Exit 0 = pass.
-import glob, os, re, subprocess, sys, time
+import glob
+import json
+import os, re, subprocess, sys, time
 
 # the shell the tools sit in (the dev worktree), unless VTNC names another
 VTNC = os.path.realpath(os.environ.get("VTNC") or os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
@@ -92,8 +100,28 @@ def known():
     return out
 
 
+def loadall():
+    head("loadall (every QML file compiled offscreen)")
+    r = subprocess.run([sys.executable, "-I", os.path.join(TOOLS, "probe", "loadall.py")], env=dict(os.environ, VTNC=VTNC))
+    if r.returncode:
+        failed.append("loadall")
+
+
+def running_shells():
+    # the vtnc configs running now (both share the shell id vtnc: with two up, the IPC and `qs log` may
+    # reach the other one, and the check reads the wrong shell)
+    r = subprocess.run(["pgrep", "-a", "qs"], capture_output=True, text=True)
+    return [l for l in r.stdout.splitlines() if re.search(r"\sqs\s.*-c\s+vtnc(-dev)?(\s|$)", " " + l)]
+
+
 def live(restart):
     head("live (restart)" if restart else "live (reload)")
+    shells = running_shells()
+    if len(shells) > 1:
+        failed.append("live")
+        print("FAIL two vtnc shells are running (they share the shell id; run one at a time: "
+              "qs kill -c vtnc; qs -c vtnc-dev -d):\n  " + "\n  ".join(shells))
+        return
     if restart:
         subprocess.run(["qs", "kill", "-c", CONFIG], capture_output=True)
         time.sleep(1)
@@ -154,14 +182,82 @@ def live(restart):
           f"{sum(bad.values())} new")
 
 
+# --apps: open every app, every Settings page and every Helper tab on the live shell, then close it, and
+# read the log of what that created (what a reload never builds: apps, pages and the dashboard are created on
+# first use). It shows on the screen: ask Theo first. The Settings page and Helper tab he was on are restored.
+APPS = ["launcher", "dashboard", "notifications", "clipboard", "notes", "wallpaper", "tools", "session", "dino"]
+HELPER_TABS = ["about", "keys", "mouse", "cli", "ipc", "glossary"]
+
+
+def ipc(*args):
+    return subprocess.run(["qs", "-c", CONFIG, "ipc", "call", *args], capture_output=True, text=True)
+
+
+def remembered(app, key, fallback):
+    try:
+        with open(os.path.expanduser("~/.local/state/vtnc/state.json"), encoding="utf-8") as f:
+            return json.load(f).get("apps", {}).get(app, {}).get(key, fallback)
+    except (OSError, ValueError):
+        return fallback
+
+
+def apps_live():
+    head("apps (open each app, page and tab)")
+    shells = running_shells()
+    if len(shells) != 1:
+        failed.append("apps")
+        print(f"FAIL needs exactly one vtnc shell running, found {len(shells)}")
+        return
+    page = remembered("settings", "path", "island/general")
+    tab = remembered("helper", "tab", "about")
+    start = len(log_lines())
+    steps = [(app, ("open",)) for app in APPS]
+    pages = ipc("settings", "pages").stdout.split()
+    if not pages:
+        failed.append("apps")
+        print("FAIL `settings pages` returned nothing")
+    steps += [("settings", ("page", p)) for p in pages] + [("helper", ("tab", t)) for t in HELPER_TABS]
+    for target, call in steps:
+        r = ipc(target, *call)
+        if r.returncode:
+            failed.append("apps")
+            print(f"FAIL ipc {target} {' '.join(call)}: {(r.stdout + r.stderr).strip()}")
+        time.sleep(1.2)
+    # back to where Theo was, then closed
+    ipc("settings", "page", page)
+    time.sleep(0.6)
+    ipc("helper", "tab", tab)
+    time.sleep(0.6)
+    ipc("helper", "close")
+    time.sleep(2)
+    new = log_lines()[start:]
+    rules = known()
+    bad, seen = {}, {}
+    for l in new:
+        if not re.search(r"ERROR|WARN scene|binding loop|caused by", l):
+            continue
+        key = re.sub(r"0x[0-9a-f]+", "0x…", l.strip())
+        (seen if any(rx.search(l) for rx in rules) else bad)[key] = (seen if any(rx.search(l) for rx in rules) else bad).get(key, 0) + 1
+    for l, n in seen.items():
+        print(f"known ×{n}  {l}")
+    for l, n in bad.items():
+        print(f"NEW   ×{n}  {l}")
+    if bad:
+        failed.append("apps")
+    print(f"{len(steps)} opened, {len(new)} new log lines, {sum(seen.values())} known, {sum(bad.values())} new")
+
+
 def main():
     sys.stdout.reconfigure(line_buffering=True)
     print(f"vtnc check: {VTNC} (qs -c {CONFIG})")
     tests()
     patterns()
     layers("--strict-layers" in sys.argv)
+    loadall()
     if "--no-live" not in sys.argv:
         live("--restart" in sys.argv)
+    if "--apps" in sys.argv:
+        apps_live()
     print("\n" + (f"FAILED: {', '.join(failed)}" if failed else "PASSED"))
     return 1 if failed else 0
 

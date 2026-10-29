@@ -10,6 +10,7 @@ import "pages/island" as IslandPages
 import "pages/dashboard" as DashboardPages
 import "pages/appearance" as AppearancePages
 import "pages/apps" as AppsPages
+import "tree.js" as Tree
 
 // Settings: a tree of pages (some have sub-pages: Island, Dashboard) in the sidebar; every change
 // is written to its file in ~/.config/vtnc right away (live preview). Island, Dashboard and
@@ -19,190 +20,49 @@ import "pages/apps" as AppsPages
 FocusScope {
     id: root
 
-    // { id, title, icon, component } or { id, title, icon, children: [{ id, title, component }] }
-    readonly property var tree: [
-        {
-            id: "appearance",
-            title: "Appearance",
-            icon: Icons.paintBrush,
-            children: [
-                {
-                    id: "general",
-                    title: "General",
-                    component: appearanceGeneral
-                },
-                {
-                    id: "colors",
-                    title: "Colors",
-                    component: appearanceColors
-                },
-                {
-                    id: "popups",
-                    title: "Popups",
-                    component: appearancePopups
-                }
-            ]
-        },
-        {
-            id: "island",
-            title: "Island",
-            icon: Icons.island,
-            children: [
-                {
-                    id: "general",
-                    title: "General",
-                    component: islandGeneral
-                },
-                {
-                    id: "layout",
-                    title: "Layout",
-                    component: islandWidgets
-                },
-                {
-                    id: "anchors",
-                    title: "Anchors",
-                    component: islandAnchors
-                },
-                {
-                    id: "autohide",
-                    title: "Auto hide",
-                    component: islandAutoHide
-                }
-            ]
-        },
-        {
-            id: "dashboard",
-            title: "Dashboard",
-            icon: Icons.squaresFour,
-            children: [
-                {
-                    id: "general",
-                    title: "General",
-                    component: dashboardGeneral
-                },
-                {
-                    id: "layout",
-                    title: "Layout",
-                    component: dashboardLayout
-                }
-            ]
-        },
-        {
-            id: "apps",
-            title: "Apps",
-            icon: Icons.apps,
-            children: [
-                {
-                    id: "notifications",
-                    title: "Notifications",
-                    component: appsNotifications
-                },
-                {
-                    id: "clipboard",
-                    title: "Clipboard",
-                    component: appsClipboard
-                },
-                {
-                    id: "notes",
-                    title: "Notes",
-                    component: appsNotes
-                },
-                {
-                    id: "session",
-                    title: "Session",
-                    component: appsSession
-                },
-                {
-                    id: "tools",
-                    title: "Tools",
-                    component: appsTools
-                },
-                {
-                    id: "wallpaper",
-                    title: "Wallpaper",
-                    component: appsWallpaper
-                },
-                {
-                    id: "dino",
-                    title: "Dino run",
-                    component: appsDino
-                }
-            ]
-        },
-        {
-            id: "presets",
-            title: "Presets",
-            icon: Icons.stack,
-            component: presetsPage
-        },
-        {
-            id: "system",
-            title: "System",
-            icon: Icons.slidersHorizontal,
-            component: systemPage
-        },
-        {
-            id: "about",
-            title: "About",
-            icon: Icons.info,
-            children: [
-                {
-                    id: "general",
-                    title: "General",
-                    component: aboutPage
-                },
-                {
-                    id: "components",
-                    title: "Examples",
-                    component: componentGallery
-                }
-            ]
-        }
-    ]
+    // the page tree (tree.js), with each page's component and icon: { id, title, icon, component } or
+    // { id, title, icon, children: [{ id, title, component }] }
+    readonly property var components: ({
+            "appearance/general": appearanceGeneral,
+            "appearance/colors": appearanceColors,
+            "appearance/popups": appearancePopups,
+            "island/general": islandGeneral,
+            "island/layout": islandWidgets,
+            "island/anchors": islandAnchors,
+            "island/autohide": islandAutoHide,
+            "dashboard/general": dashboardGeneral,
+            "dashboard/layout": dashboardLayout,
+            "apps/notifications": appsNotifications,
+            "apps/clipboard": appsClipboard,
+            "apps/notes": appsNotes,
+            "apps/session": appsSession,
+            "apps/tools": appsTools,
+            "apps/wallpaper": appsWallpaper,
+            "apps/dino": appsDino,
+            "presets": presetsPage,
+            "system": systemPage,
+            "about/general": aboutPage,
+            "about/components": componentGallery
+        })
+    readonly property var tree: Tree.TREE.map(n => Object.assign({}, n, {
+                icon: Icons[n.icon],
+                component: components[n.id] ?? null,
+                children: n.children?.map(c => Object.assign({}, c, {
+                        component: components[n.id + "/" + c.id]
+                    }))
+            }))
 
     // every selectable page in order: { path, title, parentTitle, component }
-    readonly property var leaves: {
-        const out = [];
-        for (const n of tree) {
-            if (n.children?.length) {
-                for (const c of n.children)
-                    out.push({
-                        path: n.id + "/" + c.id,
-                        title: c.title,
-                        parentTitle: n.title,
-                        component: c.component
-                    });
-            } else {
-                out.push({
-                    path: n.id,
-                    title: n.title,
-                    parentTitle: "",
-                    component: n.component
-                });
-            }
-        }
-        return out;
-    }
+    readonly property var leaves: Tree.leaves().map(l => Object.assign({}, l, {
+                component: components[l.path]
+            }))
 
     function leafIndex(path: string): int {
         return leaves.findIndex(l => l.path === path);
     }
 
-    // a parent path resolves to its first sub-page; unknown paths to the first page
     function resolve(path: string): string {
-        // Island → Iwidgets became Island → Layout (2026-10-09)
-        if (path === "island/widgets")
-            path = "island/layout";
-        // Island → OSD became Appearance → OSD (2026-10-15); OSD and Notifications became Popups
-        // (2026-10-17)
-        if (path === "island/osd" || path === "appearance/osd" || path === "appearance/notifications")
-            path = "appearance/popups";
-        if (leafIndex(path) >= 0)
-            return path;
-        const n = tree.find(t => t.id === path);
-        if (n?.children?.length)
-            return n.id + "/" + n.children[0].id;
-        return leaves[0].path;
+        return Tree.resolve(path);
     }
 
     property string path: resolve(Store.appGet("settings", "path", "island/general"))
@@ -224,14 +84,13 @@ FocusScope {
     implicitWidth: 1120
     implicitHeight: 620
 
-    // args.page (IPC `settings page <name>`): a path ("island/autohide"), a page id or a title,
-    // case-insensitive
+    // args.page (IPC `settings page <name>`): a path ("island/autohide"), a sub-page's title or a
+    // top-level id or title, case and spaces ignored (Tree.find)
     function opened(args) {
         if (args?.page) {
-            const q = String(args.page).toLowerCase().replace(/\s+/g, "");
-            const hit = leaves.find(l => l.path === q || l.title.toLowerCase().replace(/\s+/g, "") === q) ?? tree.find(t => t.id === q || t.title.toLowerCase() === q);
-            if (hit)
-                select(hit.path ?? hit.id);
+            const hit = Tree.find(args.page);
+            if (hit !== "")
+                select(hit);
         }
         sidebar.reshuffle();
         root.forceActiveFocus();

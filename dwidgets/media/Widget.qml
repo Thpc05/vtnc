@@ -16,6 +16,7 @@ Dwidget {
         id: cardHost
         anchors.fill: parent
         card: root.card
+        cardColor: root.options?.cardColor ?? ""
     }
     ToneColors {
         id: colors
