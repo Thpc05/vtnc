@@ -117,10 +117,11 @@ Item {
         }
     }
 
-    // the wavy active track: a sine from the start to the handle, drifting while animateWave
+    // the wavy active track: a sine from the start to the handle, drifting while animateWave (still when
+    // the shell's animations are off)
     property real phase: 0
     NumberAnimation on phase {
-        running: root.waving && root.animateWave && root.visible && !root.muted
+        running: root.waving && root.animateWave && Kit.anim.enabled && root.visible && !root.muted
         from: 0
         to: Math.PI * 2
         duration: 1600
