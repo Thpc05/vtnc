@@ -5,7 +5,7 @@ import ".."
 import "../panels"
 
 Qwidget {
-    readonly property var device: BluetoothService.friendlyDeviceList.find(d => d.connected) ?? null
+    readonly property var device: BluetoothService.friendlyDeviceList.find(d => d?.connected) ?? null
 
     title: "Bluetooth"
     symbol: !BluetoothService.enabled ? "bluetooth_disabled" : (BluetoothService.connected ? "bluetooth_connected" : "bluetooth")

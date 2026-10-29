@@ -19,7 +19,7 @@ Item {
         look: root.look
     }
     readonly property var devices: BluetoothService.enabled ? BluetoothService.friendlyDeviceList : []
-    readonly property var connected: devices.find(d => d.connected) ?? null
+    readonly property var connected: devices.find(d => d?.connected) ?? null
     readonly property var others: devices.filter(d => d !== connected)
 
     Component.onCompleted: {
@@ -86,23 +86,24 @@ Item {
 
             required property var modelData
             required property int index
+            // null for a moment when a device goes away (its object is destroyed before the row)
             readonly property var device: modelData
 
             width: ListView.view.width
             look: root.look
             position: index
             count: ListView.view.count
-            current: device.connected
-            open: root.openAddress === device.address
-            icon: device.connected ? "bluetooth_connected" : "bluetooth"
-            title: device.name
-            subtitle: device.connecting ? "Connecting…" : (device.connected ? "Connected" : (device.paired ? "" : "New"))
-            onClicked: root.openAddress = open ? "" : device.address
+            current: device?.connected ?? false
+            open: !!device && root.openAddress === device.address
+            icon: device?.connected ? "bluetooth_connected" : "bluetooth"
+            title: device?.name ?? ""
+            subtitle: device?.connecting ? "Connecting…" : (device?.connected ? "Connected" : (device?.paired ? "" : "New"))
+            onClicked: root.openAddress = open ? "" : (device?.address ?? "")
             onGrown: ListView.view.positionViewAtIndex(index, ListView.Contain)
             trailing: [
                 K.StyledText {
-                    visible: row.device.batteryAvailable
-                    text: row.device.battery + "%"
+                    visible: row.device?.batteryAvailable ?? false
+                    text: (row.device?.battery ?? 0) + "%"
                     font.family: K.Kit.family
                     font.pixelSize: 11
                     color: row.weak
@@ -114,6 +115,8 @@ Item {
                 look: root.look
                 actions: {
                     const d = row.device;
+                    if (!d)
+                        return [];
                     const out = [
                         {
                             text: d.connected ? "Disconnect" : "Connect",
