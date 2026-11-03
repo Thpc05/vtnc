@@ -2,7 +2,7 @@ import QtQuick
 import qs.base.core
 import qs.components
 import qs.base.theme
-import "../../../base/theme/colorRoles.js" as Roles
+import "../../base/theme/colorRoles.js" as Roles
 
 // One colour token of the shell's mapping (Store.theme.colors[mode][token], theme/colorRoles.js) in the
 // mode being shown: its swatch, its name, where it comes from ("Auto" by default) and a reset; a click

@@ -6,9 +6,9 @@ import qs.components
 import qs.dashboard.widgets
 import qs.dashboard as Dash
 import "../../controls"
-import "../../../../dashboard/widgets/layout.js" as Engine
-import "../../../../dashboard/widgets/quick/qwidgets.js" as Qw
-import "../../../../dashboard/widgets/sliders/swidgets.js" as Sw
+import "../../../dashboard/widgets/layout.js" as Engine
+import "../../../dashboard/widgets/quick/qwidgets.js" as Qw
+import "../../../dashboard/widgets/sliders/swidgets.js" as Sw
 
 // Dashboard → Layout: the layout editor (dwidgets/README.md, "Settings editor").
 //  - canvas: the real dashboard (Dwidgets render only; simple boxes when it's scaled down a lot)

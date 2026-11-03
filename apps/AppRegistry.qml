@@ -7,7 +7,7 @@ import qs.apps.tools as Tools
 import qs.apps.launcher as Launcher
 import qs.apps.wallpaper as Wallpaper
 import qs.dashboard as Dashboard
-import qs.apps.settings as Settings
+import qs.settings as Settings
 import qs.apps.notifications as NotificationsApp
 import qs.apps.clipboard as ClipboardApp
 import qs.apps.notes as NotesApp

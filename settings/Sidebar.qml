@@ -3,7 +3,7 @@ import QtQuick.Shapes
 import qs.components
 import qs.base.theme
 import qs.base.kit as K
-import "../common"
+import "../apps/common"
 import qs.base.kit.panels
 
 // Settings sidebar: icon + label rows; the selected page with sub-pages opens its branches

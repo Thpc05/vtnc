@@ -1,7 +1,7 @@
 import QtQuick
 import qs.components
 import qs.base.theme
-import "../../../base/theme/colorRoles.js" as Roles
+import "../../base/theme/colorRoles.js" as Roles
 
 // Where a color token comes from (theme/colorRoles.js specs), in three tabs:
 //  - Roles: every matugen role of the dark and of the light scheme (follow the wallpaper)

@@ -1,4 +1,4 @@
-// Tests for apps/settings/tree.js. Run: node apps/settings/tests/tree.test.js
+// Tests for settings/tree.js. Run: node settings/tests/tree.test.js
 const fs = require("fs");
 const path = require("path");
 const assert = require("assert");

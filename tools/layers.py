@@ -42,7 +42,6 @@ MAP = {
     "kit": ("kit", None),
     "components": ("kit", None),
     "services": ("services", None),
-    "apps/settings": ("feature", "settings"),
     "frame": ("shell", None),
 }
 
@@ -60,7 +59,7 @@ def area(rel):
             name = "/".join(parts[: len(k)])
             # only a folder is an app (apps/AppRegistry.qml is the apps' root)
             if len(parts) >= len(k) and parts[: len(k) - 1] == k[:-1] and os.path.isdir(os.path.join(VTNC, name)):
-                # a wildcard loses to an exact key of the same length (apps/common, apps/settings)
+                # a wildcard loses to an exact key of the same length (apps/common)
                 hit = (len(k) - 0.5, layer, name, name)
             else:
                 continue

@@ -4,7 +4,7 @@ import qs.components
 import qs.base.theme
 import qs.base.kit as K
 import "../../controls"
-import "../../../../dashboard/widgets/quick/qwidgets.js" as Qw
+import "../../../dashboard/widgets/quick/qwidgets.js" as Qw
 import qs.island.widgets
 
 // Island widgets:
