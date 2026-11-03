@@ -590,18 +590,26 @@ Item {
     // their view (and state) after closing; the others are destroyed once hidden.
     property var pages: ({})
     property var pendingDestroy: []
-    readonly property QtObject currentApp: appOpen ? root.apps.get(Runtime.activeApp) : null
+    // the open app's meta (apps/<id>/meta.js): title, icon, keepAlive, closeOnEsc
+    readonly property var currentApp: appOpen ? root.apps.get(Runtime.activeApp) : null
 
-    function pageFor(app: QtObject): Item {
-        let page = pages[app.appId];
+    // the app's View.qml, built on first open. A broken view fails on its own: the app doesn't open
+    // and the island keeps running ([[isolation by URL]])
+    function pageFor(appId: string): Item {
+        let page = pages[appId];
         if (page)
             return page;
-        page = app.view.createObject(root, {
+        const component = Qt.createComponent(root.apps.url(appId));
+        if (component.status !== Component.Ready) {
+            console.warn(`[App] "${appId}" failed to load: ${component.errorString()}`);
+            return null;
+        }
+        page = component.createObject(root, {
             visible: false
         });
         if (page.hasOwnProperty("screen"))
             page.screen = root.screen;
-        pages[app.appId] = page;
+        pages[appId] = page;
         return page;
     }
 
@@ -696,21 +704,25 @@ Item {
             return;
         }
         if (appOpen) {
-            const app = root.apps.get(Runtime.activeApp);
-            if (!app) {
-                console.warn(`[Island] unknown app "${Runtime.activeApp}"`);
+            const appId = Runtime.activeApp;
+            if (!root.apps.has(appId)) {
+                console.warn(`[Island] unknown app "${appId}"`);
                 Runtime.closeApp();
                 return;
             }
-            if (shownKey === "app:" + app.appId)
+            if (shownKey === "app:" + appId)
                 return;
-            const fresh = shownApp !== app.appId;
+            const fresh = shownApp !== appId;
             if (fresh && shownApp !== "")
                 releasePage(shownApp);
-            const page = pageFor(app);
+            const page = pageFor(appId);
+            if (!page) {
+                Runtime.closeApp();
+                return;
+            }
             stack.show(page);
-            shownApp = app.appId;
-            shownKey = "app:" + app.appId;
+            shownApp = appId;
+            shownKey = "app:" + appId;
             Qt.callLater(() => {
                 page.forceActiveFocus();
                 if (fresh)

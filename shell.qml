@@ -7,12 +7,14 @@ import qs.base.core
 import qs.apps
 import qs.island
 import qs.shell
+import "settings/tree.js" as SettingsTree
 
 ShellRoot {
     id: root
 
     Ipc {
-        settingsPages: AppRegistry.get("settings")?.pages ?? []
+        // every Settings page's path (IPC `settings pages`)
+        settingsPages: SettingsTree.leaves().map(l => l.path)
     }
 
     Daemons {}

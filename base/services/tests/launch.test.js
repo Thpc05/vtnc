@@ -3,8 +3,11 @@ const fs = require("fs");
 const path = require("path");
 const assert = require("assert");
 
-const src = fs.readFileSync(path.join(__dirname, "..", "launch.js"), "utf8").replace(/^\.pragma.*$/m, "");
-const L = new Function(src + "\nreturn { VTNC_APPS, parse, valid, format };")();
+const { rootOf, make } = require("../../core/tests/qmljs.js");
+const root = rootOf(__dirname);
+const { lib } = make(root);
+
+const L = lib("base/services/launch.js", ["VTNC_APPS", "parse", "valid", "format"]);
 
 let passed = 0, failed = 0;
 function test(name, fn) {
