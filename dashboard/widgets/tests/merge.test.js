@@ -3,12 +3,9 @@ const fs = require("fs");
 const path = require("path");
 const assert = require("assert");
 
-// the shell's root: the folder above with shell.qml (the tests move with their code)
-let root = __dirname;
-while (!fs.existsSync(path.join(root, "shell.qml")))
-    root = path.dirname(root);
-const strip = f => fs.readFileSync(path.join(root, f), "utf8").replace(/^\.(pragma|import).*$/mg, "");
-const lib = (f, names, args = [], vals = []) => new Function(...args, strip(f) + "\nreturn {" + names.join(",") + "};")(...vals);
+const { rootOf, make } = require("../../../base/core/tests/qmljs.js");
+const root = rootOf(__dirname);
+const { lib } = make(root);
 
 const Catalog = lib("island/widgets/catalog.js", ["WIDGETS", "HIDDEN", "has", "validStyle", "defaultStyle"]);
 const DCatalog = lib("dashboard/widgets/catalog.js", ["WIDGETS", "MODES", "CARDS", "TRIGGERS", "has", "style", "validStyle", "validSize", "parseSize", "validMode", "expandedSize", "trigger", "expands", "hasEvent", "defaultEntry", "renamed", "baseStyle", "isCard"]);

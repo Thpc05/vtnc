@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # The shell's check, run before every R2 commit (from the dev worktree, on the live shell at $VTNC):
 #
+#   0. catalog   the feature indexes (tools/catalog.py): <area>/index.js must match the meta.js folders
 #   1. tests     every tests/*.test.js with node
 #   2. patterns  forbidden code (PATTERNS below): "fail" ones fail the check, "warn" ones only report
 #   3. layers    the layer lint (tools/layers.py); reports only until R2 C4 (--strict-layers fails on it)
@@ -43,6 +44,17 @@ failed = []
 
 def head(name):
     print(f"\n== {name}")
+
+
+def catalog():
+    head("catalog (the feature indexes)")
+    r = subprocess.run([sys.executable, "-I", os.path.join(TOOLS, "catalog.py"), "--check"],
+                       capture_output=True, text=True, env={**os.environ, "VTNC": VTNC})
+    if r.returncode:
+        failed.append("catalog")
+        print("FAIL " + (r.stderr or r.stdout).strip())
+    else:
+        print("every index.js matches its folders")
 
 
 def tests():
@@ -256,6 +268,7 @@ def apps_live():
 def main():
     sys.stdout.reconfigure(line_buffering=True)
     print(f"vtnc check: {VTNC} (qs -c {CONFIG})")
+    catalog()
     tests()
     patterns()
     layers("--strict-layers" in sys.argv)
