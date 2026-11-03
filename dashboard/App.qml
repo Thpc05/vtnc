@@ -1,6 +1,6 @@
 import QtQuick
-import qs.components
 import qs.base.theme
+import qs.apps.common
 
 VtncApp {
     appId: "dashboard"

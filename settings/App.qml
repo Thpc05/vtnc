@@ -1,7 +1,7 @@
 import QtQuick
-import qs.components
 import qs.base.theme
 import "tree.js" as Tree
+import qs.apps.common
 
 VtncApp {
     appId: "settings"

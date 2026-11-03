@@ -1,6 +1,7 @@
 import QtQuick
 import qs.base.theme
 import qs.base.kit as K
+import qs.components
 
 // Row of big icon buttons: each a bare icon (no card at rest, user), the current one (it follows the
 // hover) in the apps' look (`look`, K.Kit.appStyle; 2026-10-17, as a Qwidget's "on" mark):

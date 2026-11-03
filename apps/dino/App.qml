@@ -1,5 +1,5 @@
 import QtQuick
-import qs.components
+import qs.apps.common
 
 VtncApp {
     appId: "dino"

@@ -1,9 +1,9 @@
 import QtQuick
 import qs.base.core
 import qs.base.services
-import qs.components
 import qs.base.theme
 import "../../base/core/toolActions.js" as ToolActions
+import qs.apps.common
 
 // Screen tools. Every action runs after the island closed,
 // so the island never shows up in captures.
