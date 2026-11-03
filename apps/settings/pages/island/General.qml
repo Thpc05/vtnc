@@ -1,6 +1,6 @@
 import QtQuick
-import qs.core
-import qs.theme
+import qs.base.core
+import qs.base.theme
 import "../../controls"
 
 // Island → General: shape (and the Iwidgets' card colour, Kit.islandCard), hover expansion and

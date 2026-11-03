@@ -2,10 +2,10 @@ import QtQuick
 import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
-import qs.core
-import qs.services
-import qs.theme
-import qs.kit as K
+import qs.base.core
+import qs.base.services
+import qs.base.theme
+import qs.base.kit as K
 
 // One full-screen, click-through overlay per screen that hosts the island.
 // Input region = island bounds. While an app is open (on any screen) it becomes the

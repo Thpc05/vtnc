@@ -1,6 +1,6 @@
 import QtQuick
-import qs.dwidgets.quick.panels
-import qs.kit as K
+import qs.base.kit as K
+import qs.base.kit.panels
 
 // A key (or a mouse button) as a small cap, in the apps' look: Shapes an idle fill, Two tones a tint,
 // Tone an outline.

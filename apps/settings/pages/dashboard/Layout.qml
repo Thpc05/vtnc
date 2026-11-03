@@ -1,14 +1,14 @@
 import QtQuick
-import qs.core
-import qs.theme
-import qs.kit as K
+import qs.base.core
+import qs.base.theme
+import qs.base.kit as K
 import qs.components
-import qs.dwidgets
-import qs.apps.dashboard as Dash
+import qs.dashboard.widgets
+import qs.dashboard as Dash
 import "../../controls"
-import "../../../../dwidgets/layout.js" as Engine
-import "../../../../dwidgets/quick/qwidgets.js" as Qw
-import "../../../../dwidgets/sliders/swidgets.js" as Sw
+import "../../../../dashboard/widgets/layout.js" as Engine
+import "../../../../dashboard/widgets/quick/qwidgets.js" as Qw
+import "../../../../dashboard/widgets/sliders/swidgets.js" as Sw
 
 // Dashboard → Layout: the layout editor (dwidgets/README.md, "Settings editor").
 //  - canvas: the real dashboard (Dwidgets render only; simple boxes when it's scaled down a lot)
@@ -1072,8 +1072,7 @@ SplitPage {
                     label: "Card colour"
                     description: "Global: Appearance → General → Cards"
                     visible: DwidgetRegistry.isCard(detail.entry?.id ?? "", detail.entry?.idle?.style ?? "")
-                    Cycler {
-                        width: 190
+                    Segmented {
                         options: [
                             {
                                 value: "",

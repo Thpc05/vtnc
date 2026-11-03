@@ -1,6 +1,6 @@
 import QtQuick
 import qs.components
-import qs.theme
+import qs.base.theme
 import "../../controls"
 
 // The look options of a Quick configs / toggle / Sliders entry (its `options`, 2026-10-11), in the

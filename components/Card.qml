@@ -1,5 +1,5 @@
 import QtQuick
-import qs.kit as K
+import qs.base.kit as K
 
 // A card on the shell's surface ladder (caelestia's: surfaceContainer, rounding large);
 // `inner` = one level up (off, rounding medium), for elements inside a card.

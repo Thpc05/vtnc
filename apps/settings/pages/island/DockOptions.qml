@@ -1,8 +1,8 @@
 import QtQuick
 import Quickshell
-import qs.core
+import qs.base.core
 import qs.components
-import qs.theme
+import qs.base.theme
 import "../../controls"
 
 // The dock Iwidget's options (island.dock), shown in the Layout detail panel: the pinned apps (pinned and

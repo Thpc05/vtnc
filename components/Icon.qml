@@ -1,6 +1,6 @@
 import QtQuick
-import qs.core
-import qs.theme
+import qs.base.core
+import qs.base.theme
 
 // An icon from theme/Icons.qml: a Material Symbols Rounded name, drawn with the M3 axes as
 // kit/MaterialIcon does (FILL 0 → 1 for on, GRAD -25 on dark, wght 400, opsz = the size).

@@ -1,8 +1,8 @@
 import QtQuick
 import qs.components
-import qs.theme
-import qs.dwidgets.quick.panels
-import qs.kit as K
+import qs.base.theme
+import qs.base.kit as K
+import qs.base.kit.panels
 
 // One setting: label (+ optional description) on the left, control on the right.
 //   SettingRow { label: "Expand on hover"; Switch { ... } }

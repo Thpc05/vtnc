@@ -1,5 +1,5 @@
 import QtQuick
-import qs.core
+import qs.base.core
 import "../../controls"
 
 // Apps → Dino run: the game's speed and its high score (state.json, apps.dino.highscore).

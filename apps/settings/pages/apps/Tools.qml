@@ -1,5 +1,5 @@
 import QtQuick
-import qs.core
+import qs.base.core
 import "../../controls"
 
 // Apps → Tools (2026-10-27, from System): the tools app's hints, where screenshots and recordings go, the

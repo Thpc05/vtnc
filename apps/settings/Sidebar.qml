@@ -1,10 +1,10 @@
 import QtQuick
 import QtQuick.Shapes
 import qs.components
-import qs.theme
-import qs.dwidgets.quick.panels
-import qs.kit as K
+import qs.base.theme
+import qs.base.kit as K
 import "../common"
+import qs.base.kit.panels
 
 // Settings sidebar: icon + label rows; the selected page with sub-pages opens its branches
 // right below it, joined by tree lines. In the apps' look (R1.5, 2026-10-17; was caelestia's nav on a

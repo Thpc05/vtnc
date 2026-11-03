@@ -1,9 +1,9 @@
 import QtQuick
-import qs.core
-import qs.theme
-import qs.kit as K
-import qs.dwidgets.quick.panels
+import qs.base.core
+import qs.base.theme
+import qs.base.kit as K
 import "sprites.js" as Sprites
+import qs.base.kit.panels
 
 // Dino run (2026-10-17): Chrome's offline game on the island. Space / ↑ jumps (held: higher), ↓ ducks
 // (in the air: falls fast), a click jumps; Space / Enter restarts after a crash. Cacti first, birds

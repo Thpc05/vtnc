@@ -1,10 +1,11 @@
 import QtQuick
-import qs.core
+import qs.base.core
 import qs.components
-import qs.theme
-import qs.kit as K
+import qs.base.theme
+import qs.base.kit as K
 import "../../controls"
-import "../../../../dwidgets/quick/qwidgets.js" as Qw
+import "../../../../dashboard/widgets/quick/qwidgets.js" as Qw
+import qs.island.widgets
 
 // Island widgets:
 //  - layout editor: three anchor columns (left / center / right) and the widgets that are off;
@@ -753,8 +754,7 @@ Page {
                 label: "Card colour"
                 description: "Global: Appearance → General → Cards"
                 visible: !!page.selected && (WidgetRegistry.isCard(page.selectedId, page.selected.compact) || WidgetRegistry.isCard(page.selectedId, page.selected.expanded))
-                Cycler {
-                    width: 190
+                Segmented {
                     options: [
                         {
                             value: "",

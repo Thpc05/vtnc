@@ -79,7 +79,7 @@ HelperList {
             section.rows.push({
                 keys: keyNames(b[1]),
                 text: describe(b[2]),
-                copy: "qs -c vtnc ipc call " + b[2]
+                copy: "qs -c " + Quickshell.shellDir.split("/").pop() + " ipc call " + b[2]
             });
         }
         if (section.rows.length > 0)

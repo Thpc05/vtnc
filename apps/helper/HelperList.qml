@@ -1,8 +1,8 @@
 import QtQuick
 import Quickshell
-import qs.theme
-import qs.kit as K
-import qs.dwidgets.quick.panels
+import qs.base.theme
+import qs.base.kit as K
+import qs.base.kit.panels
 
 // A Helper tab's body (2026-10-17): the hero card (what the tab is, how it works), a search, then the
 // sections as cards (user) in two columns, each card going to the shorter one (a section longer than

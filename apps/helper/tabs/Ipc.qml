@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell
 import Quickshell.Io
 import ".."
 
@@ -46,7 +47,7 @@ HelperList {
                     key: cur.target + " " + f[1] + (args.length ? " " + args.map(a => "<" + a + ">").join(" ") : ""),
                     // (the arguments are in the command)
                     text: what,
-                    copy: "qs -c vtnc ipc call " + cur.target + " " + f[1]
+                    copy: "qs -c " + root.config + " ipc call " + cur.target + " " + f[1]
                 });
             }
         }
@@ -56,9 +57,12 @@ HelperList {
         return out;
     }
 
+    // this shell's config (its folder: vtnc, or vtnc-dev while developing), for the qs calls
+    readonly property string config: Quickshell.shellDir.split("/").pop()
+
     Process {
         id: show
-        command: ["qs", "-c", "vtnc", "ipc", "show"]
+        command: ["qs", "-c", root.config, "ipc", "show"]
         stdout: StdioCollector {
             onStreamFinished: root.sections = root.parse(text)
         }

@@ -1,8 +1,8 @@
 import QtQuick
-import qs.core
-import qs.services
+import qs.base.core
+import qs.base.services
 import qs.components
-import qs.theme
+import qs.base.theme
 import "../../controls"
 
 // The Image Dwidget's options (2026-10-27, user): the file it shows (an image or a GIF), typed or picked

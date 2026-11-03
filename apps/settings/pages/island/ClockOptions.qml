@@ -1,8 +1,8 @@
 import QtQuick
 import Quickshell
-import qs.core
+import qs.base.core
 import qs.components
-import qs.theme
+import qs.base.theme
 import "../../controls"
 
 // The clock's or the date's options (island.clock / island.date, `which`), shown in the Widgets detail

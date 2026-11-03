@@ -6,7 +6,7 @@ import qs.apps.session as Session
 import qs.apps.tools as Tools
 import qs.apps.launcher as Launcher
 import qs.apps.wallpaper as Wallpaper
-import qs.apps.dashboard as Dashboard
+import qs.dashboard as Dashboard
 import qs.apps.settings as Settings
 import qs.apps.notifications as NotificationsApp
 import qs.apps.clipboard as ClipboardApp

@@ -1,9 +1,9 @@
 import QtQuick
 import Quickshell.Widgets
 import qs.components
-import qs.theme
-import qs.kit as K
-import qs.services
+import qs.base.theme
+import qs.base.kit as K
+import qs.base.services
 import "../controls"
 
 // Presets (services/Presets.qml): the shell's style (Island, Dashboard, Appearance, with the

@@ -1,7 +1,7 @@
 import QtQuick
-import qs.core
+import qs.base.core
 import qs.components
-import qs.theme
+import qs.base.theme
 import "../../controls"
 
 // The active window Iwidget's options (island.window), shown in the Layout detail panel: what it shows with

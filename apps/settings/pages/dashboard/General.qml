@@ -1,8 +1,9 @@
 import QtQuick
-import qs.core
-import qs.theme
+import qs.base.core
+import qs.base.theme
 import qs.components
 import "../../controls"
+import qs.dashboard.widgets
 
 // Dashboard → General: the grid (cell size, gap), how an expanding Dwidget makes room, and a demo layout for
 // comparing the expand modes. The layout itself is edited in Dashboard → Layout (Layout.qml)

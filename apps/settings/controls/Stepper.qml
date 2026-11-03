@@ -1,8 +1,8 @@
 import QtQuick
 import qs.components
-import qs.theme
-import qs.dwidgets.quick.panels
-import qs.kit as K
+import qs.base.theme
+import qs.base.kit as K
+import qs.base.kit.panels
 
 // Number with − / + buttons. Scroll also changes it; click the number to type a value.
 // `specialValueText`: shown instead of `from` (e.g. 0 = "Theme"); stepping up from it jumps to

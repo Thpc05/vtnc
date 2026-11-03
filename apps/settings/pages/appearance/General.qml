@@ -1,8 +1,8 @@
 import QtQuick
-import qs.core
-import qs.services
-import qs.theme
-import qs.kit as K
+import qs.base.core
+import qs.base.services
+import qs.base.theme
+import qs.base.kit as K
 import "../../controls"
 
 // Appearance → General: light mode, scheme, shape, text and motion (the colors: Colors.qml).
@@ -37,8 +37,7 @@ Page {
                 SettingRow {
                     label: "Cards"
                     description: "The fill of every card style, on the island and the dashboard: neutral or tinted surfaces, a colour's container, or the colour itself. A card can have its own (its widget's options)"
-                    Cycler {
-                        width: 190
+                    Segmented {
                         options: K.Kit.cardKinds.map(k => ({
                                     value: k,
                                     label: K.Kit.cardTitles[k]

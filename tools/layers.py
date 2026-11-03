@@ -42,9 +42,6 @@ MAP = {
     "kit": ("kit", None),
     "components": ("kit", None),
     "services": ("services", None),
-    "iwidgets": ("feature", "island"),
-    "dwidgets": ("feature", "dashboard"),
-    "apps/dashboard": ("feature", "dashboard"),
     "apps/settings": ("feature", "settings"),
     "frame": ("shell", None),
 }
@@ -78,7 +75,8 @@ def area(rel):
 
 def files():
     for d, dirs, names in os.walk(VTNC):
-        dirs[:] = sorted(x for x in dirs if x not in SKIP and not x.startswith("."))
+        # SKIP only at the root (apps/tools is an app)
+        dirs[:] = sorted(x for x in dirs if not (d == VTNC and x in SKIP) and x != "tests" and not x.startswith("."))
         for n in sorted(names):
             if n.endswith((".qml", ".js")):
                 yield os.path.relpath(os.path.join(d, n), VTNC)

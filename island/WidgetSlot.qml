@@ -1,9 +1,8 @@
 import QtQuick
 import Quickshell
-import qs.core
-import qs.theme
-import qs.iwidgets
-import qs.kit as K
+import qs.base.theme
+import qs.island.widgets
+import qs.base.kit as K
 
 // Hosts one Iwidget. Hidden widgets stay loaded but collapse to width 0,
 // so showing/hiding them morphs smoothly with the island.

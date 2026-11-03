@@ -1,5 +1,5 @@
 import QtQuick
-import qs.core
+import qs.base.core
 import "../../controls"
 
 // Apps → Wallpaper (2026-10-27, from System): the folder the wallpaper app lists and awww's transition.

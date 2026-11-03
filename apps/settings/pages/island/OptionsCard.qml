@@ -1,7 +1,7 @@
 import QtQuick
 import qs.components
-import qs.theme
-import qs.kit as K
+import qs.base.theme
+import qs.base.kit as K
 
 // A card grouping an Iwidget's options in the Layout detail panel (user: the general options and the
 // compact / expanded ones read as one list before): a container card with a small title over its rows.

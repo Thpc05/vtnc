@@ -1,8 +1,8 @@
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
-import qs.core
-import qs.services
+import qs.base.core
+import qs.base.services
 
 // Tiled windows give way to the frame: an invisible, click-through strip on each screen edge
 // whose exclusive zone is the frame's thickness (as caelestia's Exclusions). Off while a window

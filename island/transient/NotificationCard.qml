@@ -1,9 +1,10 @@
 import QtQuick
 import Quickshell
 import Quickshell.Widgets
-import qs.theme
-import qs.kit as K
-import qs.dwidgets.media as DMedia
+import qs.base.theme
+import qs.base.kit as K
+import qs.dashboard.widgets.media as DMedia
+import qs.base.kit.parts as DMedia
 
 // One notification on the island (R1, 2026-10-11: the transient in the Iwidget language), drawn only with
 // palette roles. `look`:
@@ -221,7 +222,7 @@ Item {
 
         // a picture in a circle (a mask, the dashboard's Art: a ClippingRectangle at a half-pixel x wrapped
         // its picture, 2026-10-27)
-        DMedia.Art {
+        DMedia.RoundedImage {
             anchors.fill: parent
             visible: root.picture !== ""
             radius: width / 2

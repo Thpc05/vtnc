@@ -1,8 +1,8 @@
 import QtQuick
-import qs.core
-import qs.services
+import qs.base.core
+import qs.base.services
 import qs.components
-import qs.theme
+import qs.base.theme
 import "../../controls"
 
 // Notifications iwidget options, shown in the Widgets detail panel when the bell is selected:

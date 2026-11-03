@@ -1,6 +1,6 @@
 import QtQuick
 import qs.components
-import qs.theme
+import qs.base.theme
 
 VtncApp {
     appId: "notifications"

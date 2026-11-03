@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# Builds an offscreen probe: a tiny Quickshell config that loads the shell's real kit/, components/,
-# dwidgets/ and iwidgets/ (symlinks, read only) on stubs: theme/Colors.qml with the user's matugen palette,
-# the real Tokens / Icons, a read-only core/Store.qml and a fake player. Nothing is written in the shell.
+# Builds an offscreen probe: a tiny Quickshell config that loads the shell's real base/kit/, components/,
+# dashboard/widgets/ and island/widgets/ (symlinks, read only; island/widgets is built by mkisland.py) on stubs: base/theme/Colors.qml with the user's matugen palette,
+# the real Tokens / Icons, a read-only base/core/Store.qml and a fake player. Nothing is written in the shell.
 #
 #   python3 -I tools/probe/mkprobe.py <probe dir> [dark|light]
 #
@@ -26,7 +26,7 @@ if os.path.isdir(out) and os.listdir(out) and not os.path.exists(os.path.join(ou
     sys.exit(f"refused: {out} is not empty and is not a probe dir (no {MARK})")
 os.makedirs(out, exist_ok=True)
 open(os.path.join(out, MARK), "w").write("vtnc offscreen probe\n")
-for d in ["theme", "core", "services"]:
+for d in ["base/theme", "base/core", "base/services", "dashboard"]:
     os.makedirs(os.path.join(out, d), exist_ok=True)
 
 
@@ -38,7 +38,7 @@ def write(rel, text):
     open(path, "w").write(text)
 
 
-for name in ["kit", "components", "dwidgets", "iwidgets"]:
+for name in ["base/kit", "components", "dashboard/widgets"]:
     link = os.path.join(out, name)
     if os.path.islink(link):
         os.unlink(link)
@@ -46,7 +46,7 @@ for name in ["kit", "components", "dwidgets", "iwidgets"]:
         os.symlink(os.path.join(VTNC, name), link)
 
 # Colors: every token of colorRoles.js, from the user's matugen json (else the fallback)
-roles = open(os.path.join(VTNC, "theme/colorRoles.js")).read()
+roles = open(os.path.join(VTNC, "base/theme/colorRoles.js")).read()
 tokens = re.findall(r'\{ token: "(\w+)", role: "(\w+)"[^}]*fallback: "(#[0-9a-fA-F]{6})"', roles)
 try:
     data = json.load(open(os.path.expanduser("~/.cache/vtnc/matugen.json")))
@@ -65,7 +65,7 @@ def hexfor(role, fallback):
 
 
 props = "\n".join(f'    readonly property color {t}: "{hexfor(r, fb)}"' for t, r, fb in tokens)
-write("theme/Colors.qml", f'''pragma Singleton
+write("base/theme/Colors.qml", f'''pragma Singleton
 import QtQuick
 import Quickshell
 // probe stub: the user's {mode} palette, transparency off
@@ -89,10 +89,10 @@ Singleton {{
 
 # the real Tokens and Icons (they only read Store.theme)
 for f in ["Tokens.qml", "Icons.qml"]:
-    write(os.path.join("theme", f), open(os.path.join(VTNC, "theme", f)).read())
+    write(os.path.join("base/theme", f), open(os.path.join(VTNC, "base/theme", f)).read())
 
 # Store: the theme the kit reads; `island` from PROBE_ISLAND (json, e.g. a widget's options); nothing saved
-write("core/Store.qml", f'''pragma Singleton
+write("base/core/Store.qml", f'''pragma Singleton
 import QtQuick
 import Quickshell
 // probe stub: the theme the kit reads; nothing is saved
@@ -116,7 +116,7 @@ Singleton {{
 }}
 ''')
 
-write("services/MprisController.qml", '''pragma Singleton
+write("base/services/MprisController.qml", '''pragma Singleton
 import QtQuick
 import Quickshell
 // probe stub: a fake player (PROBE_ART = an image path, PROBE_PAUSED=1)

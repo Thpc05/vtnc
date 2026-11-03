@@ -1,9 +1,9 @@
 import QtQuick
-import qs.core
-import qs.services
+import qs.base.core
+import qs.base.services
 import qs.components
-import qs.theme
-import qs.kit as K
+import qs.base.theme
+import qs.base.kit as K
 
 // OSD transient: the island becomes a level bar. The bar's length IS the percentage
 // (osd.pxPerPercent px per 1 %, past 100 % too, up to audio.maxVolume), symmetric, with the icon

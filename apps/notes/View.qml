@@ -1,11 +1,12 @@
 import QtQuick
 import Quickshell.Io
-import qs.core
+import qs.base.core
 import qs.components
-import qs.theme
-import qs.kit as K
-import qs.dwidgets.quick.panels
+import qs.base.theme
+import qs.base.kit as K
 import qs.apps.common
+import qs.base.kit.panels
+import qs.base.services
 
 // Notes (2026-10-17): the notes at the left (search, New, pinned first; NoteFiles.qml), the open one at
 // the right: a plain text editor that saves itself 500 ms after typing stops (and on closing), or its

@@ -1,5 +1,5 @@
 import QtQuick
-import qs.theme
+import qs.base.theme
 
 Text {
     color: Colors.overBackground

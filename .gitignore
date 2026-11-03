@@ -1,5 +1,5 @@
 # local only (R2, 2026-10-28)
 .qmlls*
 *.bak
-.claude/settings.local.json
+.claude/
 anotacoes.txt

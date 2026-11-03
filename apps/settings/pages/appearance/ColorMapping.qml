@@ -1,9 +1,9 @@
 import QtQuick
-import qs.core
-import qs.theme
-import qs.services
+import qs.base.core
+import qs.base.theme
+import qs.base.services
 import "../../controls"
-import "../../../../theme/colorRoles.js" as Roles
+import "../../../../base/theme/colorRoles.js" as Roles
 
 // Appearance → Colors: where each shell color comes from, per mode. By default a token is its
 // Material 3 role from matugen in the current mode (background: pure black / white); here it can

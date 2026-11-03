@@ -1,6 +1,6 @@
 import QtQuick
-import qs.core
-import qs.services
+import qs.base.core
+import qs.base.services
 
 // Feeds this screen's island with the OSD transient (osd.*):
 //  - volume / mic: on the focused monitor

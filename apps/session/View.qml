@@ -1,11 +1,11 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import qs.core
-import qs.services
+import qs.base.core
+import qs.base.services
 import qs.components
-import qs.theme
-import "actions.js" as SessionActions
+import qs.base.theme
+import "../../base/core/sessionActions.js" as SessionActions
 
 // Power menu: lock, suspend, hibernate, logout, reboot, power off.
 FocusScope {

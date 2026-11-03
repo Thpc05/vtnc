@@ -1,6 +1,6 @@
 import QtQuick
-import qs.theme
-import qs.kit as K
+import qs.base.theme
+import qs.base.kit as K
 
 // A clickable icon (theme/Icons.qml) as caelestia's Text icon button: a round state layer (hover
 // 8 %, a ripple on press) whose corners tighten while pressed, the icon filled. `active: false`

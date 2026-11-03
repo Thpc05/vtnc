@@ -1,6 +1,6 @@
 import QtQuick
-import qs.dwidgets.quick.panels
-import qs.kit as K
+import qs.base.kit as K
+import qs.base.kit.panels
 
 // A card of the About tab's tour (2026-10-17, user): one part of vtnc, its symbol on an M3 shape
 // (Shapes) or a tinted square (the tones), a title and two lines; a click opens it (`open()`).

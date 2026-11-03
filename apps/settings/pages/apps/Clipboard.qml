@@ -1,5 +1,5 @@
 import QtQuick
-import qs.core
+import qs.base.core
 import "../../controls"
 
 // Apps → Clipboard: the history kept by cliphist (services/Clipboard.qml).

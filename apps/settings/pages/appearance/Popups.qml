@@ -1,7 +1,7 @@
 import QtQuick
-import qs.core
+import qs.base.core
 import qs.components
-import qs.theme
+import qs.base.theme
 import "../../controls"
 
 // Appearance → Popups (2026-10-17, OSD and Notifications in one page; the name may change): what the

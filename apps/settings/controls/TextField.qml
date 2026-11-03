@@ -1,8 +1,8 @@
 import QtQuick
 import qs.components
-import qs.theme
-import qs.dwidgets.quick.panels
-import qs.kit as K
+import qs.base.theme
+import qs.base.kit as K
+import qs.base.kit.panels
 
 // Single-line text input; `edited` fires on Enter or when focus leaves, `typed` on every keystroke
 // (for a button that depends on what is being typed).

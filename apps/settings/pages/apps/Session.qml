@@ -1,5 +1,5 @@
 import QtQuick
-import qs.core
+import qs.base.core
 import "../../controls"
 
 // Apps → Session (2026-10-27, from System): the session app's hints.

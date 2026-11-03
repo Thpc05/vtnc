@@ -1,7 +1,7 @@
 import QtQuick
-import qs.core
+import qs.base.core
 import qs.components
-import qs.theme
+import qs.base.theme
 
 // Transient page for kinds without a view of their own (debug: `shell transient <kind>`).
 // Transient pages get `payload` (updated in place) and size the island themselves; `islandCentered`

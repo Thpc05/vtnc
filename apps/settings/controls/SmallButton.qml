@@ -1,7 +1,7 @@
 import QtQuick
-import qs.theme
-import qs.dwidgets.quick.panels
-import qs.kit as K
+import qs.base.theme
+import qs.base.kit as K
+import qs.base.kit.panels
 
 // A small labelled button (the kit's TextButton, caelestia's): tonal; `accent` = filled primary,
 // `danger` = errorContainer. Disabled (`enabled: false`): M3's disabled colors.

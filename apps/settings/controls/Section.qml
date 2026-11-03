@@ -1,6 +1,6 @@
 import QtQuick
-import qs.dwidgets.quick.panels
-import qs.kit as K
+import qs.base.kit as K
+import qs.base.kit.panels
 
 // A titled group of SettingRows, in the apps' look (R1.5, 2026-10-17; was a caelestia card): bare on the
 // page like the finished apps and the Quick panels, the title a small weak caption with a hairline to

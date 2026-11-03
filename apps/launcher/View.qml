@@ -1,13 +1,13 @@
 import QtQuick
 import Quickshell
 import Quickshell.Widgets
-import qs.core
-import qs.services
+import qs.base.core
+import qs.base.services
 import qs.components
-import qs.theme
-import qs.kit as K
-import qs.dwidgets.quick.panels
+import qs.base.theme
+import qs.base.kit as K
 import qs.apps.common
+import qs.base.kit.panels
 
 // App launcher: search field + results list (2026-10-17, apps' look K.Kit.appStyle). Rows show the
 // icon, the name and its description; the current one is marked in the look (Shapes the container and

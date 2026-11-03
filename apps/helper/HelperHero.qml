@@ -1,6 +1,6 @@
 import QtQuick
-import qs.dwidgets.quick.panels
-import qs.kit as K
+import qs.base.kit as K
+import qs.base.kit.panels
 
 // The card at the top of every Helper tab (2026-10-17, user): what the tab is and how it works. Its
 // symbol on an M3 shape (Shapes) or a tinted square (the tones), the title and a few lines of text; on

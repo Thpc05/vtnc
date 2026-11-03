@@ -1,10 +1,10 @@
 import QtQuick
 import Quickshell
-import qs.core
+import qs.base.core
 import qs.components
-import qs.theme
-import qs.iwidgets
-import qs.kit as K
+import qs.base.theme
+import qs.island.widgets
+import qs.base.kit as K
 
 // The real widget in one style (live: same component, same data), for a stage painted in the island's
 // body colour: the preview has no shape of its own, only the widget's width and clip.

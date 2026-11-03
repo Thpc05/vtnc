@@ -3,12 +3,13 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Effects
 import Quickshell
-import qs.core
-import qs.services
-import qs.theme
-import qs.kit as K
+import qs.base.core
+import qs.base.services
+import qs.base.theme
+import qs.base.kit as K
 import qs.apps
 import "transient" as Transient
+import qs.island.widgets
 
 Item {
     id: root

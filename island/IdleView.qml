@@ -1,8 +1,9 @@
 import QtQuick
 import Quickshell
-import qs.core
-import qs.theme
-import qs.kit as K
+import qs.base.core
+import qs.base.theme
+import qs.base.kit as K
+import qs.island.widgets
 
 // Idle content of the island: three sections (left / center / right).
 // Widget section "off" → not created. Per mode (compact / expanded) each widget has a style

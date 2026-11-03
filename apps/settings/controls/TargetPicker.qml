@@ -1,11 +1,11 @@
 import QtQuick
 import Quickshell
 import Quickshell.Widgets
-import qs.core
-import qs.services
+import qs.base.core
+import qs.base.services
 import qs.components
-import qs.theme
-import qs.kit as K
+import qs.base.theme
+import qs.base.kit as K
 
 // Picks a launch target (core/launch.js), reusable wherever something "opens an app" (the App Qwidget
 // today; dashboard tabs and others later): a field showing the current one (icon + name); clicking it

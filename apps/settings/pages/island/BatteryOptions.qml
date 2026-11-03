@@ -1,7 +1,7 @@
 import QtQuick
-import qs.core
+import qs.base.core
 import qs.components
-import qs.theme
+import qs.base.theme
 import "../../controls"
 
 // The battery Iwidget's options (island.battery), shown in the Layout detail panel: the tone (Shapes /

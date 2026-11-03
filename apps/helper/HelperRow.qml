@@ -1,7 +1,7 @@
 import QtQuick
-import qs.theme
-import qs.kit as K
-import qs.dwidgets.quick.panels
+import qs.base.theme
+import qs.base.kit as K
+import qs.base.kit.panels
 
 // One item of a Helper list (2026-10-17): a section's caption with a hairline (or a blank one: a section
 // carried over to the next column), or a row: its keys (caps), a mouse button and the place, or a

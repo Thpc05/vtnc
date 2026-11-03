@@ -1,9 +1,9 @@
 import QtQuick
-import qs.core
+import qs.base.core
 import qs.components
-import qs.theme
-import qs.services
-import qs.kit as K
+import qs.base.theme
+import qs.base.services
+import qs.base.kit as K
 import "controls"
 import "pages"
 import "pages/island" as IslandPages

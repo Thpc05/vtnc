@@ -1,6 +1,6 @@
 import QtQuick
-import qs.dwidgets.quick.panels
-import qs.kit as K
+import qs.base.kit as K
+import qs.base.kit.panels
 
 // The settings switch (R1.5, 2026-10-17): the Quick panels' switch in the apps' look (K.Kit.appLook), with
 // the old API: `checked` is driven from outside, a click emits `toggled(next)`.

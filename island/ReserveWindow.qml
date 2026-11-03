@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
-import qs.core
+import qs.base.core
 
 // Invisible window that reserves the island's idle height as an exclusive zone
 // (so tiled windows don't go under it). Enabled by Store.island.reserveSpace.

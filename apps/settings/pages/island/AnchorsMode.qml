@@ -1,5 +1,5 @@
 import QtQuick
-import qs.core
+import qs.base.core
 import "../../controls"
 
 // One island mode's anchors (island.anchors.<mode>), a Section of Island → Anchors (Anchors.qml).

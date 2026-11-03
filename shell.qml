@@ -3,13 +3,14 @@
 
 import QtQuick
 import Quickshell
-import qs.core
+import qs.base.core
 import qs.frame
 import qs.island
 import qs.apps
-import qs.services
-import qs.dwidgets.visualizer as DashVisualizer
+import qs.base.services
+import qs.dashboard.widgets.visualizer as DashVisualizer
 import "island/transient" as Transient
+import qs.base.services as DashVisualizer
 
 ShellRoot {
     id: root

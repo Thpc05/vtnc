@@ -1,13 +1,13 @@
 import QtQuick
 import Quickshell
 import Quickshell.Widgets
-import qs.core
-import qs.services
+import qs.base.core
+import qs.base.services
 import qs.components
-import qs.theme
-import qs.kit as K
-import qs.dwidgets.quick.panels
+import qs.base.theme
+import qs.base.kit as K
 import qs.apps.common
+import qs.base.kit.panels
 
 // Notifications (2026-10-17): the history (services/Notifications.qml), newest first, grouped by app
 // (Settings → Apps → Notifications: groupByApp; a group's header folds it). A row: the app's icon, the

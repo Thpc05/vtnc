@@ -1,8 +1,8 @@
 // The main row is vtnc's IdleView (three widget sections, Iwidgets).
 import QtQuick
 import Quickshell
-import qs.core
-import qs.kit as K
+import qs.base.core
+import qs.base.kit as K
 
 Item {
     id: root

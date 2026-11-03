@@ -1,7 +1,7 @@
 import QtQuick
-import qs.core
-import qs.services
-import qs.theme
+import qs.base.core
+import qs.base.services
+import qs.base.theme
 import "../controls"
 
 // The system: audio, brightness, media and night light (2026-10-27: the wallpaper, the screen tools and

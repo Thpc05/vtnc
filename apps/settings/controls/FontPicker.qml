@@ -1,8 +1,8 @@
 import QtQuick
 import qs.components
-import qs.theme
-import qs.dwidgets.quick.panels
-import qs.kit as K
+import qs.base.theme
+import qs.base.kit as K
+import qs.base.kit.panels
 
 // Font family picker: a field showing the current family in its own font; clicking it opens a
 // searchable list of the installed families right below (inline, so the page's clip and scroll

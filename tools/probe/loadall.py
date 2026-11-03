@@ -35,13 +35,16 @@ for d in folders:
 
 flt = sys.argv[1] if len(sys.argv) > 1 else ""
 files = []
+qml_dirs = set()
 for d in folders:
     for base, dirs, names in os.walk(os.path.join(VTNC, d)):
-        dirs[:] = [x for x in dirs if x not in SKIP_DIRS]
+        # the tests' folders hold no QML; any other folder counts (apps/tools is an app)
+        dirs[:] = [x for x in dirs if x != "tests"]
         for n in names:
             if not n.endswith(".qml"):
                 continue
             rel = os.path.relpath(os.path.join(base, n), VTNC)
+            qml_dirs.add(os.path.dirname(rel))
             if flt and flt not in rel:
                 continue
             # a singleton can't be created as a component; it compiles when something imports it
@@ -52,7 +55,8 @@ for d in folders:
 files.sort()
 
 # every folder with QML files as a module: Quickshell registers a qs.* module when an import names it
-modules = sorted({os.path.dirname(f).replace(os.sep, ".") for f in files} | {d for d in folders})
+# (a folder with no QML of its own, like base/, is no module)
+modules = sorted(d.replace(os.sep, ".") for d in qml_dirs if d != "")
 imports = "\n".join(f"import qs.{m} as M{i}" for i, m in enumerate(modules) if re.fullmatch(r"[a-z][\w.]*", m))
 
 with open(os.path.join(OUT, "files.txt"), "w") as f:

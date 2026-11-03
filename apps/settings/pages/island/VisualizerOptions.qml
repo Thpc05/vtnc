@@ -1,7 +1,7 @@
 import QtQuick
-import qs.core
+import qs.base.core
 import qs.components
-import qs.theme
+import qs.base.theme
 import "../../controls"
 
 // The visualizer Iwidget's options (island.visualizer), shown in the Layout detail panel: a General card

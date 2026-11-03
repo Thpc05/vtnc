@@ -1,5 +1,5 @@
 import QtQuick
-import qs.core
+import qs.base.core
 import "../../controls"
 
 // Apps → Notifications: the history the Notifications app shows (services/Notifications.qml). How the

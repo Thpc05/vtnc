@@ -1,8 +1,8 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import qs.theme
-import qs.kit as K
+import qs.base.theme
+import qs.base.kit as K
 import "../controls"
 
 // About → Examples: the controls the shell really uses, in their states (R2 C3, 2026-10-29: the kit parts

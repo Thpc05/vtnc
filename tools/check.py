@@ -63,7 +63,8 @@ def patterns():
     head("patterns")
     hits = 0
     for d, dirs, names in os.walk(VTNC):
-        dirs[:] = [x for x in dirs if not x.startswith(".") and x not in ("tests", "tools")]
+        # the tests and the root's tools/ (apps/tools is an app)
+        dirs[:] = [x for x in dirs if not x.startswith(".") and x != "tests" and not (d == VTNC and x == "tools")]
         for n in names:
             if not n.endswith((".qml", ".js")):
                 continue
@@ -111,7 +112,7 @@ def running_shells():
     # the vtnc configs running now (both share the shell id vtnc: with two up, the IPC and `qs log` may
     # reach the other one, and the check reads the wrong shell)
     r = subprocess.run(["pgrep", "-a", "qs"], capture_output=True, text=True)
-    return [l for l in r.stdout.splitlines() if re.search(r"\sqs\s.*-c\s+vtnc(-dev)?(\s|$)", " " + l)]
+    return [l for l in r.stdout.splitlines() if re.search(r"\sqs\s.*-c\s+vtnc(-dev)?(\s|$)", " " + l) and " ipc " not in l]
 
 
 def live(restart):
@@ -123,8 +124,13 @@ def live(restart):
               "qs kill -c vtnc; qs -c vtnc-dev -d):\n  " + "\n  ".join(shells))
         return
     if restart:
-        subprocess.run(["qs", "kill", "-c", CONFIG], capture_output=True)
-        time.sleep(1)
+        # `qs kill` stops one instance: every one of this config goes, so only the new one runs after
+        for _ in range(5):
+            mine = [l for l in running_shells() if re.search(r"-c\s+" + re.escape(CONFIG) + r"(\s|$)", l) and " ipc " not in l]
+            if not mine:
+                break
+            subprocess.run(["qs", "kill", "-c", CONFIG], capture_output=True)
+            time.sleep(1)
         subprocess.run(["qs", "-c", CONFIG, "-d"], capture_output=True)
         start = 0
     else:

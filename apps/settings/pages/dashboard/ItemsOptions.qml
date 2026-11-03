@@ -1,8 +1,8 @@
 import QtQuick
-import qs.core
+import qs.base.core
 import qs.components
-import qs.theme
-import qs.kit as K
+import qs.base.theme
+import qs.base.kit as K
 import "../../controls"
 
 // The chosen-items options of a Dwidget / Iwidget (Dashboard → Layout and Island → Layout side panels):

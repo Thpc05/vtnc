@@ -1,10 +1,11 @@
 import QtQuick
 import QtQuick.Controls
-import qs.core
-import qs.theme
-import qs.services
-import qs.kit as K
-import "../../dwidgets/quick" as DQ
+import qs.base.core
+import qs.base.theme
+import qs.base.services
+import qs.base.kit as K
+import "../../dashboard/widgets/quick" as DQ
+import qs.base.kit.panels as DQ
 
 // Notification transient (2026-10-15, vtnc's own; was ambxst's): the current popup's card
 // (Notifications.popupList) and, with several, dots beside it; the wheel goes through them (the card

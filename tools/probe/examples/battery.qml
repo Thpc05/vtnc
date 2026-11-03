@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell
-import qs.theme
-import qs.iwidgets
+import qs.base.theme
+import qs.island.widgets
 
 // Example gallery: the battery Iwidget in every style, bare and on the card.
 // tools/probe/render.sh tools/probe/examples/battery.qml

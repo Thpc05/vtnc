@@ -1,11 +1,11 @@
 import QtQuick
 import Quickshell.Widgets
-import qs.core
-import qs.services
+import qs.base.core
+import qs.base.services
 import qs.components
-import qs.theme
-import qs.kit as K
-import qs.dwidgets.quick.panels
+import qs.base.theme
+import qs.base.kit as K
+import qs.base.kit.panels
 
 // Wallpaper picker: search + matugen scheme + light/dark (one connected group in the apps' look,
 // K.Kit.appStyle, 2026-10-17), grid of square thumbnails with a moving highlight frame and a name label.

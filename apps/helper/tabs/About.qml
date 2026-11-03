@@ -1,6 +1,6 @@
 import QtQuick
 import Quickshell
-import qs.core
+import qs.base.core
 import ".."
 import "../info.js" as Info
 

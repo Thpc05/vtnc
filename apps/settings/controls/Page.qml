@@ -1,6 +1,6 @@
 import QtQuick
-import qs.theme
-import qs.kit as K
+import qs.base.theme
+import qs.base.kit as K
 
 // Scrollable settings page: a column of Sections.
 // The mouse wheel scrolls `wheelStep` px per notch with a short smooth animation

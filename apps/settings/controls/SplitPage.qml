@@ -1,5 +1,5 @@
 import QtQuick
-import qs.theme
+import qs.base.theme
 
 // A settings page with a side panel: the main column and the side panel scroll on their own
 // (both are Pages). `overlay` sits above both, unclipped (drag ghosts).

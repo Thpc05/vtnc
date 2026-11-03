@@ -1,9 +1,9 @@
 import QtQuick
 import qs.components
-import qs.theme
-import qs.dwidgets
-import qs.dwidgets.quick.panels
-import qs.kit as K
+import qs.base.theme
+import qs.base.kit as K
+import qs.base.kit.parts
+import qs.base.kit.panels
 
 // Segmented switch: options side by side with a sliding highlight; they wrap to more lines when
 // they don't fit `maxWidth` (SettingRow sets it).

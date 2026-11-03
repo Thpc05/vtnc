@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # Adds the island bits to a probe made by mkprobe.py, so galleries can host real Iwidgets in an
-# IwidgetFrame (iwidgets/IwidgetFrame.qml):
-#  - core/WidgetRegistry.qml: the real registry trimmed to the Iwidgets asked for (default: battery, tray,
+# IwidgetFrame (island/widgets/IwidgetFrame.qml):
+#  - island/widgets/: a real folder with a link to each Iwidget, catalog.js and IwidgetFrame, and the real
+#    registry (WidgetRegistry.qml) trimmed to the Iwidgets asked for (default: battery, tray,
 #    volume; others may need more service stubs);
-#  - core/Runtime.qml, services/Battery.qml (PROBE_BATT="<percent>[,charging]"), services/Audio.qml.
+#  - base/core/Runtime.qml, base/services/Battery.qml (PROBE_BATT="<percent>[,charging]"), base/services/Audio.qml.
 # Store.island comes from PROBE_ISLAND (see mkprobe.py). Nothing is written in the shell.
 #
 #   python3 -I tools/probe/mkisland.py <probe dir> [widget id ...]
@@ -33,20 +34,31 @@ def write(rel, text):
 
 
 # the real registry, keeping only the wanted Iwidgets (imports, the components map and their Components)
-reg = open(os.path.join(VTNC, "core/WidgetRegistry.qml")).read()
+# island/widgets: a real folder (the trimmed registry lives in it) with the rest linked
+widgets_dir = os.path.join(out, "island", "widgets")
+if os.path.islink(widgets_dir):
+    os.unlink(widgets_dir)
+os.makedirs(widgets_dir, exist_ok=True)
+for n in os.listdir(os.path.join(VTNC, "island/widgets")):
+    if n == "WidgetRegistry.qml":
+        continue
+    link = os.path.join(widgets_dir, n)
+    if not os.path.lexists(link):
+        os.symlink(os.path.join(VTNC, "island/widgets", n), link)
+reg = open(os.path.join(VTNC, "island/widgets/WidgetRegistry.qml")).read()
 keep = "|".join(map(re.escape, wanted))
-reg = re.sub(r'import qs\.iwidgets\.(?!(?:%s) as)\w+ as \w+\n' % keep, '', reg)
+reg = re.sub(r'import qs\.island\.widgets\.(?!(?:%s) as)\w+ as \w+\n' % keep, '', reg)
 # (the map's lines only: `id: xComponent` lines of the Components below are left for the next step)
 reg = re.sub(r'\n\s*(?!(?:%s|id):)\w+: \w+Component,?' % keep, '', reg)
 reg = re.sub(r'    Component \{\n        id: (?!(?:%s)Component\b)\w+\n        [\w.]+ \{\}\n    \}\n' % keep, '', reg)
-write("core/WidgetRegistry.qml", reg)
+write("island/widgets/WidgetRegistry.qml", reg)
 
-write("core/Runtime.qml", '''pragma Singleton
+write("base/core/Runtime.qml", '''pragma Singleton
 import QtQuick
 import Quickshell
 Singleton { property string activeScreen: "" }
 ''')
-write("services/Battery.qml", '''pragma Singleton
+write("base/services/Battery.qml", '''pragma Singleton
 import QtQuick
 import Quickshell
 // probe stub: PROBE_BATT=<percent>[,charging]
@@ -59,7 +71,7 @@ Singleton {
     property bool low: !pluggedIn && percentage <= 20
 }
 ''')
-write("services/Audio.qml", '''pragma Singleton
+write("base/services/Audio.qml", '''pragma Singleton
 import QtQuick
 import Quickshell
 // probe stub: 42 %, not muted

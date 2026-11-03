@@ -1,6 +1,6 @@
 import QtQuick
-import qs.dwidgets.quick.panels
-import qs.kit as K
+import qs.base.kit as K
+import qs.base.kit.panels
 
 // A list's current row in the apps' look (2026-10-17; a ListView `highlight`): Shapes the container and
 // the FocusShape behind the row's icon, Two tones the container tinted with the primary, Tone no fill

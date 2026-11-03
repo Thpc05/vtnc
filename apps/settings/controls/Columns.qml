@@ -1,5 +1,5 @@
 import QtQuick
-import qs.theme
+import qs.base.theme
 
 // Settings side by side: its children (Sections, or a Column of Sections) get equal widths and
 // line up at the top; the height is the tallest one.

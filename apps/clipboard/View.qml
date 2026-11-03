@@ -1,11 +1,11 @@
 import QtQuick
-import qs.core
-import qs.services
+import qs.base.core
+import qs.base.services
 import qs.components
-import qs.theme
-import qs.kit as K
-import qs.dwidgets.quick.panels
+import qs.base.theme
+import qs.base.kit as K
 import qs.apps.common
+import qs.base.kit.panels
 
 // Clipboard (2026-10-17): the history cliphist keeps (services/Clipboard.qml), newest first, pinned ones
 // on top. A row: its kind (text, link, image) and the text (Settings → Apps → Clipboard: 1 or 2 lines),

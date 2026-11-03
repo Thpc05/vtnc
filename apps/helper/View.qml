@@ -1,9 +1,9 @@
 import QtQuick
-import qs.core
-import qs.theme
-import qs.kit as K
-import qs.dwidgets.quick.panels
+import qs.base.core
+import qs.base.theme
+import qs.base.kit as K
 import "tabs" as Tabs
+import qs.base.kit.panels
 
 // Helper (2026-10-17, a base: the content grows towards 1.0): help for the shell, in tabs shown as one
 // connected group in the header (About · Keys · Mouse · CLI · IPC · Glossary), the current one filled in

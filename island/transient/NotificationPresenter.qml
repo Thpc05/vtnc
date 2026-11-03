@@ -1,6 +1,6 @@
 import QtQuick
-import qs.core
-import qs.services
+import qs.base.core
+import qs.base.services
 
 // Decides when the notification transient shows (one for the whole shell, in shell.qml):
 //  - popups (Notifications.popupList) go to the focused monitor once its island is free:
