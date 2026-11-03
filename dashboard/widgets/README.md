@@ -21,15 +21,18 @@ widget or picking one of the open options below. Keep it up to date whenever a c
 
 | File | Role |
 |---|---|
-| `catalog.js` | The source of truth: Dwidgets, their styles and sizes, and their default modes and event. |
+| `<id>/meta.js` | What a Dwidget is: title, icon, styles and sizes, the styles that get a card, defaults, `expand`, renames. A folder that declares `var metas` describes several (`toggle/`, `summary/`), told apart by `widgetId`. |
+| `index.js` | **Generated** (`tools/catalog.py`, run by `tools/check`): one `.import` line per folder, `WIDGETS` and `FOLDERS`. Never edit it by hand. |
+| `catalog.js` | The lookups over that index: the card variants, `MODES` / `CARDS` / `TRIGGERS`, and the style, size and rename questions. |
 | `layout.js` | A pure layout engine: entries plus the expanded entry go in, rects in cells come out. |
 | `Dwidget.qml` | The base type every Dwidget extends: the contract. |
 | `DwidgetFace.qml` | A Dwidget drawn as a simple box (icon, title, size): editor fallback and drag ghost. |
 | `<id>/Widget.qml` | One Dwidget. Its helpers live next to it. |
-| `tests/layout.test.js` | Tests for the engine and the catalog: `node dwidgets/tests/layout.test.js`. |
-| `tests/merge.test.js` | Tests for `mergeDashboard`: `node dwidgets/tests/merge.test.js`. |
-| `tests/qwidgets.test.js` | Tests for the Qwidget catalog: `node dwidgets/tests/qwidgets.test.js`. |
-| `core/DwidgetRegistry.qml` | Merges the catalog with the components; imported by the dashboard and settings. |
+| `tests/layout.test.js` | Tests for the engine and the catalog: `node dashboard/widgets/tests/layout.test.js`. |
+| `tests/merge.test.js` | Tests for `mergeDashboard`: `node dashboard/widgets/tests/merge.test.js`. |
+| `tests/qwidgets.test.js` | Tests for the Qwidget catalog: `node dashboard/widgets/tests/qwidgets.test.js`. |
+| `tests/index.test.js` | Tests that the index still matches the folders and that every meta is well formed. |
+| `DwidgetRegistry.qml` | The catalog plus `url(id)`: the cell loads that file. Imported by the dashboard and the settings. |
 | `apps/dashboard/View.qml` | The dashboard page. It holds which entry is expanded, and Esc collapses it. |
 | `apps/dashboard/DashboardGrid.qml` | Runs the engine and places one `Cell` per entry. Its implicit size is the grid's size. |
 | `apps/dashboard/Cell.qml` | Loads a Dwidget, animates it to its rect, and handles the click/hover triggers and dimming. Each time the dashboard opens (`View.opened` → `grid.enter()`) the cells come in one after another in reading order (`grid.rank`): a fade and an 8 px rise, timed against the island page's own fade. |
@@ -116,7 +119,7 @@ Under over every other cell dims alike to 40 %, the ones under the raised cell t
 faded out for a day). The covered ones take no input (`Cell.qml` `covered`, `grid.raisedCell`). No backing: an opaque one showed through a
 translucent island (R1 area 3, 2026-10-15; the earlier backing, shown while `settling`, is gone).
 
-**Cards' colour** (`theme.card`, one setting for the island and the dashboard since 2026-10-11: Settings → Appearance → Colors → Cards; `catalog.js` `CARDS`): neutral
+**Cards' colour** (`theme.card`, one setting for the island and the dashboard since 2026-10-11: Settings → Appearance → Colors → Cards; `CARDS` in `catalog.js`): neutral
 (surfaceContainer, factory), container (primaryContainer), tinted (surfaceContainer with a 14 % primary tint) or
 primary. It's one palette for every Dwidget with a card: `K.Kit.card` (`kit/Kit.qml`), and `K.Kit.bare` for the
 no-card styles, with the same roles: fill · over / overVariant · accent / overAccent · off / high · selected /
@@ -206,7 +209,7 @@ Tools or apps Dwidget out of it.
 independent, so one Dwidget can look completely different on two dashboards.
 
 - **Styles** (2026-10-11, redone in the Iwidget family): `shapes` · `tones` (Two tones) · `tone`, each with a
-  `<look>Card` variant (the no-card one is the parent and default; `cards()` in `catalog.js`).
+  `<look>Card` variant (the no-card one is the parent and default; `cards` in the widget's `meta.js`).
   - `quick/QMark.qml` draws one mark, shared with the island's Quick configs Iwidget:
     - shapes: off a rounded square, on an accent circle; with Random shapes (each Dwidget's `options.randomShapes`, default on,
       in its Layout options; 2026-10-16, per Dwidget since 2026-10-17, user) off a circle, on an accent M3 shape (`RandomShape.qml`: the same
@@ -223,7 +226,7 @@ independent, so one Dwidget can look completely different on two dashboards.
   - `gap`;
   - `weight`: 300…1500, emboldened past 700;
   - `labels`: auto / on / off.
-- **Migration:** the old `shapesNoCard` / `tonesNoCard` become `shapes` / `tones` (`RENAMED` in `catalog.js`). The old
+- **Migration:** the old `shapesNoCard` / `tonesNoCard` become `shapes` / `tones` (`renames` in the widget's `meta.js`). The old
   card ids `shapes` / `tones` are reused, so they become the no-card styles.
 - **Arrangement:** no option; the size decides (`qwidgets.js`: `arrange()` pills or icons; `split()` and
   `squares()` are shared).
@@ -255,7 +258,7 @@ independent, so one Dwidget can look completely different on two dashboards.
     trailing marks at its right edge.
 - **Migration:** the old `options.layout` is dropped (`StateMerge.migrateQuick`).
 
-**Adding a style:** add it to `catalog.js` (inside `cards()` for a Card variant), teach `QMark` / `QuickView` its look, and the Iwidget follows.
+**Adding a style:** add it to the widget's `meta.js` (name it in `cards` for a Card variant), teach `QMark` / `QuickView` its look, and the Iwidget follows.
 
 | File | Role |
 |---|---|
@@ -331,17 +334,17 @@ A Dwidget must **fill whatever rect it gets**: the rect animates between sizes, 
 
 ## Adding things
 
-- **A Dwidget:**
-  1. Create `dwidgets/<id>/Widget.qml` extending `Dwidget` (`import qs.dwidgets`).
-  2. Add it to `catalog.js`.
-  3. Import it in `core/DwidgetRegistry.qml` and add it to `components` and to a `Component`.
+- **A Dwidget:** one folder, nothing else to wire.
+  1. Create `dashboard/widgets/<id>/Widget.qml` extending `Dwidget` (`import qs.dashboard.widgets`).
+  2. Describe it in `dashboard/widgets/<id>/meta.js` (`var meta = { title, icon, styles, cards, defaults, … }`).
+  3. Run `tools/check` (or `tools/catalog.py`): it writes `index.js` and the registry's hot-reload import line.
   4. Optionally, add it to the default layout in `defaults/config/dashboard.json`. Otherwise the merge appends
      it to Off.
-  5. Run both test files: they check every catalog entry is well formed.
-- **Its options:** make a component and map it in `page.options` in `apps/settings/pages/dashboard/Layout.qml`.
+  5. The test files check the index against the folders and that every meta is well formed.
+- **Its options:** make a component and map it in `page.options` in `settings/pages/dashboard/Layout.qml`.
   The Dwidget reads them from `options`.
-- **A style:** add it to the Dwidget's `styles` and render it when `style` is its id.
-- **A size:** add it to the style's `sizes`. Both modes can use it, and the Dwidget must still fill the new rect.
+- **A style:** add it to the Dwidget's `styles` in its `meta.js` and render it when `style` is its id.
+- **A size:** add it to the style's `sizes` in `meta.js`. Both modes can use it, and the Dwidget must still fill the new rect.
 - **A trigger or an expand mode:** add it to `TRIGGERS` or `MODES` (the StateMerge ENUMS follow them), then
   handle it in `Cell.qml` or `layout.js`, and add tests.
 
@@ -352,7 +355,7 @@ A Dwidget must **fill whatever rect it gets**: the rect animates between sizes, 
 | The expand mode: over, push or takeover | `dashboard.expandMode`, Settings → Dashboard → Expand mode |
 | The cards' colour: neutral, container, tinted or primary | `theme.card`, Settings → Appearance → Colors → Cards (one for the island and the dashboard since 2026-10-11) |
 | The expand event | The catalog's `expand.trigger`, overridable per entry (`expandOn`, Layout → "Expand on"); only Dwidgets with `expand` |
-| How many styles and sizes per Dwidget | `catalog.js` |
+| How many styles and sizes per Dwidget | the widget's `meta.js` |
 | Size editing | Both exist (the knob and the chips); both use `sizes` |
 | Whether the mixer is a volume style or its own Dwidget | A Qwidget (2026-09-27): in Quick configs, or its own Dwidget like Wi-Fi / Bluetooth |
 
@@ -391,7 +394,7 @@ when it fits). The style selector stays, even with one style.
 - **Summaries (`summary/Widget.qml`, 2026-10-17, user):** Notifications, Clipboard, Notes and (2026-10-27) Dino run
   on the dashboard (ids notifications, clipboard, notes, dino), one component with a `kind`, as the toggles' `qid`.
   Helper gets none.
-  - Styles: the Iwidget family, `shapes` · `tones` · `tone`, each + `Card` (`summaryWidget()` in `catalog.js`).
+  - Styles: the Iwidget family, `shapes` · `tones` · `tone`, each + `Card` (`summary()` in `summary/meta.js`).
     Options: `color`, `randomShapes` (the header mark). They never expand.
   - Sizes: 1x1 / 2x1 / 1x2 a **badge** (the mark, with the count and the title beside or under it when they fit; a
     click opens the app); 2x2 and up a **list** (`SummaryView`): a header (mark, title, count; a click opens the

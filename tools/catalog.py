@@ -10,11 +10,14 @@ import os, re, sys
 VTNC = os.path.realpath(os.environ.get("VTNC") or os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 # (folder of the index, what it holds, the map's name, folders outside it that also have a meta.js)
 AREAS = [
-    ("island/widgets", "Iwidget", "WIDGETS", []),
-    ("dashboard/widgets", "Dwidget", "WIDGETS", []),
+    ("island/widgets", "Iwidget", "WIDGETS", [], "island/widgets/WidgetRegistry.qml", "qs.island.widgets"),
+    ("dashboard/widgets", "Dwidget", "WIDGETS", [], "dashboard/widgets/DwidgetRegistry.qml", "qs.dashboard.widgets"),
     # the dashboard and the Settings are apps too, from their own surface folders
-    ("apps", "app", "APPS", ["../dashboard", "../settings"]),
+    ("apps", "app", "APPS", ["../dashboard", "../settings"], "apps/AppRegistry.qml", "qs.apps"),
 ]
+# a folder outside the area imports as its own module (apps/../settings → qs.settings)
+OUTSIDE = {"../dashboard": "qs.dashboard", "../settings": "qs.settings"}
+HOT = re.compile(r"^import [\w.]+ // hot reload$", re.M)
 
 
 def qualifier(wid):
@@ -66,6 +69,20 @@ def ref(wid, folder):
     return "%s.meta" % qualifier(folder) if own else "%s.metas.%s" % (qualifier(folder), wid)
 
 
+def hot_imports(registry, module, folders):
+    """The registry's directory imports, one per folder: Quickshell's hot reload only watches a file
+    some QML imports, and the widgets are loaded by URL. Rewritten in place, between the first and
+    the last `// hot reload` line."""
+    p = os.path.join(VTNC, registry)
+    src = open(p).read()
+    lines = ["import %s // hot reload" % (OUTSIDE[f] if f in OUTSIDE else module + "." + f)
+             for f in folders]
+    hits = list(HOT.finditer(src))
+    if not hits:
+        return src, src
+    return src, src[:hits[0].start()] + "\n".join(lines) + src[hits[-1].end():]
+
+
 def launch_apps():
     """base/services/launch.js's VTNC_APPS: the apps whose meta.js declares a launch target. A service
     must not import a feature, so the list is written here instead of read from apps/index.js."""
@@ -82,28 +99,28 @@ def launch_apps():
 
 
 stale = []
-for area, kind, name, extra in AREAS:
+def write(path, new, old):
+    if old == new:
+        return
+    if "--check" in sys.argv:
+        stale.append(path)
+    else:
+        open(os.path.join(VTNC, path), "w").write(new)
+        print("wrote " + path)
+
+
+for area, kind, name, extra, registry, module in AREAS:
     # an area whose folders have no meta.js yet (R2 C5 does one area at a time) has no index
-    if not ids(area, extra):
+    pairs = ids(area, extra)
+    if not pairs:
         continue
     p = os.path.join(VTNC, area, "index.js")
-    new = index(area, kind, name, extra)
-    old = open(p).read() if os.path.exists(p) else None
-    if old == new:
-        continue
-    if "--check" in sys.argv:
-        stale.append(area + "/index.js")
-    else:
-        open(p, "w").write(new)
-        print("wrote " + area + "/index.js (%d)" % len(ids(area, extra)))
+    write(area + "/index.js", index(area, kind, name, extra),
+          open(p).read() if os.path.exists(p) else None)
+    old, new = hot_imports(registry, module, sorted(set(f for _, f in pairs)))
+    write(registry, new, old)
 p = os.path.join(VTNC, "base/services/launchApps.js")
-new = launch_apps()
-if (open(p).read() if os.path.exists(p) else None) != new:
-    if "--check" in sys.argv:
-        stale.append("base/services/launchApps.js")
-    else:
-        open(p, "w").write(new)
-        print("wrote base/services/launchApps.js")
+write("base/services/launchApps.js", launch_apps(), open(p).read() if os.path.exists(p) else None)
 
 if stale:
     sys.exit("stale (run tools/catalog.py): " + ", ".join(stale))

@@ -7,6 +7,8 @@ import "index.js" as Index
 // A directory import per app folder, on purpose unused: a URL load alone doesn't tell Quickshell's
 // hot reload to watch those files (the trailing comment keeps tools/unused-imports.py from dropping
 // them).
+import qs.dashboard // hot reload
+import qs.settings // hot reload
 import qs.apps.clipboard // hot reload
 import qs.apps.dino // hot reload
 import qs.apps.helper // hot reload
@@ -16,8 +18,6 @@ import qs.apps.notifications // hot reload
 import qs.apps.session // hot reload
 import qs.apps.tools // hot reload
 import qs.apps.wallpaper // hot reload
-import qs.dashboard // hot reload
-import qs.settings // hot reload
 
 // The island's apps. Each one is a folder that describes itself in meta.js (title, icon, keepAlive,
 // closeOnEsc and, when it has one, its launch target) and draws itself in View.qml; apps/index.js
