@@ -1,4 +1,4 @@
-// Tests for core/launch.js (launch targets). Run: node core/tests/launch.test.js
+// Tests for base/services/launch.js (launch targets). Run: node base/services/tests/launch.test.js
 const fs = require("fs");
 const path = require("path");
 const assert = require("assert");

@@ -30,6 +30,7 @@ ShellRoot {
             }
 
             IslandWindow {
+                apps: AppRegistry
                 screen: screenScope.modelData
             }
 

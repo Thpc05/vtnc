@@ -5,6 +5,7 @@ import Quickshell
 import qs.base.services
 import qs.base.theme
 import "launch.js" as L
+import qs.base.core
 
 // Opens launch targets (core/launch.js: vtnc:<app>, vtnc:settings/<page>, desktop:<entry id>), for the
 // App / Settings Qwidgets, IPC (`launch run <target>`) and, later, dashboard tabs and the CLI.

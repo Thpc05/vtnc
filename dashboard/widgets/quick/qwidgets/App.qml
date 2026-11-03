@@ -1,6 +1,6 @@
 import QtQuick
-import qs.base.core
 import ".."
+import qs.base.services
 
 // Opens a launch target (core/launch.js): the instance's `config.target` (the App Qwidget, picked in
 // the settings), or a fixed `target` (the Settings Qwidget). Its title and icon are the target's.

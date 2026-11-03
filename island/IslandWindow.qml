@@ -13,6 +13,9 @@ import qs.base.kit as K
 PanelWindow {
     id: window
 
+    // the apps' registry, handed in by the shell and passed to the island
+    required property QtObject apps
+
     // the app's page is shown here (not covered by a transient)
     readonly property bool appShown: island.showingApp
     readonly property bool anyAppOpen: Runtime.activeApp !== ""
@@ -154,6 +157,7 @@ PanelWindow {
 
     Island {
         id: island
+        apps: window.apps
         frameTop: window.frameThickness
         screen: window.screen
         anchors.top: parent.top

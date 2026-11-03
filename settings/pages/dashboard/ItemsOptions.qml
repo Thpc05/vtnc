@@ -1,9 +1,9 @@
 import QtQuick
-import qs.base.core
 import qs.components
 import qs.base.theme
 import qs.base.kit as K
 import "../../controls"
+import qs.base.services
 
 // The chosen-items options of a Dwidget / Iwidget (Dashboard → Layout and Island → Layout side panels):
 // which of its mini widgets it shows in what order (options.items): Quick configs' Qwidgets, Sliders'

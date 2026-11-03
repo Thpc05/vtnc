@@ -1,7 +1,6 @@
 import QtQuick
 import Quickshell
 import Quickshell.Widgets
-import qs.base.core
 import qs.base.services
 import qs.components
 import qs.base.theme

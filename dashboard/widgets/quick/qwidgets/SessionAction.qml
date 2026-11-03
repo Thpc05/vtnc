@@ -1,6 +1,5 @@
 import QtQuick
 import qs.base.services
-import qs.base.core
 import qs.base.theme
 import ".."
 import "../../../../base/core/sessionActions.js" as SessionActions

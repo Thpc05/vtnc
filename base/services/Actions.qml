@@ -3,6 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import qs.base.services
+import qs.base.core
 
 // Runs the screen tools' and the session's actions by id (apps/tools/actions.js,
 // apps/session/actions.js), for the Tools / Session apps, their Qwidgets and IPC. Each runs after the

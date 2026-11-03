@@ -1,6 +1,5 @@
 import QtQuick
 import Quickshell.Widgets
-import qs.base.core
 import qs.base.services
 import qs.base.kit as K
 import qs.base.kit.panels

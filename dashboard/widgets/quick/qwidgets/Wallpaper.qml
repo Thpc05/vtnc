@@ -1,5 +1,4 @@
 import QtQuick
-import qs.base.core
 import qs.base.services
 import qs.base.theme
 import ".."

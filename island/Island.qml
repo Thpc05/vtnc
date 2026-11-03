@@ -1,4 +1,5 @@
-// The StackView pages come from vtnc's apps system (apps/AppRegistry).
+// The StackView pages come from vtnc's apps system: the shell hands in its registry
+// (`apps` below), so the island doesn't import the apps itself.
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Effects
@@ -7,7 +8,6 @@ import qs.base.core
 import qs.base.services
 import qs.base.theme
 import qs.base.kit as K
-import qs.apps
 import "transient" as Transient
 import qs.island.widgets
 
@@ -15,6 +15,8 @@ Item {
     id: root
 
     required property ShellScreen screen
+    // the apps' registry (apps/AppRegistry), handed in by the shell
+    required property QtObject apps
     readonly property string screenName: screen?.name ?? ""
     // "island" (floating) or "default" (the notch, attached to the top edge): island.style
     readonly property string notchTheme: Store.island.style === "island" ? "island" : "default"
@@ -588,7 +590,7 @@ Item {
     // their view (and state) after closing; the others are destroyed once hidden.
     property var pages: ({})
     property var pendingDestroy: []
-    readonly property QtObject currentApp: appOpen ? AppRegistry.get(Runtime.activeApp) : null
+    readonly property QtObject currentApp: appOpen ? root.apps.get(Runtime.activeApp) : null
 
     function pageFor(app: QtObject): Item {
         let page = pages[app.appId];
@@ -608,7 +610,7 @@ Item {
         if (!page)
             return;
         page.closed?.();
-        const app = AppRegistry.get(appId);
+        const app = root.apps.get(appId);
         if (app && !app.keepAlive) {
             delete pages[appId];
             pendingDestroy.push(page);
@@ -694,7 +696,7 @@ Item {
             return;
         }
         if (appOpen) {
-            const app = AppRegistry.get(Runtime.activeApp);
+            const app = root.apps.get(Runtime.activeApp);
             if (!app) {
                 console.warn(`[Island] unknown app "${Runtime.activeApp}"`);
                 Runtime.closeApp();
