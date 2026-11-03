@@ -1,13 +1,13 @@
-// Tests for dwidgets/layout.js and dwidgets/catalog.js. Run: node dwidgets/tests/layout.test.js
-// (the files are QML JS libraries; the loader strips `.pragma library` and evaluates them)
+// Tests for dashboard/widgets/layout.js and catalog.js.
+// Run: node dashboard/widgets/tests/layout.test.js
 const fs = require("fs");
 const path = require("path");
 const assert = require("assert");
 
-function load(file, names) {
-    const src = fs.readFileSync(path.join(__dirname, "..", file), "utf8").replace(/^\.pragma library.*$/m, "");
-    return new Function(src + "\nreturn {" + names.join(",") + "};")();
-}
+const { rootOf, make } = require("../../../base/core/tests/qmljs.js");
+const root = rootOf(__dirname);
+const lib = make(root).lib;
+const load = (file, names) => lib("dashboard/widgets/" + file, names);
 
 const L = load("layout.js", ["solve", "place", "bounds", "anchor", "overlaps", "drop", "nearestSize", "firstFree"]);
 const C = load("catalog.js", ["WIDGETS", "MODES", "TRIGGERS", "has", "style", "validStyle", "validSize", "parseSize", "validMode", "expandedSize", "trigger", "expands", "hasEvent", "defaultEntry"]);
