@@ -5,8 +5,7 @@
 #   base/core → base/theme → base/kit → base/services → apps/common → features → shell
 #
 # a file may import its own layer or a lower one, and a feature (island, dashboard, settings, each app) may
-# not import another feature. Today's folders (before the R2 move) are mapped onto the same layers, so the
-# first runs list the backlog of R2 phase C steps 4–5.
+# not import another feature. What it still lists belongs to R2 phase C steps 5 and 7.
 #
 #   python3 -I tools/layers.py [--strict] [-v]        (VTNC = the shell, default the one around tools/)
 #
@@ -36,13 +35,8 @@ MAP = {
     "apps": ("shell", None),
     "shell": ("shell", None),
     "shell.qml": ("shell", None),
-    # today's folders (drop them after the move, R2 C4)
-    "core": ("core", None),
-    "theme": ("theme", None),
-    "kit": ("kit", None),
+    # the kit's old twins (step 7 fuses them into base/kit)
     "components": ("kit", None),
-    "services": ("services", None),
-    "frame": ("shell", None),
 }
 
 QS = re.compile(r'^\s*\.?import\s+qs\.([\w.]+)')

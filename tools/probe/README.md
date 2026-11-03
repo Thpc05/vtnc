@@ -1,7 +1,7 @@
 # Offscreen probe
 
 Renders parts of the shell to PNGs without touching the running shell or its files: a tiny Quickshell config
-built in a temporary folder loads the real `kit/`, `components/`, `dwidgets/` and `iwidgets/` (symlinks, read only)
+built in a temporary folder loads the real `base/`, `components/`, `dashboard/widgets/` and `island/widgets/` (symlinks, read only)
 on stubs (the user's matugen palette, a read-only Store, fake player / battery / audio).
 
 It lives on the `dev` branch (`~/.config/quickshell/vtnc-dev`) and renders the shell around it, or the one
