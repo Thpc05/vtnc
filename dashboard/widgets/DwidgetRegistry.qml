@@ -2,62 +2,40 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
-import qs.dashboard.widgets.placeholder as Placeholder
-import qs.dashboard.widgets.media as Media
-import qs.dashboard.widgets.quick as Quick
-import qs.dashboard.widgets.calendar as Calendar
-import qs.dashboard.widgets.sliders as Sliders
-import qs.dashboard.widgets.toggle as Toggle
-import qs.dashboard.widgets.summary as Summary
-import qs.dashboard.widgets.image as Image
-import qs.dashboard.widgets.clock as Clock
-import qs.dashboard.widgets.visualizer as Visualizer
 import "catalog.js" as Catalog
 
+// A directory import per widget folder, on purpose unused: a URL load alone doesn't tell
+// Quickshell's hot reload to watch those files (the trailing comment keeps
+// tools/unused-imports.py from dropping them).
+import qs.dashboard.widgets.calendar // hot reload
+import qs.dashboard.widgets.clock // hot reload
+import qs.dashboard.widgets.image // hot reload
+import qs.dashboard.widgets.media // hot reload
+import qs.dashboard.widgets.placeholder // hot reload
+import qs.dashboard.widgets.quick // hot reload
+import qs.dashboard.widgets.sliders // hot reload
+import qs.dashboard.widgets.summary // hot reload
+import qs.dashboard.widgets.toggle // hot reload
+import qs.dashboard.widgets.visualizer // hot reload
+
 // Dashboard widgets (Dwidgets) available to the dashboard and to the settings app.
-// Each one lives in dwidgets/<id>/Widget.qml, is a Dwidget (dwidgets/Dwidget.qml: style, size,
-// expanded, expandable, growing, options, editing, expandRequest) and is described in
-// dwidgets/catalog.js. Entries have two modes, idle and expanded, each { style, size }.
-// Imported (not loaded by URL) so Quickshell's hot reload tracks their files.
-// To add one, see dwidgets/README.md ("Adding a Dwidget").
+// Each one is described in its folder's meta.js (index.js collects them, catalog.js adds the card
+// variants) and drawn by that folder's Widget.qml, a Dwidget (Dwidget.qml: widgetId, style, size,
+// expanded, expandable, options, editing, expandRequest). A folder may draw several Dwidgets and tell
+// them apart by `widgetId` (toggle, summary). Entries have two modes, idle and expanded, each
+// { style, size }.
+// The cell loads the file by URL ([[isolation by URL]]: a broken Dwidget fails in its own cell).
+// To add one, see README.md ("Adding a Dwidget").
 Singleton {
     id: root
 
-    // title / icon / styles / defaults come from dwidgets/catalog.js; the components are here
-    readonly property var components: ({
-            placeholder: placeholderComponent,
-            media: mediaComponent,
-            quick: quickComponent,
-            calendar: calendarComponent,
-            sliders: slidersComponent,
-            mixer: mixerComponent,
-            wifi: wifiComponent,
-            bluetooth: bluetoothComponent,
-            colorScheme: schemeComponent,
-            powerProfile: powerComponent,
-            wallpaper: wallpaperComponent,
-            notifications: notificationsComponent,
-            clipboard: clipboardComponent,
-            notes: notesComponent,
-            dino: dinoComponent,
-            image: imageComponent,
-            clock: clockComponent,
-            visualizer: visualizerComponent
-        })
+    // id → { title, icon, styles, defaults, … } from the widget's meta.js
+    readonly property var widgets: Catalog.WIDGETS
 
-    // id → { title, icon, styles, defaults, component }
-    readonly property var widgets: {
-        const out = {};
-        for (const id in Catalog.WIDGETS)
-            if (components[id])
-                out[id] = Object.assign({
-                    component: components[id]
-                }, Catalog.WIDGETS[id]);
-        return out;
-    }
-
-    function component(id: string): Component {
-        return widgets[id]?.component ?? null;
+    // the Widget.qml that draws Dwidget `id` ("" when the id is unknown): several ids may share one
+    function url(id: string): url {
+        const folder = Catalog.FOLDERS[id];
+        return folder ? Qt.resolvedUrl(folder + "/Widget.qml") : "";
     }
 
     function styles(id: string): var {
@@ -100,98 +78,5 @@ Singleton {
 
     function defaultEntry(id: string, uid: string, x: int, y: int): var {
         return Catalog.defaultEntry(id, uid, x, y);
-    }
-
-    Component {
-        id: placeholderComponent
-        Placeholder.Widget {}
-    }
-    Component {
-        id: mediaComponent
-        Media.Widget {}
-    }
-    Component {
-        id: quickComponent
-        Quick.Widget {}
-    }
-    Component {
-        id: calendarComponent
-        Calendar.Widget {}
-    }
-    Component {
-        id: slidersComponent
-        Sliders.Widget {}
-    }
-    Component {
-        id: mixerComponent
-        Toggle.Widget {
-            qid: "mixer"
-        }
-    }
-    Component {
-        id: wifiComponent
-        Toggle.Widget {
-            qid: "wifi"
-        }
-    }
-    Component {
-        id: bluetoothComponent
-        Toggle.Widget {
-            qid: "bluetooth"
-        }
-    }
-    Component {
-        id: schemeComponent
-        Toggle.Widget {
-            qid: "colorScheme"
-        }
-    }
-    Component {
-        id: powerComponent
-        Toggle.Widget {
-            qid: "powerProfile"
-        }
-    }
-    Component {
-        id: wallpaperComponent
-        Toggle.Widget {
-            qid: "wallpaper"
-        }
-    }
-    Component {
-        id: notificationsComponent
-        Summary.Widget {
-            kind: "notifications"
-        }
-    }
-    Component {
-        id: clipboardComponent
-        Summary.Widget {
-            kind: "clipboard"
-        }
-    }
-    Component {
-        id: notesComponent
-        Summary.Widget {
-            kind: "notes"
-        }
-    }
-    Component {
-        id: dinoComponent
-        Summary.Widget {
-            kind: "dino"
-        }
-    }
-    Component {
-        id: imageComponent
-        Image.Widget {}
-    }
-    Component {
-        id: clockComponent
-        Clock.Widget {}
-    }
-    Component {
-        id: visualizerComponent
-        Visualizer.Widget {}
     }
 }

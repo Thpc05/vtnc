@@ -6,7 +6,7 @@ import qs.dashboard.widgets.quick
 import "../catalog.js" as DCatalog
 import qs.base.kit.panels
 
-// A Qwidget with a panel as a Dwidget of its own (`qid` picks it: Wi-Fi, Bluetooth, Mixer and, 2026-10-27,
+// A Qwidget with a panel as a Dwidget of its own (`widgetId` picks it: Wi-Fi, Bluetooth, Mixer and, 2026-10-27,
 // Color scheme, Power profile, Wallpaper; user: every toggle has a panel), in the Quick configs family
 // (2026-10-11): shapes · tones · tone, each also on the card, drawn by Quick configs' QuickView with
 // this one Qwidget (1x1 the mark; 2x1 / 3x1 / 2x2 the mark and its name and state; 1x2 the mark).
@@ -20,7 +20,6 @@ import qs.base.kit.panels
 Dwidget {
     id: root
 
-    required property string qid
 
     // the Qwidget's live model (quick/qwidgets): title, symbol, active, status, panel, toggle()
     readonly property QtObject q: model.item
@@ -33,7 +32,7 @@ Dwidget {
                 colorScheme: schemeModel,
                 powerProfile: powerModel,
                 wallpaper: wallpaperModel
-            })[root.qid] ?? null
+            })[root.widgetId] ?? null
     }
     Component {
         id: wifiModel
@@ -64,7 +63,7 @@ Dwidget {
     readonly property bool available: q?.available ?? false
     // the click split between the mark (toggle) and the rest (the panel): Wi-Fi and Bluetooth when their
     // name shows (with the mark alone, the entry's event decides as before)
-    readonly property bool split: (qid === "wifi" || qid === "bluetooth") && view.arranged.kind !== "icons"
+    readonly property bool split: (widgetId === "wifi" || widgetId === "bluetooth") && view.arranged.kind !== "icons"
     // 3x3 and up the panel is the face (always open, no click event, no back); `size` is the expanded one
     // while expanded, so only at rest (a small toggle expanded keeps its back)
     readonly property bool panelFace: !expanded && size.w >= 3 && size.h >= 3 && (q?.panel ?? null) !== null
@@ -73,8 +72,8 @@ Dwidget {
 
     // the look drawn (catalog style, 2026-10-11: the Quick configs family): shapes · tones · tone, each
     // also on the card (`<look>Card`)
-    readonly property bool card: DCatalog.isCard(root.qid, root.style)
-    readonly property string face: DCatalog.baseStyle(root.qid, root.style)
+    readonly property bool card: DCatalog.isCard(root.widgetId, root.style)
+    readonly property string face: DCatalog.baseStyle(root.widgetId, root.style)
     readonly property var pal: cardHost.pal
     readonly property ToneColors colors: ToneColors {
         pal: root.pal
@@ -127,9 +126,9 @@ Dwidget {
             interactive: false
             pressed: input.pressed && (!root.split || input.onMark)
             models: ({
-                    [root.qid]: root.q
+                    [root.widgetId]: root.q
                 })
-            items: root.q ? [root.qid] : []
+            items: root.q ? [root.widgetId] : []
             look: root.face
             pal: root.pal
             tone: root.colors.tone

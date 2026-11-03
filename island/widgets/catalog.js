@@ -43,6 +43,9 @@ var WIDGETS = (function () {
     return out;
 })();
 
+// id → the folder whose Widget.qml draws it
+var FOLDERS = Index.FOLDERS;
+
 function has(id) {
     return WIDGETS.hasOwnProperty(id);
 }

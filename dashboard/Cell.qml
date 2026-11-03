@@ -126,8 +126,13 @@ Item {
         id: loader
         anchors.fill: parent
         active: !cell.simple
-        sourceComponent: DwidgetRegistry.component(cell.entry.id)
+        source: DwidgetRegistry.url(cell.entry.id)
+        // a broken Dwidget fails in its own cell: the grid and the other cells keep running
+        onStatusChanged: if (status === Loader.Error)
+            console.warn(`[Dwidget] "${cell.entry.id}" failed to load`);
         onLoaded: {
+            // the id it draws (a folder may draw several: toggle, summary)
+            item.widgetId = Qt.binding(() => cell.entry.id);
             // one style in both states (expanding, only for the Dwidgets that need it, grows the rect)
             item.style = Qt.binding(() => cell.entry.idle?.style ?? "");
             item.size = Qt.binding(() => ({

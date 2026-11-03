@@ -1,8 +1,10 @@
 import QtQuick
 
-// Base of every Dwidget (see README.md, "Dwidget contract"). apps/dashboard/Cell.qml sets these
+// Base of every Dwidget (see README.md, "Dwidget contract"). dashboard/Cell.qml sets these
 // and sizes the Dwidget to its rect; the Dwidget just fills itself.
 Item {
+    // the Dwidget's id (the catalog's key): a folder that draws several (toggle, summary) picks by it
+    property string widgetId
     // the look to render now: the idle or the expanded mode's style (catalog.js)
     property string style
     // the current size in cells, { w, h } (the expanded size while expanded)
