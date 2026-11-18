@@ -18,7 +18,7 @@ Lists share `apps/common/`:
   it `idleFill: K.Kit.expressive.high` in Shapes (the row is the container).
 
 ## Apps
-| id | Keys (Hyprland, hypr/vtnc/keybinds.lua) | Notes |
+| id | Keys (Hyprland, hypr/vtnc-0.4/keybinds.lua) | Notes |
 |---|---|---|
 | launcher | Super | the current app grows with its desktop actions (Ctrl+1…3) |
 | session, tools | Super+Esc, Super+S | `components/ActionRow.qml`; Shapes: one sliding M3 shape |

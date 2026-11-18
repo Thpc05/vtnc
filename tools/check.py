@@ -213,7 +213,7 @@ def ipc(*args):
 
 def remembered(app, key, fallback):
     try:
-        with open(os.path.expanduser("~/.local/state/vtnc/state.json"), encoding="utf-8") as f:
+        with open(os.path.expanduser("~/.local/state/vtnc-0.4/state.json"), encoding="utf-8") as f:
             return json.load(f).get("apps", {}).get(app, {}).get(key, fallback)
     except (OSError, ValueError):
         return fallback

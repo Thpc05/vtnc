@@ -7,14 +7,14 @@ import qs.base.core
 import "colorRoles.js" as Roles
 
 // The shell's color tokens. matugen's whole output (every role of both schemes and the tonal
-// palettes, written by Wallpapers to ~/.cache/vtnc/matugen.json) is mapped to each token by
+// palettes, written by Wallpapers to ~/.cache/vtnc-0.4/matugen.json) is mapped to each token by
 // theme/colorRoles.js: by default its M3 role in the current mode (background: M3 surface),
 // or what the user picked in Settings → Appearance → Colors (Store.theme.colors[mode][token]: a
 // role of either scheme, a palette tone or a fixed hex). Until matugen has run, a fallback palette.
 Singleton {
     id: root
 
-    readonly property string path: (Quickshell.env("XDG_CACHE_HOME") || Quickshell.env("HOME") + "/.cache") + "/vtnc/matugen.json"
+    readonly property string path: (Quickshell.env("XDG_CACHE_HOME") || Quickshell.env("HOME") + "/.cache") + "/vtnc-0.4/matugen.json"
     readonly property string mode: Store.theme.light ? "light" : "dark"
 
     // the parsed matugen output (the last good one)

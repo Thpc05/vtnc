@@ -1,7 +1,7 @@
 .pragma library
 
 // The shell's color tokens and where each comes from. matugen's whole output (`matugen … --dry-run
-// -j hex`, in ~/.cache/vtnc/matugen.json) holds every role for both schemes and the tonal palettes;
+// -j hex`, in ~/.cache/vtnc-0.4/matugen.json) holds every role for both schemes and the tonal palettes;
 // the user's mapping (Store.theme.colors[mode][token]) may point a token somewhere else.
 // A spec (what the state stores) is one of:
 //  - "light:<role>" / "dark:<role>"  a matugen role from that scheme (follows the wallpaper)

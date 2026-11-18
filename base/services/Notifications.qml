@@ -9,7 +9,7 @@ import qs.base.core
 
 // Notifications (2026-10-15, vtnc's own; replaces ambxst's service): the D-Bus server and the list.
 //  - list: every notification, oldest first (NotificationEntry); the last `keep` are saved to
-//    ~/.cache/vtnc/notifications.json (text only) and come back after a restart. Settings → Apps →
+//    ~/.cache/vtnc-0.4/notifications.json (text only) and come back after a restart. Settings → Apps →
 //    Notifications (2026-10-17): `keep` is the history size, `persist` off = nothing saved (the file
 //    emptied), `maxAgeDays` drops older ones (on load and once an hour; 0 = never)
 //  - popupList: the ones popping up now; each for its timeout (NotificationEntry.timeout). The island
@@ -191,7 +191,7 @@ Singleton {
     // the history ------------------------------------------------------------
     FileView {
         id: historyFile
-        path: Quickshell.env("HOME") + "/.cache/vtnc/notifications.json"
+        path: Quickshell.env("HOME") + "/.cache/vtnc-0.4/notifications.json"
         printErrors: false
         onLoaded: root.loadHistory()
         onLoadFailed: root.historyLoaded = true

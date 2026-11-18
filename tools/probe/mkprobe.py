@@ -49,7 +49,7 @@ for name in ["base/kit", "components", "dashboard/widgets"]:
 roles = open(os.path.join(VTNC, "base/theme/colorRoles.js")).read()
 tokens = re.findall(r'\{ token: "(\w+)", role: "(\w+)"[^}]*fallback: "(#[0-9a-fA-F]{6})"', roles)
 try:
-    data = json.load(open(os.path.expanduser("~/.cache/vtnc/matugen.json")))
+    data = json.load(open(os.path.expanduser("~/.cache/vtnc-0.4/matugen.json")))
     colors = data.get("colors", data)
 except Exception:
     colors = {}

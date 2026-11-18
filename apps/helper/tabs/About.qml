@@ -42,19 +42,19 @@ HelperList {
             title: "Where things are",
             rows: [
                 {
-                    key: "~/.config/vtnc/",
+                    key: "~/.config/vtnc-0.4/",
                     text: "Your settings and presets",
                     copy: Store.configDir
                 },
                 {
-                    key: "~/.local/state/vtnc/",
+                    key: "~/.local/state/vtnc-0.4/",
                     text: "What the shell remembers",
                     copy: Store.stateDir
                 },
                 {
-                    key: "~/.config/hypr/vtnc/",
+                    key: "~/.config/hypr/vtnc-0.4/",
                     text: "vtnc's Hyprland files (yours: custom/)",
-                    copy: Quickshell.env("HOME") + "/.config/hypr/vtnc"
+                    copy: Quickshell.env("HOME") + "/.config/hypr/vtnc-0.4"
                 },
                 {
                     key: "~/.config/quickshell/vtnc/",

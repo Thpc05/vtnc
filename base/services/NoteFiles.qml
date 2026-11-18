@@ -9,7 +9,7 @@ import qs.base.core
 QtObject {
     id: root
 
-    readonly property string dir: Store.expandPath(Store.appOptions.notes?.dir || "~/.local/share/vtnc/notes")
+    readonly property string dir: Store.expandPath(Store.appOptions.notes?.dir || "~/.local/share/vtnc-0.4/notes")
     property var notes: []
     readonly property var pins: Store.appGet("notes", "pins", [])
 

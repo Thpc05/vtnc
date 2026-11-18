@@ -6,7 +6,7 @@ Two Quickshell configs, one repo:
 - `~/.config/quickshell/vtnc`, branch `main` = the express version, `qs -c vtnc`: it only receives releases,
   `tools/release` (a merge of dev with `tools/` left out).
 
-Both share the shell id `vtnc` (its state and config in `~/.config/vtnc`): run one at a time
+Both share the shell id `vtnc-0.4` (its state and config in `~/.config/vtnc-0.4`): run one at a time
 (`qs kill -c vtnc; qs -c vtnc-dev -d`). The tools work on the shell around them, or `$VTNC`.
 
 | Tool | What |

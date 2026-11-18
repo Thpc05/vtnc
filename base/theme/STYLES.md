@@ -29,7 +29,7 @@ read from its config or state. Stage 0 (foundation) is done:
   matugen.json, computed by `Wallpapers` with ImageMagick: the mean of sqrt(0.299r² + 0.587g² + 0.114b²)).
   Light mode lowers `base` by 0.1. `services/Hypr.qml` sets the blur layer rules at runtime (`hyprctl eval`) for
   `vtnc` (the frame, island and apps): blur only while transparent, `ignore_alpha` = base − 0.03; re-applied on
-  `configreloaded`. `~/.config/hypr/vtnc/rules.lua` has no static blur.
+  `configreloaded`. `~/.config/hypr/vtnc-0.4/rules.lua` has no static blur.
 
 **Stage 1 (the component library, 2026-10-08)**: caelestia's controls ported into `kit/`, pure QML on Kit
 tokens and `Colors` (no plugin):
@@ -252,13 +252,13 @@ the new look replaces the `expressive` style (no extra catalog variant).
 ## Colors: matugen → the shell's tokens
 
 - `services/Wallpapers.qml` runs `matugen image <wallpaper> -t <scheme> --source-color-index 0 --dry-run -j hex`
-  on a wallpaper or scheme change and saves the whole output to `~/.cache/vtnc/matugen.json`: every role
+  on a wallpaper or scheme change and saves the whole output to `~/.cache/vtnc-0.4/matugen.json`: every role
   (50) of **both** schemes and the six tonal palettes (tones 0…100). A light / dark toggle doesn't re-run it.
 - `theme/colorRoles.js` lists the shell's tokens (`primary`, `surfaceContainer`, …) with their M3 role and
   resolves a **spec**: `light:<role>` / `dark:<role>`, `tone:<palette>:<tone>`, `#rrggbb` or `oled`.
   The file also carries `luminance` (see Transparency above).
 - `theme/Colors.qml` keeps the same token names; each one is the user's spec for the current mode
-  (`Store.theme.colors[mode][token]`, saved in `~/.config/vtnc/appearance.json`, so presets carry it), else
+  (`Store.theme.colors[mode][token]`, saved in `~/.config/vtnc-0.4/appearance.json`, so presets carry it), else
   its role in that mode (`background`: `surface`).
 - Settings → Appearance → Colors edits the mappings per mode; roles and tones follow the
   wallpaper, a hex doesn't. The user's own: dark `primary` / `overPrimary` = the light scheme's (the deep tone 40).

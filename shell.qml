@@ -1,5 +1,5 @@
 //@ pragma UseQApplication
-//@ pragma ShellId vtnc
+//@ pragma ShellId vtnc-0.4
 
 import QtQuick
 import Quickshell

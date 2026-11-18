@@ -42,7 +42,7 @@
       "format": "markdown",
       "font": "ui",
       "fontSize": 14,
-      "dir": "~/.local/share/vtnc/notes",
+      "dir": "~/.local/share/vtnc-0.4/notes",
       "openPreview": false
     },
     "dino": {

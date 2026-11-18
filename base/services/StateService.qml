@@ -5,7 +5,7 @@ import Quickshell
 import qs.base.core
 
 // Compat StateService (a key/value store):
-// values live in ~/.local/state/vtnc/state.json under apps.state.
+// values live in ~/.local/state/vtnc-0.4/state.json under apps.state.
 Singleton {
     id: root
 

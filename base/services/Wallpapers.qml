@@ -6,15 +6,15 @@ import Quickshell.Io
 import qs.base.core
 
 // Wallpapers: list + thumbnails of Store.wallpapers.dir, apply with awww, colors with matugen.
-//  - thumbnails: ~/.cache/vtnc/thumbs/<md5(path)>.jpg (vipsthumbnail, generated in background)
+//  - thumbnails: ~/.cache/vtnc-0.4/thumbs/<md5(path)>.jpg (vipsthumbnail, generated in background)
 //  - awww grows the new wallpaper from the top (where the island is)
 //  - matugen's whole output (every role of both schemes, the tonal palettes) goes to
-//    ~/.cache/vtnc/matugen.json, which Colors watches and maps to the shell's tokens (theme/colorRoles.js)
+//    ~/.cache/vtnc-0.4/matugen.json, which Colors watches and maps to the shell's tokens (theme/colorRoles.js)
 Singleton {
     id: root
 
     readonly property string dir: Store.expandPath(Store.wallpapers.dir)
-    readonly property string cacheDir: (Quickshell.env("XDG_CACHE_HOME") || Quickshell.env("HOME") + "/.cache") + "/vtnc"
+    readonly property string cacheDir: (Quickshell.env("XDG_CACHE_HOME") || Quickshell.env("HOME") + "/.cache") + "/vtnc-0.4"
     readonly property string thumbDir: cacheDir + "/thumbs"
     readonly property string colorsFile: cacheDir + "/matugen.json"
 

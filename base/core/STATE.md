@@ -4,14 +4,14 @@
 
 | Where | What | Who writes it |
 |---|---|---|
-| `~/.config/vtnc/island.json` | `island` (shape, widgets — entries `{ uid, id, section, compact, expanded }`, an Iwidget may repeat, Off keeps one of each —, clock, date, notifications, auto hide), `osd` | Settings → Island |
-| `~/.config/vtnc/dashboard.json` | `dashboard` (grid, Dwidget entries) | Settings → Dashboard |
-| `~/.config/vtnc/appearance.json` | `theme` (fonts, `scale`, `transparency`, anim, `scheme`, `light`, `colors`), `frame`, `wallpaper.current` | Settings → Appearance, the wallpaper app, light mode |
-| `~/.config/vtnc/system.json` | `wallpapers` (dir, transition), `tools`, `audio`, `media`, `nightLight`, `hints`, `alerts`; `apps` (the island apps' options: notifications, clipboard, notes, dino; `Store.appOptions`) | Settings → System (audio, brightness, media, night light), Settings → Apps (also the wallpaper, tools and session apps' options, 2026-10-27) |
-| `~/.config/vtnc/presets/<name>.json` | one preset each (below) | Settings → Presets |
-| `~/.local/state/vtnc/state.json` | `controls` (toggles on/off), `player.pinned`, `presets.active`, `apps` (each app's UI memory, launcher usage) | the shell |
-| `~/.local/share/vtnc/` | data (the future notification history, clipboard) | the shell |
-| `~/.cache/vtnc/` | anything that can be rebuilt: matugen output, thumbnails, cover art, notifications | the shell |
+| `~/.config/vtnc-0.4/island.json` | `island` (shape, widgets — entries `{ uid, id, section, compact, expanded }`, an Iwidget may repeat, Off keeps one of each —, clock, date, notifications, auto hide), `osd` | Settings → Island |
+| `~/.config/vtnc-0.4/dashboard.json` | `dashboard` (grid, Dwidget entries) | Settings → Dashboard |
+| `~/.config/vtnc-0.4/appearance.json` | `theme` (fonts, `scale`, `transparency`, anim, `scheme`, `light`, `colors`), `frame`, `wallpaper.current` | Settings → Appearance, the wallpaper app, light mode |
+| `~/.config/vtnc-0.4/system.json` | `wallpapers` (dir, transition), `tools`, `audio`, `media`, `nightLight`, `hints`, `alerts`; `apps` (the island apps' options: notifications, clipboard, notes, dino; `Store.appOptions`) | Settings → System (audio, brightness, media, night light), Settings → Apps (also the wallpaper, tools and session apps' options, 2026-10-27) |
+| `~/.config/vtnc-0.4/presets/<name>.json` | one preset each (below) | Settings → Presets |
+| `~/.local/state/vtnc-0.4/state.json` | `controls` (toggles on/off), `player.pinned`, `presets.active`, `apps` (each app's UI memory, launcher usage) | the shell |
+| `~/.local/share/vtnc-0.4/` | data (the future notification history, clipboard) | the shell |
+| `~/.cache/vtnc-0.4/` | anything that can be rebuilt: matugen output, thumbnails, cover art, notifications | the shell |
 
 - **The rule:** `~/.config` holds what the user sets, `~/.local/state` what the shell remembers, `~/.local/share` what
   the shell collects, and `~/.cache` what can be thrown away.

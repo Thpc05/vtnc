@@ -13,7 +13,7 @@ import "pages/apps" as AppsPages
 import "tree.js" as Tree
 
 // Settings: a tree of pages (some have sub-pages: Island, Dashboard) in the sidebar; every change
-// is written to its file in ~/.config/vtnc right away (live preview). Island, Dashboard and
+// is written to its file in ~/.config/vtnc-0.4 right away (live preview). Island, Dashboard and
 // Appearance belong to the active preset (services/Presets.qml): a changed one shows Revert.
 // Keys: ↑/↓ previous/next page (sub-pages included), Ctrl+Tab / Ctrl+Shift+Tab next/previous
 // top-level page.

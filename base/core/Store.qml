@@ -5,16 +5,16 @@ import Quickshell
 import Quickshell.Io
 
 // Persistent settings and state (core/STATE.md):
-//  - ~/.config/vtnc/{island,dashboard,appearance,system}.json: what the user configures
+//  - ~/.config/vtnc-0.4/{island,dashboard,appearance,system}.json: what the user configures
 //    (island / dashboard / appearance are what a preset saves, services/Presets.qml)
-//  - ~/.local/state/vtnc/state.json: what the shell remembers (toggles, pinned player, apps' UI)
+//  - ~/.local/state/vtnc-0.4/state.json: what the shell remembers (toggles, pinned player, apps' UI)
 // Factory defaults live in defaults/config/*.json and defaults/state.json; a missing file is created from
 // them (ConfigFile).
 Singleton {
     id: root
 
-    readonly property string configDir: (Quickshell.env("XDG_CONFIG_HOME") || Quickshell.env("HOME") + "/.config") + "/vtnc"
-    readonly property string stateDir: (Quickshell.env("XDG_STATE_HOME") || Quickshell.env("HOME") + "/.local/state") + "/vtnc"
+    readonly property string configDir: (Quickshell.env("XDG_CONFIG_HOME") || Quickshell.env("HOME") + "/.config") + "/vtnc-0.4"
+    readonly property string stateDir: (Quickshell.env("XDG_STATE_HOME") || Quickshell.env("HOME") + "/.local/state") + "/vtnc-0.4"
     readonly property string presetsDir: configDir + "/presets"
     readonly property string factoryDir: Quickshell.shellDir + "/defaults"
 

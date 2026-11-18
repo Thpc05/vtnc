@@ -11,7 +11,7 @@ import qs.base.core
 //    Settings → Apps → Clipboard → Keep images is on), with its History size as -max-items
 //  - entries: `cliphist list`, newest first, read on `refresh()` (the app opening, after a change)
 //    { id, line, text, image, mime, size, dims }; an image's thumbnail is decoded on demand to
-//    ~/.cache/vtnc/clipboard/<id>.<ext> (`thumb(entry)`, `thumbsVersion` bumps when one is ready)
+//    ~/.cache/vtnc-0.4/clipboard/<id>.<ext> (`thumb(entry)`, `thumbsVersion` bumps when one is ready)
 //  - pins: ids kept in state.json (apps.clipboard.pins; cliphist has none), shown first
 Singleton {
     id: root
@@ -19,7 +19,7 @@ Singleton {
     readonly property var cfg: Store.appOptions.clipboard
     readonly property int maxItems: Math.max(10, cfg?.maxItems || 750)
     readonly property bool images: cfg?.images ?? true
-    readonly property string cacheDir: Quickshell.env("HOME") + "/.cache/vtnc/clipboard"
+    readonly property string cacheDir: Quickshell.env("HOME") + "/.cache/vtnc-0.4/clipboard"
 
     property var entries: []
     property bool loading: false

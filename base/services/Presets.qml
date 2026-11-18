@@ -7,7 +7,7 @@ import qs.base.core
 
 // Presets (core/STATE.md): snapshots of the shell's style, i.e. island.json, dashboard.json and
 // appearance.json (which holds the wallpaper, scheme, light mode and color mapping). One file each:
-// ~/.config/vtnc/presets/<name>.json = { name, created, updated, config: { island, dashboard, appearance } }.
+// ~/.config/vtnc-0.4/presets/<name>.json = { name, created, updated, config: { island, dashboard, appearance } }.
 // Store.presets.active is the one applied or saved last ("" = none); changing a setting makes it
 // modified until it's saved (only on the Presets page) or reverted. A preset is
 // saved with or without the wallpaper; without one (or when its file is gone) it keeps the one shown.

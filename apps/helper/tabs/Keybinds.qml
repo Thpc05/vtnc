@@ -4,13 +4,13 @@ import Quickshell.Io
 import ".."
 
 // Helper → Keys (2026-10-17): the shortcuts, read for now from vtnc's Hyprland file
-// (~/.config/hypr/vtnc/keybinds.lua: its `bind_ipc("KEYS", "target call")` lines, its `----- Name -----`
+// (~/.config/hypr/vtnc-0.4/keybinds.lua: its `bind_ipc("KEYS", "target call")` lines, its `----- Name -----`
 // comments as the sections). The keybind system will replace this source.
 HelperList {
     id: root
 
     placeholder: "Search shortcuts…"
-    note: "From ~/.config/hypr/vtnc/keybinds.lua"
+    note: "From ~/.config/hypr/vtnc-0.4/keybinds.lua"
     heroIcon: "keyboard"
     heroShape: "cookie9"
     heroTitle: "Keyboard shortcuts"
@@ -89,7 +89,7 @@ HelperList {
 
     FileView {
         id: file
-        path: Quickshell.env("HOME") + "/.config/hypr/vtnc/keybinds.lua"
+        path: Quickshell.env("HOME") + "/.config/hypr/vtnc-0.4/keybinds.lua"
         printErrors: false
         onLoaded: root.sections = root.parse(text())
     }

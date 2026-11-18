@@ -67,7 +67,7 @@ fallback's when valid, else the style's first),
 `expandedSize(entry)`, `trigger(entry)` (`"none"` when invalid), `defaultEntry(id, uid, x, y)`.
 Constants: `MODES` (the expand modes) and `TRIGGERS`.
 
-## State (`Store.dashboard`, `~/.config/vtnc/dashboard.json`, factory `defaults/config/dashboard.json`)
+## State (`Store.dashboard`, `~/.config/vtnc-0.4/dashboard.json`, factory `defaults/config/dashboard.json`)
 
 ```json
 "dashboard": {
