@@ -1,0 +1,6 @@
+# Documentacao do projeto vtnc. Fonte versionavel; os dados ficam em vtnc-data/.
+version: 1
+state: { backend: cluster, lock: true }
+graphs:
+  vtnc:
+    schema: schema.pg

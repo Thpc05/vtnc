@@ -1,0 +1,68 @@
+// vtnc — ontologia da documentacao do projeto.
+// Guarda o desenho da shell: o vocabulario do modelo, as decisoes tomadas,
+// o que ficou em aberto, os riscos aceitos e os passos de implementacao.
+
+// Uma peca do vocabulario do modelo: island, page, widget, type, style,
+// service, celula, grid, camada, ciclo de vida.
+node Concept {
+    slug: String @key
+    name: String @index
+    definition: String @index
+    kind: enum(model, surface, mechanism, process, tooling) @index
+    body: String?
+    createdAt: DateTime
+}
+
+// Uma decisao de desenho ja tomada. `block` guarda de qual pergunta ela veio
+// (por exemplo "2c.3"), para rastrear a conversa que a originou.
+node Decision {
+    slug: String @key
+    title: String @index
+    statement: String @index
+    rationale: String?
+    status: enum(settled, open, superseded, rejected) @index
+    block: String @index
+    version: String @index
+    origin: enum(theo, claude, agreed) @index
+    createdAt: DateTime
+}
+
+// Algo deliberadamente deixado em aberto, para decidir na hora da implementacao.
+node OpenQuestion {
+    slug: String @key
+    question: String @index
+    note: String?
+    status: enum(open, answered, dropped) @index
+    createdAt: DateTime
+}
+
+// Um risco conhecido e aceito conscientemente.
+node Risk {
+    slug: String @key
+    title: String @index
+    statement: String @index
+    accepted: Bool
+    mitigation: String?
+    createdAt: DateTime
+}
+
+// Um passo de implementacao. Cada passo e uma versao 0.5.x.
+node Step {
+    slug: String @key
+    version: String @index
+    title: String @index
+    goal: String
+    status: enum(planned, inProgress, done, blocked) @index
+    ordinal: I64
+    acceptance: String?
+    outOfScope: String?
+    createdAt: DateTime
+}
+
+edge DecidesAbout: Decision -> Concept { @key(@src, @dst) }
+edge Supersedes: Decision -> Decision { @key(@src, @dst) }
+edge DependsOn: Decision -> Decision { @key(@src, @dst) }
+edge QuestionAbout: OpenQuestion -> Concept { @key(@src, @dst) }
+edge RiskFrom: Risk -> Decision { @key(@src, @dst) }
+edge StepImplements: Step -> Decision { @key(@src, @dst) }
+edge RelatesTo: Concept -> Concept { @key(@src, @dst) }

@@ -1,0 +1,100 @@
+{"type": "Decision", "data": {"slug": "page-nome", "title": "O grupo de widgets se chama page", "statement": "O grupo reutilizavel de widgets se chama page.", "status": "settled", "block": "1b.0", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "page-nome", "to": "page", "data": {}}
+{"type": "Decision", "data": {"slug": "cli-modifica-infra", "title": "A infra existe para a CLI modificar", "statement": "A infraestrutura e construida para que a CLI possa modifica-la como achar necessario.", "status": "settled", "block": "1b.1", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "cli-modifica-infra", "to": "cli", "data": {}}
+{"type": "Decision", "data": {"slug": "page-reutilizavel", "title": "A page e reutilizavel", "statement": "A page e reutilizavel: vinte islands podem usar a mesma page.", "status": "settled", "block": "1b.3", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "page-reutilizavel", "to": "page", "data": {}}
+{"type": "Decision", "data": {"slug": "island-poucas-pages", "title": "Uma island tem poucas pages", "statement": "Uma island pode ter varias pages, mas poucas - no maximo cinco.", "status": "settled", "block": "1b.4", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "island-poucas-pages", "to": "island", "data": {}}
+{"edge": "DecidesAbout", "from": "island-poucas-pages", "to": "page", "data": {}}
+{"type": "Decision", "data": {"slug": "trigger-na-page", "title": "O gatilho mora na page", "statement": "O gatilho que invoca a page mora na page, nao na island.", "status": "settled", "block": "1b.5", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "trigger-na-page", "to": "page", "data": {}}
+{"edge": "DecidesAbout", "from": "trigger-na-page", "to": "lifecycle", "data": {}}
+{"type": "Decision", "data": {"slug": "camadas-1-a-4", "title": "Camadas 3 a 6, vistas como 1 a 4", "statement": "Internamente existem as camadas 3 a 6; o usuario as ve como 1 a 4. No modo de edicao ele escolhe ver por camada ou todas ao mesmo tempo.", "status": "settled", "block": "1c.1", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "camadas-1-a-4", "to": "layer", "data": {}}
+{"edge": "DecidesAbout", "from": "camadas-1-a-4", "to": "edit-mode", "data": {}}
+{"type": "Decision", "data": {"slug": "camada-da-island", "title": "A camada e propriedade da island", "statement": "A camada e propriedade da island.", "status": "settled", "block": "1c.2", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "camada-da-island", "to": "layer", "data": {}}
+{"edge": "DecidesAbout", "from": "camada-da-island", "to": "island", "data": {}}
+{"type": "Decision", "data": {"slug": "posicao-ancora-deslocamento", "title": "Posicao por ancora e deslocamento", "statement": "A posicao da island e ancora + deslocamento, o que a mantem no lugar certo em qualquer resolucao.", "status": "settled", "block": "1c.3", "version": "0.5", "origin": "agreed", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "posicao-ancora-deslocamento", "to": "island", "data": {}}
+{"edge": "DecidesAbout", "from": "posicao-ancora-deslocamento", "to": "grid", "data": {}}
+{"type": "Decision", "data": {"slug": "politica-por-monitor", "title": "Politica de islands por monitor", "statement": "Por padrao a island aparece em todos os monitores. Na pagina Monitors o usuario escolhe entre mostrar todas as islands, bloquear as de sua escolha ou permitir apenas as de sua escolha.", "status": "settled", "block": "1c.4", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "politica-por-monitor", "to": "island", "data": {}}
+{"edge": "DecidesAbout", "from": "politica-por-monitor", "to": "settings", "data": {}}
+{"type": "Decision", "data": {"slug": "gap-opcional-por-island", "title": "Gap opcional por island", "statement": "O gap e opcional por island, com tamanho configuravel.", "status": "settled", "block": "1c.5", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "gap-opcional-por-island", "to": "island", "data": {}}
+{"edge": "DecidesAbout", "from": "gap-opcional-por-island", "to": "exclusive-zone", "data": {}}
+{"type": "Decision", "data": {"slug": "sem-sobreposicao-de-islands", "title": "Islands nao se sobrepoem", "statement": "Duas islands nao podem se sobrepor: o sistema de grid nao permite.", "status": "settled", "block": "1c.6", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "sem-sobreposicao-de-islands", "to": "grid", "data": {}}
+{"edge": "DecidesAbout", "from": "sem-sobreposicao-de-islands", "to": "island", "data": {}}
+{"type": "Decision", "data": {"slug": "hover-configuravel", "title": "Hover configuravel, prioridade da camada superior", "statement": "Islands e widgets tem eventos de hover configuraveis; a prioridade e da island da camada superior.", "status": "settled", "block": "1c.extra1", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "hover-configuravel", "to": "widget", "data": {}}
+{"edge": "DecidesAbout", "from": "hover-configuravel", "to": "island", "data": {}}
+{"type": "Decision", "data": {"slug": "islands-sistema-sao-janelas", "title": "Islands do sistema sao janelas do Hyprland", "statement": "As islands do sistema sao literalmente janelas do Hyprland.", "status": "settled", "block": "1c.extra2", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "islands-sistema-sao-janelas", "to": "settings", "data": {}}
+{"edge": "DecidesAbout", "from": "islands-sistema-sao-janelas", "to": "startup", "data": {}}
+{"type": "Decision", "data": {"slug": "sobreposicao-dentro-da-camada", "title": "Sobreposicao proibida dentro da camada", "statement": "A proibicao de sobrepor vale dentro da mesma camada; camadas diferentes se cruzam livremente. Islands de camada superior tem prioridade em hover, clique e demais eventos.", "status": "settled", "block": "1d.1", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "sobreposicao-dentro-da-camada", "to": "layer", "data": {}}
+{"type": "Decision", "data": {"slug": "reserva-so-entre-visiveis", "title": "A reserva vale so entre islands visiveis juntas", "statement": "A proibicao vale so entre islands visiveis ao mesmo tempo: duas islands que nunca aparecem juntas podem ocupar as mesmas celulas.", "status": "settled", "block": "1d.2", "version": "0.5", "origin": "agreed", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "reserva-so-entre-visiveis", "to": "grid", "data": {}}
+{"type": "Decision", "data": {"slug": "crescer-empurra-vizinha", "title": "Crescer empurra a vizinha", "statement": "Ao crescer e esbarrar numa vizinha da mesma camada, a island empurra a vizinha; a vizinha volta ao lugar quando o espaco e liberado.", "status": "settled", "block": "1d.3", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "crescer-empurra-vizinha", "to": "island", "data": {}}
+{"edge": "DecidesAbout", "from": "crescer-empurra-vizinha", "to": "grid", "data": {}}
+{"type": "Decision", "data": {"slug": "monitores-espelhados", "title": "Espelhadas, com eventos seguindo o monitor", "statement": "Em varios monitores as islands sao espelhadas, mas os eventos seguem o monitor - chamar o launcher abre no monitor de onde veio.", "status": "settled", "block": "1d.4", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "monitores-espelhados", "to": "island", "data": {}}
+{"type": "Decision", "data": {"slug": "reserva-retangulo-mais-gap", "title": "Reserva e o retangulo mais um gap", "statement": "A reserva de espaco e o retangulo da island mais um gap configuravel, e a opcao so existe para island encostada numa borda: no Wayland apenas uma superficie ancorada numa borda empurra as janelas.", "status": "settled", "block": "1d.5", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "reserva-retangulo-mais-gap", "to": "exclusive-zone", "data": {}}
+{"type": "Decision", "data": {"slug": "quais-sao-janelas", "title": "So settings e startup sao janelas", "statement": "So settings e startup sao janelas do Hyprland; seguem as regras de posicionamento de qualquer app e podem ser mortas por super+q.", "status": "settled", "block": "1d.6", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "quais-sao-janelas", "to": "settings", "data": {}}
+{"edge": "DecidesAbout", "from": "quais-sao-janelas", "to": "startup", "data": {}}
+{"type": "Decision", "data": {"slug": "quatro-ciclos", "title": "Os quatro ciclos de vida", "statement": "idle nasce com a shell e some com autohide, e pode ser trocada por CLI de forma permanente; called e invocada; popup e igual a called, mas some por tempo ou pelo x no canto superior direito; lock fica ate algo tira-la.", "status": "settled", "block": "1e.0", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "quatro-ciclos", "to": "lifecycle", "data": {}}
+{"type": "Decision", "data": {"slug": "ciclo-e-da-page", "title": "O ciclo de vida e propriedade da page", "statement": "O ciclo de vida e propriedade da page, nao da island: a mesma island e idle vestindo a page barra e desaparece ao vestir uma page called.", "status": "settled", "block": "1e.1", "version": "0.5", "origin": "agreed", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "ciclo-e-da-page", "to": "lifecycle", "data": {}}
+{"edge": "DecidesAbout", "from": "ciclo-e-da-page", "to": "page", "data": {}}
+{"type": "Decision", "data": {"slug": "page-substitui-e-vai-pro-historico", "title": "Invocar substitui e entra no historico", "statement": "Invocar uma page com outra ja aberta na mesma island substitui e entra no historico de cinco. A page idle e o fallback padrao quando a pilha esvazia.", "status": "settled", "block": "1e.2", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "page-substitui-e-vai-pro-historico", "to": "lifecycle", "data": {}}
+{"edge": "DecidesAbout", "from": "page-substitui-e-vai-pro-historico", "to": "page", "data": {}}
+{"type": "Decision", "data": {"slug": "called-so-no-monitor-focado", "title": "Called aparece so no monitor focado", "statement": "Uma page called aparece so no monitor focado; nos outros a island fica como estava.", "status": "settled", "block": "1e.3", "version": "0.5", "origin": "agreed", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "called-so-no-monitor-focado", "to": "island", "data": {}}
+{"edge": "DecidesAbout", "from": "called-so-no-monitor-focado", "to": "lifecycle", "data": {}}
+{"type": "Decision", "data": {"slug": "esc-e-clique-fora-fecham", "title": "Esc e clique fora fecham quase sempre", "statement": "Esc e clique fora fecham praticamente sempre; as excecoes sao as islands de ciclo lock e as islands do sistema.", "status": "settled", "block": "1e.4", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "esc-e-clique-fora-fecham", "to": "lifecycle", "data": {}}
+{"type": "Decision", "data": {"slug": "page-declara-teclado", "title": "A page declara se precisa do teclado", "statement": "A page declara se precisa do teclado, e quem declara rouba o foco enquanto estiver a mostra.", "status": "settled", "block": "1e.5", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "page-declara-teclado", "to": "page", "data": {}}
+{"type": "Decision", "data": {"slug": "gap-exclusivo-da-island", "title": "O gap exclusivo e da island", "statement": "O gap exclusivo e da island e serve so para as janelas do Hyprland; o espaco entre islands e definido pelo usuario no grid da tela, com celulas vazias.", "status": "settled", "block": "2b.1", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "gap-exclusivo-da-island", "to": "exclusive-zone", "data": {}}
+{"edge": "DecidesAbout", "from": "gap-exclusivo-da-island", "to": "grid", "data": {}}
+{"type": "Decision", "data": {"slug": "fluxo-ou-grade-pela-page", "title": "Fluxo ou grade e escolha da page", "statement": "Fluxo, a fila que empacota quando alguem encolhe, ou grade, retangulos fixos, e escolha da page.", "status": "settled", "block": "2b.2", "version": "0.5", "origin": "agreed", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "fluxo-ou-grade-pela-page", "to": "page", "data": {}}
+{"edge": "DecidesAbout", "from": "fluxo-ou-grade-pela-page", "to": "grid", "data": {}}
+{"type": "Decision", "data": {"slug": "widget-tem-nada-a-mostrar", "title": "Todo widget tem o estado nada a mostrar", "statement": "Todo widget e obrigado a ter o estado nada a mostrar no contrato: o media sem player encolhe a zero. Sem isso o fluxo nao funciona.", "status": "settled", "block": "2b.3", "version": "0.5", "origin": "agreed", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "widget-tem-nada-a-mostrar", "to": "widget", "data": {}}
+{"type": "Decision", "data": {"slug": "minimo-px-pelo-style", "title": "O minimo em px e declarado pelo style", "statement": "O minimo em px por celula e declarado pelo style, que ja declara os tamanhos.", "status": "settled", "block": "2b.4", "version": "0.5", "origin": "agreed", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "minimo-px-pelo-style", "to": "style", "data": {}}
+{"edge": "DecidesAbout", "from": "minimo-px-pelo-style", "to": "cell", "data": {}}
+{"type": "Decision", "data": {"slug": "crescimento-escolhido-pela-page", "title": "A page escolhe como o widget cresce", "statement": "A page escolhe entre dois comportamentos: os widgets empurram os outros, aumentando a island, ou o widget sobrepoe o necessario para o seu novo tamanho, aumentando a island se preciso.", "status": "settled", "block": "2b.6", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "crescimento-escolhido-pela-page", "to": "page", "data": {}}
+{"edge": "DecidesAbout", "from": "crescimento-escolhido-pela-page", "to": "widget", "data": {}}
+{"type": "Decision", "data": {"slug": "celula-base-mais-fator", "title": "Celula base global vezes fator por monitor", "statement": "Densidade e a celula base global multiplicada por um fator por monitor, configuravel, 1.0 por padrao, como ajuste fino em cima da escala do Hyprland. Islands e widgets continuam medidos em celulas, entao o layout e igual em qualquer tela.", "status": "settled", "block": "2c.1", "version": "0.5", "origin": "agreed", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "celula-base-mais-fator", "to": "density", "data": {}}
+{"edge": "DecidesAbout", "from": "celula-base-mais-fator", "to": "cell", "data": {}}
+{"type": "Decision", "data": {"slug": "multiplicador-por-island", "title": "Multiplicador por island em passos", "statement": "Existe um multiplicador por island em passos de 0,75, 1, 1,25 e 1,5 para quem quiser um dock mais gordo, sem soltar o px livre.", "status": "settled", "block": "2c.2", "version": "0.5", "origin": "agreed", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "multiplicador-por-island", "to": "island", "data": {}}
+{"edge": "DecidesAbout", "from": "multiplicador-por-island", "to": "density", "data": {}}
+{"type": "Decision", "data": {"slug": "island-grande-corta", "title": "Island que nao cabe corta", "statement": "Uma island larga que nao cabe num monitor menor corta, escondendo os widgets que sobram.", "status": "settled", "block": "2c.3", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "island-grande-corta", "to": "island", "data": {}}
+{"edge": "DecidesAbout", "from": "island-grande-corta", "to": "density", "data": {}}
+{"type": "Decision", "data": {"slug": "celula-fixa-quantidade-varia", "title": "Celula fixa, quantidade varia por monitor", "statement": "O grid da tela usa celula de tamanho fixo e quantidade de celulas variando por monitor, nao um numero fixo de celulas. Funciona porque a posicao e por ancora.", "status": "settled", "block": "2b.5", "version": "0.5", "origin": "agreed", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "celula-fixa-quantidade-varia", "to": "grid", "data": {}}
+{"edge": "DecidesAbout", "from": "celula-fixa-quantidade-varia", "to": "density", "data": {}}
+{"type": "Decision", "data": {"slug": "gap-interno-global-com-override", "title": "Gap interno global com override por page", "statement": "O gap interno entre celulas tem um valor global em Appearance e override por page. Zero deixa as celulas coladas.", "status": "settled", "block": "2d.1", "version": "0.5", "origin": "agreed", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "gap-interno-global-com-override", "to": "page", "data": {}}
+{"edge": "DecidesAbout", "from": "gap-interno-global-com-override", "to": "animation", "data": {}}
+{"type": "Decision", "data": {"slug": "reserva-liberada-no-autohide", "title": "O autohide libera a zona reservada", "statement": "Quando o autohide esconde a page idle, a zona reservada e liberada e as janelas do Hyprland crescem.", "status": "settled", "block": "2d.2", "version": "0.5", "origin": "theo", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "reserva-liberada-no-autohide", "to": "exclusive-zone", "data": {}}
+{"type": "Decision", "data": {"slug": "gap-exclusivo-um-numero", "title": "Gap exclusivo e um numero por island", "statement": "O gap exclusivo e um numero unico por island, nao quatro lados: a island so reserva no lado em que esta ancorada.", "status": "settled", "block": "2d.3", "version": "0.5", "origin": "agreed", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "gap-exclusivo-um-numero", "to": "exclusive-zone", "data": {}}
+{"type": "Decision", "data": {"slug": "reserva-congelada-na-page-idle", "title": "A reserva congela no tamanho da page idle", "statement": "A island reserva o que a page idle pede e so isso, congelado. Crescer ou trocar de page faz o excedente passar por cima das janelas sem mexer na zona reservada, senao toda janela saltaria a cada abertura do launcher. Island sem page idle nao reserva nada, e so island ancorada numa borda consegue reservar.", "status": "settled", "block": "2d.4", "version": "0.5", "origin": "agreed", "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "DecidesAbout", "from": "reserva-congelada-na-page-idle", "to": "exclusive-zone", "data": {}}

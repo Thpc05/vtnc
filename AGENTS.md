@@ -23,13 +23,31 @@ omnigraph query --target vtnc --format table -e 'query s() {
 Se der `connection refused`, o servidor caiu (ele não sobe sozinho no boot). Para levantar:
 
 ```sh
-~/.local/bin/omnigraph-studio-launch   # sobe o servidor e abre o Studio
-# ou só o servidor:
-omnigraph-server --cluster file://$HOME/.local/share/omnigraph/vtnc-data \
-                 --bind 127.0.0.1:8787 --unauthenticated &
+omnigraph-serve   # sobe só o servidor, e sai em silêncio se ele já estiver no ar
 ```
 
-A fonte do grafo (ontologia e cargas) está em `~/.local/share/omnigraph/vtnc-src/`.
+Nunca abra o Studio para subir o servidor: o Studio é do Theo. A dependência só vale num sentido —
+o Studio sobe o servidor, o servidor nunca abre o Studio.
+
+A fonte do grafo (a ontologia e as cargas) está versionada neste repositório, em
+[`docs/graph/`](docs/graph/); o banco em si fica em `~/.local/share/omnigraph/vtnc-data/` e não vai
+para o git.
+
+**Mudar a ontologia** (`docs/graph/schema.pg`) exige parar o servidor, porque ele recusa rotas de
+deploy sem autenticação:
+
+```sh
+kill $(pgrep -f 'bin/omnigraph-server')
+omnigraph cluster plan  --target ~/.local/share/omnigraph/vtnc-data --config docs/graph
+omnigraph cluster apply --target ~/.local/share/omnigraph/vtnc-data --config docs/graph --as thpc
+omnigraph cluster force-unlock "$(omnigraph cluster status \
+    --target ~/.local/share/omnigraph/vtnc-data --json | python3 -c 'import sys,json;print(json.load(sys.stdin)["lock_id"])')" \
+    --target ~/.local/share/omnigraph/vtnc-data
+omnigraph-serve
+```
+
+Adicionar propriedade anulável é barato; mudar uma constraint existente é reconstrução. Leia a
+skill `omnigraph` antes.
 
 ### As consultas que você vai usar
 
