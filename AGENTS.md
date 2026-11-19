@@ -1,0 +1,113 @@
+# vtnc
+
+Shell para Hyprland escrita em QML sobre [Quickshell](https://quickshell.org). Esta é a **0.5**,
+reescrita do zero. A 0.4 está congelada na branch `0.4` e **não deve ser consultada como modelo**:
+nada dela é transplantado.
+
+Autor: Thpc (Theo). Fala-se português com ele.
+
+## A verdade não está neste repositório
+
+O desenho inteiro da 0.5 — mais de 130 decisões, o vocabulário do modelo, os riscos aceitos e as
+perguntas deixadas em aberto — vive num grafo **Omnigraph**, não em arquivos. Este `AGENTS.md` é só
+a porta de entrada.
+
+```sh
+omnigraph query --target vtnc --format table -e 'query s() {
+    match { $s: Step }
+    return { $s.slug, $s.title, $s.status, $s.goal }
+    order { $s.ordinal } limit 20
+}'
+```
+
+Se der `connection refused`, o servidor caiu (ele não sobe sozinho no boot). Para levantar:
+
+```sh
+~/.local/bin/omnigraph-studio-launch   # sobe o servidor e abre o Studio
+# ou só o servidor:
+omnigraph-server --cluster file://$HOME/.local/share/omnigraph/vtnc-data \
+                 --bind 127.0.0.1:8787 --unauthenticated &
+```
+
+A fonte do grafo (ontologia e cargas) está em `~/.local/share/omnigraph/vtnc-src/`.
+
+### As consultas que você vai usar
+
+Tudo que foi decidido sobre um conceito (`island`, `page`, `widget`, `type`, `style`, `service`,
+`cell`, `grid`, `layer`, `lifecycle`, `cli`, `notch`, `preset`, `extension`, `settings`, `startup`,
+`animation`, `game-mode`, `density`, `exclusive-zone`, `edit-mode`, `empty-state`,
+`hyprland-integration`, `dependency`, `screen-decoration`, `test-environment`, `process`,
+`omnigraph`):
+
+```sh
+omnigraph query --target vtnc --format table --params '{"c":"island"}' -e 'query d($c: String) {
+    match {
+        $k: Concept { slug: $c }
+        $d: Decision
+        $d decidesAbout $k
+    }
+    return { $d.block, $d.title, $d.statement }
+    order { $d.block } limit 60
+}'
+```
+
+O que está **deliberadamente em aberto** — leia antes de começar qualquer etapa:
+
+```sh
+omnigraph query --target vtnc --format table -e 'query q() {
+    match { $q: OpenQuestion { status: "open" } }
+    return { $q.slug, $q.question, $q.note } limit 30
+}'
+```
+
+Os riscos já aceitos (não os levante de novo, já foram discutidos):
+
+```sh
+omnigraph query --target vtnc --format table -e 'query r() {
+    match { $r: Risk }
+    return { $r.title, $r.statement, $r.mitigation } limit 20
+}'
+```
+
+## O modelo, em um minuto
+
+Só para você não consultar o grafo às cegas. O detalhe está lá, não aqui.
+
+- **Island** — superfície Wayland que ocupa células do grid da tela e veste **uma page por vez**.
+- **Page** — grupo **reutilizável** de widgets com grid próprio. É **dona** das instâncias de
+  widget, então mexer numa page muda todas as islands que a usam. O **ciclo de vida**
+  (`idle` · `called` · `popup` · `lock`) e o gatilho são dela, não da island.
+- **Widget** — um **type** (a função; nomeia os services que usa) vestindo um **style** (a
+  aparência). Um style pertence a **um único type**; um type tem vários styles.
+- **Service** — código único e compartilhado que fala com o sistema, ligado só quando algum widget
+  visível precisa e desligado quando o último sai de cena.
+- **Célula** — tudo é medido em células: uma célula base global × um fator por monitor. Posição é
+  **âncora + deslocamento**, nunca pixels absolutos.
+- **CLI** — `vtnc <namespace> <nome> <verbo> <args>`, onde `call` é momentâneo e `set` é permanente.
+  Ela é o motor: o Settings não tem lógica própria, ele chama a CLI.
+
+## Regras de trabalho
+
+- **Um passo por vez.** Cada passo é uma versão (`0.51`, `0.52`…). Versões não levam pontos extras:
+  `0.5.1` se escreve `0.51`, e isso vale para pastas e para todo lugar. Entre um passo e outro há
+  revisão — não emende dois.
+- **Pergunta em aberto não se decide sozinho.** Se o que você precisa está numa `OpenQuestion`,
+  pare e pergunte ao Theo.
+- **Português** na documentação; **inglês** no código e em todo texto que o usuário vê.
+- **Cada pasta se descreve**: um `README` por área, um `meta.js` por widget. É isso que faz o
+  catálogo automático funcionar e que deixa uma extensão de terceiro se apresentar sozinha.
+- **Commit** livre nesta branch, um por passo fechado. Mensagens em inglês.
+- **Nunca** edite `~/.config/quickshell/vtnc-0.4` nem a branch `0.4`.
+- **Nunca** rode `hyprctl dispatch` nem troque de workspace. `hyprctl reload` pode sempre.
+
+## Testes
+
+Quatro camadas, nem todas rodam em toda etapa:
+
+1. lógica pura em JS, testada em node;
+2. todo o QML compila;
+3. contrato da CLI, conferido pelo JSON que ela devolve;
+4. visual, renderizado em claro e escuro e **olhado** — sem comparação de pixels.
+
+Os testes rodam num compositor Wayland **headless** com uma pasta de configuração descartável, para
+nunca dependerem da tela do Theo.
