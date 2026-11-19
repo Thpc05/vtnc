@@ -6,6 +6,21 @@ nada dela é transplantado.
 
 Autor: Thpc (Theo). Fala-se português com ele.
 
+## As pastas
+
+Três repositórios **independentes** (não worktrees — eles já foram worktrees e apagar uma pasta
+derrubou o git das três de uma vez), todos remotos de `github.com/Thpc05/vtnc`:
+
+| Pasta | Branch | |
+|---|---|---|
+| `~/.config/quickshell/vtnc-dev` | `dev` | **onde se trabalha.** Commit livre aqui. |
+| `~/.config/quickshell/vtnc` | `main` | a versão estável. Só o Theo publica nela. |
+| `~/.config/quickshell/vtnc-0.4` | `0.4-dev` | a 0.4 arquivada. **Nunca edite.** |
+
+A pasta da versão atual é sempre `vtnc`, sem número. Existe **uma só** pasta de desenvolvimento,
+`vtnc-dev`, que nunca leva versão no nome e nunca é arquivada. Arquivar é renomear `vtnc` para
+`vtnc-<versão>` — não existe `vtnc-0.4-dev`.
+
 ## A verdade não está neste repositório
 
 O desenho inteiro da 0.5 — mais de 130 decisões, o vocabulário do modelo, os riscos aceitos e as
