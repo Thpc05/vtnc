@@ -57,7 +57,7 @@ HelperList {
                     copy: Quickshell.env("HOME") + "/.config/hypr/vtnc-0.4"
                 },
                 {
-                    key: "~/.config/quickshell/vtnc/",
+                    key: "~/.config/quickshell/vtnc-0.4/",
                     text: "The shell itself",
                     copy: Quickshell.shellDir
                 }

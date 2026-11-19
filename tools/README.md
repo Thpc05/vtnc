@@ -3,7 +3,7 @@
 Two Quickshell configs, one repo:
 - `~/.config/quickshell/vtnc-dev`, branch `dev` = the shell + this folder: all work happens and is committed
   here, and it runs as `qs -c vtnc-dev` (Quickshell never loads `tools/`; nothing imports it).
-- `~/.config/quickshell/vtnc`, branch `main` = the express version, `qs -c vtnc`: it only receives releases,
+- `~/.config/quickshell/vtnc-0.4`, branch `main` = the express version, `qs -c vtnc-0.4`: it only receives releases,
   `tools/release` (a merge of dev with `tools/` left out).
 
 Both share the shell id `vtnc-0.4` (its state and config in `~/.config/vtnc-0.4`): run one at a time
