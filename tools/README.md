@@ -33,10 +33,19 @@ atalhos globais, notificação real), e a aceitação visual final. Pedir
 autorização a cada vez, dizendo o que vai rodar e por quanto tempo, e como
 abortar — nunca entrar nesse modo por conta própria.
 
-**Antes de qualquer compositor**: as camadas 1 (lógica pura), 2 (compilação
-do QML) e 4 (visual) não precisam de nenhum compositor —
-`QT_QPA_PLATFORM=offscreen` cobre as três. Só a camada 3 (contrato da CLI) e
-a geometria real de uma island precisam do aninhado.
+**Antes de qualquer compositor**: só as camadas 1 (lógica pura) e 2
+(compilação do QML) dispensam compositor, com `QT_QPA_PLATFORM=offscreen`. A
+camada 3 (contrato da CLI), a camada 4 (visual) e a geometria real de uma
+island precisam do aninhado — no offscreen o `grabToImage` nunca chama o
+callback de volta.
+
+A largada do aninhado **não é confiável**: mais ou menos uma tentativa em
+três morre cedo com `could not connect to wayland server` e nunca registra
+a instância. Por isso o `nested.sh` tenta até três vezes e espera o
+`hyprctl instances` listá-la, em vez de esperar um arquivo aparecer. A linha
+`unable to lock lockfile .../wayland-N.lock` no log é **esperada**: o
+Hyprland tenta primeiro nomear o próprio socket como o `WAYLAND_DISPLAY` do
+hospedeiro, falha, e cai para o próximo livre.
 
 ## Arquivos
 

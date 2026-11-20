@@ -2,10 +2,11 @@ import QtQuick
 import QtQuick.Window
 import "../../page"
 
-// Renders one page to a PNG, offscreen, with no compositor: the "looked
-// at" layer (decision 17.2) doesn't need layer-shell, only QtQuick's own
-// grabToImage. 0.51 has no light/dark theming yet, so there's one render,
-// not a pair.
+// Renders one page to a PNG: the "looked at" layer (decision 17.2). It needs
+// a real compositor — grabToImage never calls back under
+// QT_QPA_PLATFORM=offscreen, with any render loop or scene-graph backend —
+// so this runs inside the nested test session (tools/headless/nested.sh).
+// 0.51 has no light/dark theming yet, so there's one render, not a pair.
 Window {
     width: 400
     height: 200
@@ -15,18 +16,28 @@ Window {
         id: page
         anchors.fill: parent
         cellPx: 8
-        pageConfig: {
+
+        // The parentheses matter: `property: { ... }` is parsed as a code
+        // block, not an object literal, and without them this file loads
+        // nothing at all, silently.
+        pageConfig: ({
             "grid": { "cols": 10, "rows": 4 },
             "widgets": [
                 { "type": "vtnc.square", "style": "default", "text": "square", "cell": { "x": 1, "y": 1, "w": 6, "h": 4 } }
             ]
-        }
+        })
     }
 
     Component.onCompleted: {
         Qt.callLater(function () {
+            // qml6 passes everything after `--` straight through, so the
+            // output path is the last argument, not argument 1.
+            const args = Qt.application.arguments;
+            const out = args[args.length - 1];
             page.grabToImage(function (result) {
-                const ok = result.saveToFile(Qt.application.arguments[1]);
+                const ok = result.saveToFile(out);
+                if (!ok)
+                    console.warn("render.qml: saveToFile failed for", out);
                 Qt.exit(ok ? 0 : 1);
             });
         });
