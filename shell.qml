@@ -2,6 +2,7 @@ import Quickshell
 import Quickshell.Io
 import "./core"
 import "./island"
+import "./services"
 
 // Entry point. The CLI's `set` writes config.json directly (decision 4b.4),
 // picked up live by Config's FileView; `call`, `get` and `list` talk to this
@@ -63,6 +64,22 @@ ShellRoot {
             const page = Config.page(name);
             if (!page) return JSON.stringify({ error: "no such page: " + name });
             return JSON.stringify(page);
+        }
+    }
+
+    IpcHandler {
+        target: "service"
+
+        function list(): string {
+            return JSON.stringify(ServiceRegistry.list());
+        }
+
+        function get(name: string): string {
+            return JSON.stringify({
+                name: name,
+                running: ServiceRegistry.isRunning(name),
+                holders: ServiceRegistry.holders(name),
+            });
         }
     }
 }

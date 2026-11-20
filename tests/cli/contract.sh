@@ -38,7 +38,9 @@ cat >"$tmp_config_dir/config.json" <<'EOF'
   ],
   "pages": {
     "clock": { "grid": { "cols": 10, "rows": 4 }, "widgets": [ { "type": "vtnc.square", "style": "default", "text": "clock", "cell": { "x": 0, "y": 0, "w": 6, "h": 4 } } ] },
-    "launcher": { "grid": { "cols": 10, "rows": 6 }, "widgets": [ { "type": "vtnc.square", "style": "default", "text": "launcher", "cell": { "x": 0, "y": 0, "w": 20, "h": 6 } } ] }
+    "launcher": { "grid": { "cols": 10, "rows": 6 }, "widgets": [ { "type": "vtnc.square", "style": "default", "text": "launcher", "cell": { "x": 0, "y": 0, "w": 20, "h": 6 } } ] },
+    "dashboard": { "grid": { "cols": 10, "rows": 4 }, "widgets": [ { "type": "vtnc.clock", "style": "digital", "cell": { "x": 0, "y": 0, "w": 6, "h": 4 } } ] },
+    "dashboard-compact": { "grid": { "cols": 10, "rows": 6 }, "widgets": [ { "type": "vtnc.clock", "style": "compact", "cell": { "x": 0, "y": 0, "w": 4, "h": 2 } } ] }
   }
 }
 EOF
@@ -69,6 +71,59 @@ check "list reports anchor/size/layer" "$has_fields" "True"
 "$here/cli/vtnc" island bar call launcher >/dev/null
 got_page=$(echo "$("$here/cli/vtnc" island bar get)" | python3 -c 'import json,sys; print(json.load(sys.stdin)["page"])')
 check "call switches page live" "$got_page" "launcher"
+
+# 0.502 criterion 5: set refuses an unknown key or a value pointing at
+# something that doesn't exist, and config.json stays untouched.
+config_before=$(cat "$tmp_config_dir/config.json")
+if "$here/cli/vtnc" island bar set page no-such-page >/dev/null 2>"$tmp_config_dir/set.err"; then
+    check "set to a nonexistent page is refused" "accepted" "refused"
+else
+    check "set to a nonexistent page is refused" "refused" "refused"
+fi
+check "set error mentions the page" "$(grep -c 'no such page' "$tmp_config_dir/set.err")" "1"
+config_after=$(cat "$tmp_config_dir/config.json")
+check "config.json untouched after a refused set" "$([[ "$config_before" == "$config_after" ]] && echo same)" "same"
+
+if "$here/cli/vtnc" island bar set banana 7 >/dev/null 2>"$tmp_config_dir/set2.err"; then
+    check "set with an unknown key is refused" "accepted" "refused"
+else
+    check "set with an unknown key is refused" "refused" "refused"
+fi
+check "unknown-key error mentions it" "$(grep -c 'unknown key' "$tmp_config_dir/set2.err")" "1"
+
+# 0.502 criterion 5: vtnc help lists all seven top-level namespaces.
+help_out=$("$here/cli/vtnc" help)
+missing=0
+for ns in island page widget service monitor preset theme; do
+    echo "$help_out" | grep -q "$ns" || missing=1
+done
+check "help lists all seven namespaces" "$missing" "0"
+
+# 0.502 criterion 1/2/3: the clock service is off until a visible clock
+# widget needs it, and two islands showing it share one instance. Every
+# island mirrors across every screen (decision 1c.4) — and the nested
+# compositor's own host window counts as one more screen (WAYLAND-1)
+# besides the two HEADLESS outputs, so "one island showing a clock" means
+# one clock widget per screen, not one total.
+screen_count=$(hyprctl monitors -j | python3 -c 'import json,sys; print(len(json.load(sys.stdin)))')
+
+check "clock service is off before any clock widget is visible" \
+    "$("$here/cli/vtnc" service list | python3 -c 'import json,sys; s=[x for x in json.load(sys.stdin) if x["name"]=="clock"][0]; print(s["running"], s["holders"])')" \
+    "False 0"
+
+"$here/cli/vtnc" island bar call dashboard >/dev/null
+"$here/cli/vtnc" island dock call dashboard-compact >/dev/null
+sleep 0.3
+check "clock turns on and is shared by two islands (two different styles)" \
+    "$("$here/cli/vtnc" service list | python3 -c 'import json,sys; s=[x for x in json.load(sys.stdin) if x["name"]=="clock"][0]; print(s["running"], s["holders"])')" \
+    "True $((screen_count * 2))"
+
+"$here/cli/vtnc" island bar call launcher >/dev/null
+"$here/cli/vtnc" island dock call launcher >/dev/null
+sleep 0.3
+check "clock turns back off once the last clock widget leaves" \
+    "$("$here/cli/vtnc" service list | python3 -c 'import json,sys; s=[x for x in json.load(sys.stdin) if x["name"]=="clock"][0]; print(s["running"], s["holders"])')" \
+    "False 0"
 
 # Criterion 4: set survives a restart, call doesn't.
 "$here/cli/vtnc" island bar set page dashboard >/dev/null

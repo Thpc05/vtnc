@@ -9,10 +9,13 @@ import { dirname, join } from "node:path";
 import { execFileSync } from "node:child_process";
 import { readConfig, writeConfig } from "./lib/store.js";
 import { ipcCall } from "./lib/ipc.js";
-import { findIsland } from "../core/config-shape.mjs";
+import { findIsland, validateIslandSet } from "../core/config-shape.mjs";
 
 const VERBS = new Set(["set", "call", "get", "list"]);
-const NAMESPACES = new Set(["island", "page"]);
+// The full namespace list from decision 4b.3 — widget/monitor/preset/theme
+// are listed even though they have no verbs yet (also decision 4b.3).
+const NAMESPACES = new Set(["island", "page", "widget", "service", "monitor", "preset", "theme"]);
+const NAMESPACES_WITH_VERBS = new Set(["island", "page", "service"]);
 
 // The shell's own source folder — one level up from cli/ — doubles as its
 // quickshell config name (vtnc-dev while developing, vtnc once installed),
@@ -25,7 +28,8 @@ function usage() {
        vtnc                                 start the shell
        vtnc help                            this message
 
-namespaces: island, page
+namespaces: island, page, widget, service, monitor, preset, theme
+  (widget, monitor, preset and theme have no verbs yet)
 verbs: set, call, get, list
 
 examples:
@@ -33,7 +37,9 @@ examples:
   vtnc island bar set page dashboard   permanent: writes config.json
   vtnc island bar get               current state, as JSON
   vtnc island list                  all islands, as JSON
-  vtnc page list                    all pages, as JSON`);
+  vtnc page list                    all pages, as JSON
+  vtnc service list                 which services are on and who's holding them
+  vtnc service clock get            one service's state, as JSON`);
 }
 
 function startShell() {
@@ -50,12 +56,21 @@ function cmdSet(namespace, name, args) {
         console.error("vtnc: set needs a key and a value, e.g. set page dashboard");
         process.exit(1);
     }
+
     const config = readConfig();
     const island = findIsland(config, name);
     if (!island) {
         console.error(`vtnc: no such island: ${name}`);
         process.exit(1);
     }
+
+    const error = validateIslandSet(key, value, config);
+    if (error) {
+        // config.json is untouched: we haven't written anything yet.
+        console.error(`vtnc: ${error}`);
+        process.exit(1);
+    }
+
     island[key] = value;
     writeConfig(config);
     console.log(JSON.stringify(island));
@@ -78,6 +93,11 @@ const [namespace, second, ...rest] = argv;
 if (!NAMESPACES.has(namespace)) {
     console.error(`vtnc: unknown namespace "${namespace}"`);
     usage();
+    process.exit(1);
+}
+
+if (!NAMESPACES_WITH_VERBS.has(namespace)) {
+    console.error(`vtnc: "${namespace}" has no verbs yet`);
     process.exit(1);
 }
 

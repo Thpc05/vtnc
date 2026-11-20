@@ -12,3 +12,15 @@ Para verbos sem alvo (`list`), a forma é `vtnc <namespace> <verbo> [args...]`.
 `vtnc` sem argumentos inicia a shell (`qs -p <esta pasta>`). A pasta-mãe do
 `cli/` dobra como a raiz da config do Quickshell, então a CLI nunca precisa
 ser avisada se está falando com `vtnc-dev` ou `vtnc`.
+
+Os sete namespaces de topo da decisão 4b.3 todos aparecem em `vtnc help`;
+hoje só `island`, `page` e `service` têm verbo — os outros (`widget`,
+`monitor`, `preset`, `theme`) existem só para a lista não ficar incompleta
+depois.
+
+`set` em island valida antes de escrever: chave desconhecida ou valor que
+aponta para algo que não existe (uma page inexistente, uma camada que não é
+`background`/`bottom`/`top`/`overlay`) é recusado com erro e `config.json`
+fica como estava — nunca escreve um config que a própria shell não
+conseguiria ler de volta (o princípio por trás da decisão 5.4, aplicada
+aqui ao `set`, não só ao Settings).

@@ -1,5 +1,6 @@
 import QtQuick
 import "../widgets/square"
+import "../widgets/clock"
 
 // A page: a reusable group of widget instances with its own grid (decision
 // 1b.0 / 1b.3 / 6.1). The page owns the widget instances — swap which page
@@ -21,13 +22,13 @@ Item {
             width: (modelData.cell?.w ?? 1) * root.cellPx
             height: (modelData.cell?.h ?? 1) * root.cellPx
 
-            // 0.51 has exactly one type ("vtnc.square"); the loader is here
-            // so a second type doesn't require touching Page.qml, only this
-            // one switch (decision 3.1 — type/style come from third parties
-            // too, Page can't know their names in advance beyond this list).
+            // Adding a type is one case here, nothing else in this file
+            // (decision 3.1 — type/style come from third parties too, Page
+            // can't know their names in advance beyond this list).
             sourceComponent: {
                 switch (modelData.type) {
                 case "vtnc.square": return squareComponent;
+                case "vtnc.clock": return clockComponent;
                 default: return null;
                 }
             }
@@ -41,5 +42,10 @@ Item {
     Component {
         id: squareComponent
         Square {}
+    }
+
+    Component {
+        id: clockComponent
+        Clock {}
     }
 }
