@@ -1,0 +1,3 @@
+singleton Paths 1.0 Paths.qml
+singleton Config 1.0 Config.qml
+singleton IslandState 1.0 IslandState.qml

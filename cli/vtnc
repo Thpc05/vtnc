@@ -1,0 +1,116 @@
+#!/usr/bin/env node
+// The CLI (decision 4b.2/4b.3): vtnc <namespace> <name> <verb> <args...>,
+// or vtnc <namespace> <verb> <args...> for verbs that don't target one name
+// (list). `set` writes config.json directly; `call`/`get`/`list` talk to
+// the running shell over IPC (decision 4b.4/4b.5).
+
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+import { execFileSync } from "node:child_process";
+import { readConfig, writeConfig } from "./lib/store.js";
+import { ipcCall } from "./lib/ipc.js";
+import { findIsland } from "../core/config-shape.mjs";
+
+const VERBS = new Set(["set", "call", "get", "list"]);
+const NAMESPACES = new Set(["island", "page"]);
+
+// The shell's own source folder — one level up from cli/ — doubles as its
+// quickshell config name (vtnc-dev while developing, vtnc once installed),
+// so the CLI never has to be told which one it's talking to.
+const shellRoot = dirname(dirname(fileURLToPath(import.meta.url)));
+
+function usage() {
+    console.log(`usage: vtnc <namespace> <name> <verb> [args...]
+       vtnc <namespace> <verb> [args...]   (for verbs with no target name, e.g. list)
+       vtnc                                 start the shell
+       vtnc help                            this message
+
+namespaces: island, page
+verbs: set, call, get, list
+
+examples:
+  vtnc island bar call launcher     momentary: wears launcher until the next call
+  vtnc island bar set page dashboard   permanent: writes config.json
+  vtnc island bar get               current state, as JSON
+  vtnc island list                  all islands, as JSON
+  vtnc page list                    all pages, as JSON`);
+}
+
+function startShell() {
+    execFileSync("qs", ["-p", shellRoot], { stdio: "inherit" });
+}
+
+function cmdSet(namespace, name, args) {
+    if (namespace !== "island") {
+        console.error(`vtnc: set is not supported on namespace "${namespace}" yet`);
+        process.exit(1);
+    }
+    const [key, value] = args;
+    if (!key || value === undefined) {
+        console.error("vtnc: set needs a key and a value, e.g. set page dashboard");
+        process.exit(1);
+    }
+    const config = readConfig();
+    const island = findIsland(config, name);
+    if (!island) {
+        console.error(`vtnc: no such island: ${name}`);
+        process.exit(1);
+    }
+    island[key] = value;
+    writeConfig(config);
+    console.log(JSON.stringify(island));
+}
+
+const argv = process.argv.slice(2);
+
+if (argv.length === 0) {
+    startShell();
+    process.exit(0);
+}
+
+if (argv[0] === "help" || argv[0] === "--help" || argv[0] === "-h") {
+    usage();
+    process.exit(0);
+}
+
+const [namespace, second, ...rest] = argv;
+
+if (!NAMESPACES.has(namespace)) {
+    console.error(`vtnc: unknown namespace "${namespace}"`);
+    usage();
+    process.exit(1);
+}
+
+let name = null;
+let verb;
+let args;
+
+if (VERBS.has(second)) {
+    verb = second;
+    args = rest;
+} else {
+    name = second;
+    verb = rest[0];
+    args = rest.slice(1);
+}
+
+if (!VERBS.has(verb)) {
+    console.error(`vtnc: unknown verb "${verb}"`);
+    usage();
+    process.exit(1);
+}
+
+switch (verb) {
+case "set":
+    cmdSet(namespace, name, args);
+    break;
+case "call":
+    console.log(ipcCall(shellRoot, namespace, "call", [name, ...args]));
+    break;
+case "get":
+    console.log(ipcCall(shellRoot, namespace, "get", [name]));
+    break;
+case "list":
+    console.log(ipcCall(shellRoot, namespace, "list", []));
+    break;
+}
