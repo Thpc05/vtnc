@@ -121,9 +121,10 @@ Só para você não consultar o grafo às cegas. O detalhe está lá, não aqui.
 
 ## Regras de trabalho
 
-- **Um passo por vez.** Cada passo é uma versão (`0.51`, `0.52`…). Versões não levam pontos extras:
-  `0.5.1` se escreve `0.51`, e isso vale para pastas e para todo lugar. Entre um passo e outro há
-  revisão — não emende dois.
+- **Um passo por vez.** Cada passo de implementação do que já foi desenhado é uma versão `0.50x`:
+  `0.501`, `0.502`, `0.503`… O `0.51` fica reservado para coisa **nova**, fora do desenho fechado
+  nos 19 blocos. Versões não levam pontos extras: `0.5.0.1` se escreve `0.501`, e isso vale para
+  pastas e para todo lugar. Entre um passo e outro há revisão — não emende dois.
 - **Pergunta em aberto não se decide sozinho.** Se o que você precisa está numa `OpenQuestion`,
   pare e pergunte ao Theo.
 - **Português** na documentação; **inglês** no código e em todo texto que o usuário vê.
@@ -142,5 +143,11 @@ Quatro camadas, nem todas rodam em toda etapa:
 3. contrato da CLI, conferido pelo JSON que ela devolve;
 4. visual, renderizado em claro e escuro e **olhado** — sem comparação de pixels.
 
-Os testes rodam num compositor Wayland **headless** com uma pasta de configuração descartável, para
-nunca dependerem da tela do Theo.
+As camadas 1 e 2 dispensam compositor (`QT_QPA_PLATFORM=offscreen`). As camadas 3 e 4 rodam num
+**Hyprland aninhado** dentro da sessão do Theo (`tools/headless/nested.sh`), com uma pasta de
+configuração descartável. A tela real do Theo é o modo de maior fidelidade, pedido a ele a cada
+vez — veja [`tools/README.md`](tools/README.md).
+
+**Quem implementa não declara o próprio teste verificado.** Escrever os testes é parte da entrega,
+mas quem roda, confere e conserta o arranjo de teste é o coordenador. Entregue dizendo o que você
+acredita que funciona, não o que você deu por verificado.

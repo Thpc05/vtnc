@@ -30,13 +30,13 @@
 {"edge": "RelatesTo", "from": "omnigraph", "to": "process", "data": {}}
 {"edge": "RelatesTo", "from": "test-environment", "to": "cli", "data": {}}
 {"edge": "RelatesTo", "from": "test-environment", "to": "process", "data": {}}
-{"type": "Step", "data": {"slug": "0.51", "version": "0.51", "title": "Esqueleto", "goal": "Grid da tela, island, page, um widget burro (um quadrado com texto) e a CLI. Nada bonito: e o esqueleto que prova se o modelo funciona.", "status": "planned", "ordinal": 1, "createdAt": "2026-11-19T00:00:00.000Z"}}
-{"edge": "StepImplements", "from": "0.51", "to": "esqueleto-primeiro", "data": {}}
-{"edge": "StepImplements", "from": "0.51", "to": "posicao-ancora-deslocamento", "data": {}}
-{"edge": "StepImplements", "from": "0.51", "to": "celula-base-mais-fator", "data": {}}
-{"edge": "StepImplements", "from": "0.51", "to": "ciclo-e-da-page", "data": {}}
-{"edge": "StepImplements", "from": "0.51", "to": "page-dona-dos-widgets", "data": {}}
-{"edge": "StepImplements", "from": "0.51", "to": "alvo-primeiro", "data": {}}
-{"edge": "StepImplements", "from": "0.51", "to": "call-e-set", "data": {}}
-{"edge": "StepImplements", "from": "0.51", "to": "cli-le-em-json", "data": {}}
-{"edge": "StepImplements", "from": "0.51", "to": "ambiente-headless", "data": {}}
+{"type": "Step", "data": {"slug": "0.501", "version": "0.501", "title": "Esqueleto", "goal": "Grid da tela, island, page, um widget burro (um quadrado com texto) e a CLI. Nada bonito: e o esqueleto que prova se o modelo funciona.", "status": "done", "ordinal": 1, "createdAt": "2026-11-19T00:00:00.000Z"}}
+{"edge": "StepImplements", "from": "0.501", "to": "esqueleto-primeiro", "data": {}}
+{"edge": "StepImplements", "from": "0.501", "to": "posicao-ancora-deslocamento", "data": {}}
+{"edge": "StepImplements", "from": "0.501", "to": "celula-base-mais-fator", "data": {}}
+{"edge": "StepImplements", "from": "0.501", "to": "ciclo-e-da-page", "data": {}}
+{"edge": "StepImplements", "from": "0.501", "to": "page-dona-dos-widgets", "data": {}}
+{"edge": "StepImplements", "from": "0.501", "to": "alvo-primeiro", "data": {}}
+{"edge": "StepImplements", "from": "0.501", "to": "call-e-set", "data": {}}
+{"edge": "StepImplements", "from": "0.501", "to": "cli-le-em-json", "data": {}}
+{"edge": "StepImplements", "from": "0.501", "to": "ambiente-headless", "data": {}}
