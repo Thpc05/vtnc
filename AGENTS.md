@@ -148,6 +148,12 @@ As camadas 1 e 2 dispensam compositor (`QT_QPA_PLATFORM=offscreen`). As camadas 
 configuração descartável. A tela real do Theo é o modo de maior fidelidade, pedido a ele a cada
 vez — veja [`tools/README.md`](tools/README.md).
 
-**Quem implementa não declara o próprio teste verificado.** Escrever os testes é parte da entrega,
-mas quem roda, confere e conserta o arranjo de teste é o coordenador. Entregue dizendo o que você
-acredita que funciona, não o que você deu por verificado.
+**Quem implementa não declara o próprio teste verificado.** A linha é esta:
+
+- **do implementador:** os casos de teste do passo — o que ele precisa provar. Rode-os enquanto
+  desenvolve, porque não dá para programar às cegas, mas entregue dizendo o que você *acredita* que
+  funciona e onde está inseguro, não uma lista de OKs.
+- **do coordenador:** o arranjo (`tools/headless/`, os scripts que rodam as camadas), o veredito, e
+  investigar o que falhar. Não mexa no arranjo sem avisar — senão nós dois consertamos a mesma coisa.
+
+De tempos em tempos o coordenador roda a tomada na tela real do Theo, por garantia.
