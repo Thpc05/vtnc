@@ -24,3 +24,10 @@ aponta para algo que não existe (uma page inexistente, uma camada que não é
 fica como estava — nunca escreve um config que a própria shell não
 conseguiria ler de volta (o princípio por trás da decisão 5.4, aplicada
 aqui ao `set`, não só ao Settings).
+
+As chaves aceitas por `set` em island são uma lista fechada (decisão
+0.502i): `page`, `layer`, e — desde a 0.503, para a página Islands da
+Settings — `anchor`, `offset` e `size`. As três últimas são objetos, não
+escalares, então chegam como um único argumento JSON
+(`set anchor '{"top":true,"left":true}'`); `core/config-shape.mjs` faz o
+parse e valida o formato antes de qualquer coisa chegar perto do arquivo.

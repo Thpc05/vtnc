@@ -1,6 +1,8 @@
 import QtQuick
 import "../widgets/square"
 import "../widgets/clock"
+import "../widgets/island-editor"
+import "../widgets/not-built"
 
 // A page: a reusable group of widget instances with its own grid (decision
 // 1b.0 / 1b.3 / 6.1). The page owns the widget instances — swap which page
@@ -29,6 +31,8 @@ Item {
                 switch (modelData.type) {
                 case "vtnc.square": return squareComponent;
                 case "vtnc.clock": return clockComponent;
+                case "vtnc.island-editor": return islandEditorComponent;
+                case "vtnc.not-built": return notBuiltComponent;
                 default: return null;
                 }
             }
@@ -47,5 +51,15 @@ Item {
     Component {
         id: clockComponent
         Clock {}
+    }
+
+    Component {
+        id: islandEditorComponent
+        IslandEditor {}
+    }
+
+    Component {
+        id: notBuiltComponent
+        NotBuilt {}
     }
 }

@@ -7,6 +7,14 @@
 # never calls its callback back, with any combination of QT_QUICK_BACKEND and
 # QSG_RENDER_LOOP. So this starts the nested test session itself, unless the
 # caller already put us inside one (NESTED_PID set).
+#
+# 0.503: runs via `qs -p` now, not plain qml6 — Page.qml started
+# unconditionally importing widgets/island-editor (for its switch case),
+# which needs core/Config.qml, a pragma Singleton that only resolves with
+# the Quickshell runtime `qs` provides. `qs -p <file>` also only resolves
+# qmldir imports under that file's own directory, so the harness runs from
+# a disposable copy at vtnc-dev's root with its import rewritten — the
+# versioned render.qml in tests/visual/ is untouched.
 
 set -uo pipefail
 
@@ -14,14 +22,18 @@ here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 root="$(cd "$here/../.." && pwd)"
 out="${1:-$here/render.png}"
 own_nest=""
+harness="$root/.render-test.qml"
 
 cleanup() {
     if [[ -n "$own_nest" ]]; then
         "$root/tools/headless/nested.sh" stop "$own_nest" || true
         rm -f "$own_nest"
     fi
+    rm -f "$harness"
 }
 trap cleanup EXIT
+
+sed 's#\.\./\.\./page#./page#' "$here/render.qml" >"$harness"
 
 if [[ -z "${NESTED_PID:-}" ]]; then
     own_nest=$(mktemp)
@@ -34,7 +46,7 @@ if [[ -z "${NESTED_PID:-}" ]]; then
 fi
 
 rm -f "$out"
-log=$(timeout 30 env QT_QPA_PLATFORM=wayland qml6 "$here/render.qml" -- "$out" 2>&1)
+log=$(VTNC_RENDER_OUT="$out" timeout 30 env QT_QPA_PLATFORM=wayland qs -p "$harness" -n 2>&1)
 status=$?
 
 if [[ $status -eq 124 ]]; then
@@ -44,7 +56,7 @@ if [[ $status -eq 124 ]]; then
 fi
 
 if [[ ! -s "$out" ]]; then
-    echo "FAIL: no image produced (qml6 exited $status)."
+    echo "FAIL: no image produced (qs exited $status)."
     echo "$log"
     exit 1
 fi

@@ -157,4 +157,22 @@ print(sizes.get("HEADLESS-1"), sizes.get("HEADLESS-2"))
 ')
 check "dock scales 1.25x from HEADLESS-1 to HEADLESS-2" "$sizes" "(160, 48) (200, 60)"
 
+# 0.503 criterion 1: Settings is a Hyprland window (hyprctl clients), not a
+# layer-shell surface (hyprctl layers) — unlike every island.
+has_settings_client=$(hyprctl clients -j | python3 -c 'import json,sys; print(any(c["title"]=="vtnc Settings" for c in json.load(sys.stdin)))')
+check "Settings is listed in hyprctl clients" "$has_settings_client" "True"
+
+has_settings_layer=$(hyprctl layers -j | python3 -c '
+import json, sys
+layers = json.load(sys.stdin)
+found = False
+for data in layers.values():
+    for level in data.get("levels", {}).values():
+        for l in level:
+            if "vtnc Settings" in l.get("namespace", ""):
+                found = True
+print(found)
+')
+check "Settings is not listed in hyprctl layers" "$has_settings_layer" "False"
+
 exit $fail

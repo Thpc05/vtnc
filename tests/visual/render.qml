@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Window
+import Quickshell
 import "../../page"
 
 // Renders one page to a PNG: the "looked at" layer (decision 17.2). It needs
@@ -7,6 +8,11 @@ import "../../page"
 // QT_QPA_PLATFORM=offscreen, with any render loop or scene-graph backend —
 // so this runs inside the nested test session (tools/headless/nested.sh).
 // 0.51 has no light/dark theming yet, so there's one render, not a pair.
+//
+// 0.503: Page.qml now unconditionally imports widgets/island-editor (for
+// its switch case), which imports core/Config.qml — a pragma Singleton
+// that only resolves under `qs`'s own runtime, not plain qml6. So this
+// runs via `qs -p` now (render-check.sh), not bare qml6 like before.
 Window {
     width: 400
     height: 200
@@ -32,10 +38,9 @@ Window {
 
     Component.onCompleted: {
         Qt.callLater(function () {
-            // qml6 passes everything after `--` straight through, so the
-            // output path is the last argument, not argument 1.
-            const args = Qt.application.arguments;
-            const out = args[args.length - 1];
+            // `qs` doesn't forward trailing CLI args the way `qml6 -- ...`
+            // did, so the output path travels as an env var instead.
+            const out = Quickshell.env("VTNC_RENDER_OUT");
             page.grabToImage(function (result) {
                 const ok = result.saveToFile(out);
                 if (!ok)

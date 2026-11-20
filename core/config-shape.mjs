@@ -24,23 +24,70 @@ export function listIslands(config) {
 }
 
 // What the CLI's `set` accepts on an island, and what makes a value valid
-// (decision 5.4's principle — an invalid config is never applied — carried
-// over from Settings to the CLI: a `set` that would leave config.json
-// pointing at something that doesn't exist is refused, not written).
-export const ISLAND_SETTABLE_KEYS = ["page", "layer"];
+// (decision 0.502i: a fixed list, not inferred from the config's shape — an
+// unknown key or a value pointing at something that doesn't exist is
+// refused, config.json stays untouched). 0.503 adds anchor/offset/size:
+// exactly what the Settings Islands page needs, nothing more.
+export const ISLAND_SETTABLE_KEYS = ["page", "layer", "anchor", "offset", "size"];
 export const VALID_LAYERS = ["background", "bottom", "top", "overlay"];
+export const ANCHOR_EDGES = ["top", "bottom", "left", "right"];
 
-// Returns an error string, or null if `value` is fine for `key` on an
-// island in this `config`.
+// anchor/offset/size travel through the CLI as a single JSON-encoded
+// argument (they're objects, not scalars like page/layer); this turns the
+// raw command-line string into the value validateIslandSet checks and
+// island[key] eventually stores. Invalid JSON becomes undefined, which the
+// shape checks below already reject with a clear message — no special case
+// needed for "that wasn't JSON at all".
+export function parseIslandSetValue(key, raw) {
+    if (key === "anchor" || key === "offset" || key === "size") {
+        try {
+            return JSON.parse(raw);
+        } catch (error) {
+            return undefined;
+        }
+    }
+    return raw;
+}
+
+function isPlainObject(value) {
+    return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+// Returns an error string, or null if `value` (already run through
+// parseIslandSetValue) is fine for `key` on an island in this `config`.
 export function validateIslandSet(key, value, config) {
     if (!ISLAND_SETTABLE_KEYS.includes(key)) {
         return `unknown key "${key}" for island set (try: ${ISLAND_SETTABLE_KEYS.join(", ")})`;
     }
-    if (key === "page" && !findPage(config, value)) {
-        return `no such page: "${value}"`;
+
+    if (key === "page") {
+        return findPage(config, value) ? null : `no such page: "${value}"`;
     }
-    if (key === "layer" && !VALID_LAYERS.includes(value)) {
-        return `invalid layer: "${value}" (must be one of: ${VALID_LAYERS.join(", ")})`;
+
+    if (key === "layer") {
+        return VALID_LAYERS.includes(value) ? null : `invalid layer: "${value}" (must be one of: ${VALID_LAYERS.join(", ")})`;
     }
+
+    if (key === "anchor") {
+        if (!isPlainObject(value)) return `invalid anchor: must be a JSON object, e.g. {"top":true,"left":true}`;
+        for (const edge of Object.keys(value)) {
+            if (!ANCHOR_EDGES.includes(edge)) return `invalid anchor: unknown edge "${edge}" (must be one of: ${ANCHOR_EDGES.join(", ")})`;
+            if (typeof value[edge] !== "boolean") return `invalid anchor: "${edge}" must be true or false`;
+        }
+        return null;
+    }
+
+    if (key === "offset" || key === "size") {
+        const fields = key === "offset" ? ["x", "y"] : ["w", "h"];
+        if (!isPlainObject(value)) return `invalid ${key}: must be a JSON object with ${fields.join(" and ")}`;
+        for (const field of fields) {
+            if (typeof value[field] !== "number" || !Number.isFinite(value[field])) {
+                return `invalid ${key}: "${field}" must be a number`;
+            }
+            if (key === "size" && value[field] <= 0) return `invalid size: "${field}" must be greater than zero`;
+        }
+        return null;
+    }
+
     return null;
 }

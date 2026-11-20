@@ -9,7 +9,7 @@ import { dirname, join } from "node:path";
 import { execFileSync } from "node:child_process";
 import { readConfig, writeConfig } from "./lib/store.js";
 import { ipcCall } from "./lib/ipc.js";
-import { findIsland, validateIslandSet } from "../core/config-shape.mjs";
+import { findIsland, validateIslandSet, parseIslandSetValue } from "../core/config-shape.mjs";
 
 const VERBS = new Set(["set", "call", "get", "list"]);
 // The full namespace list from decision 4b.3 — widget/monitor/preset/theme
@@ -32,9 +32,15 @@ namespaces: island, page, widget, service, monitor, preset, theme
   (widget, monitor, preset and theme have no verbs yet)
 verbs: set, call, get, list
 
+island set keys: page, layer, anchor, offset, size
+  (anchor/offset/size take one JSON object argument)
+
 examples:
   vtnc island bar call launcher     momentary: wears launcher until the next call
   vtnc island bar set page dashboard   permanent: writes config.json
+  vtnc island bar set anchor '{"top":true,"left":true}'
+  vtnc island bar set offset '{"x":2,"y":0}'
+  vtnc island bar set size '{"w":20,"h":6}'
   vtnc island bar get               current state, as JSON
   vtnc island list                  all islands, as JSON
   vtnc page list                    all pages, as JSON
@@ -51,8 +57,8 @@ function cmdSet(namespace, name, args) {
         console.error(`vtnc: set is not supported on namespace "${namespace}" yet`);
         process.exit(1);
     }
-    const [key, value] = args;
-    if (!key || value === undefined) {
+    const [key, rawValue] = args;
+    if (!key || rawValue === undefined) {
         console.error("vtnc: set needs a key and a value, e.g. set page dashboard");
         process.exit(1);
     }
@@ -64,6 +70,7 @@ function cmdSet(namespace, name, args) {
         process.exit(1);
     }
 
+    const value = parseIslandSetValue(key, rawValue);
     const error = validateIslandSet(key, value, config);
     if (error) {
         // config.json is untouched: we haven't written anything yet.

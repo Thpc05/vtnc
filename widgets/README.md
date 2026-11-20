@@ -21,3 +21,12 @@ widgets/<type>/
   `Component.onCompleted`/`onDestruction` — o `Loader` da `Page` já destrói
   o widget sozinho quando a page troca, então o desligar do service é de
   graça, não precisa de código extra para isso.
+- `island-editor` (0.503) — o controle da página Islands da Settings
+  (decisão 8.3): lê uma island direto de `core/Config.qml` e só escreve
+  através de `core/CliRunner.qml`, nunca em `Config` (decisão 6.3). Um
+  style só, `panel`, porque Appearance (estilo visual da própria Settings)
+  está fora de escopo aqui.
+- `not-built` (0.503) — o que aparece nas nove páginas da Settings que
+  ainda não existem (decisão 8.1). Mesmo o placeholder é um widget de
+  verdade, para a Settings inteira ficar dentro do mecanismo de pages e
+  widgets, sem caso especial por fora.

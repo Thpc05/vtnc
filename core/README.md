@@ -15,6 +15,10 @@ A base que não conhece ninguém acima dela: nenhum arquivo aqui importa
 - `IslandState.qml` — só em memória: qual page um `call` pôs por cima da
   idle de cada island. Nunca grava em disco; é isso que faz `call` ser
   momentâneo e `set` permanente.
+- `CliRunner.qml` — a única porta para o binário `cli/vtnc` de verdade
+  (`Quickshell.shellDir` acha onde ele mora). A Settings usa isto para toda
+  mudança (decisão 6.3): nunca escreve em `Config` nem no arquivo
+  diretamente.
 
 Os tipos QML daqui são expostos via `qmldir` (singletons), não por import de
 arquivo único — ver nota em `../AGENTS.md`-adjacente: imports de arquivo

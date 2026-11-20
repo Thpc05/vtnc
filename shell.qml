@@ -3,6 +3,7 @@ import Quickshell.Io
 import "./core"
 import "./island"
 import "./services"
+import "./settings"
 
 // Entry point. The CLI's `set` writes config.json directly (decision 4b.4),
 // picked up live by Config's FileView; `call`, `get` and `list` talk to this
@@ -12,6 +13,11 @@ ShellRoot {
     IslandManager {
         configRef: Config
     }
+
+    // A plain window, not a layer-shell surface (decision 1d.6) — opens
+    // with the shell for now; a toggle/keybind to show it on demand is a
+    // later step's job, out of 0.503's scope.
+    Settings {}
 
     IpcHandler {
         target: "island"
