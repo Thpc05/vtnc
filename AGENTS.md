@@ -132,7 +132,11 @@ Só para você não consultar o grafo às cegas. O detalhe está lá, não aqui.
   catálogo automático funcionar e que deixa uma extensão de terceiro se apresentar sozinha.
 - **Commit** livre nesta branch, um por passo fechado. Mensagens em inglês.
 - **Nunca** edite `~/.config/quickshell/vtnc-0.4` nem a branch `0.4`.
-- **Nunca** rode `hyprctl dispatch` nem troque de workspace. `hyprctl reload` pode sempre.
+- **Hyprland**: `hyprctl reload` pode sempre. `hyprctl dispatch` e trocar de workspace estão
+  **liberados para teste** — vá para um workspace vazio, faça o que precisa e volte para o do Theo.
+  Abrir janelas (`kitty`) para testar zona exclusiva também pode. Fora de teste, não mexa na sessão
+  dele.
+- Pesquise sempre no **wiki oficial do Hyprland**, na versão instalada (hoje a 0.57).
 
 ## Testes
 
