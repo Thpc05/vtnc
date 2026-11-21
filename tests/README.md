@@ -70,6 +70,21 @@ As quatro camadas da decisão 17.2:
    caminho de saída vai por `VTNC_RENDER_OUT` (variável de ambiente), não
    por `Qt.application.arguments`.
 
+**`cli/settings-click-path.sh`** (do coordenador) fecha o centímetro que os
+outros não alcançam: não "as funções do type chegam ao `config.json`", mas
+"clicar o controle chama a função". Ele caminha a árvore de objetos até o
+`MouseArea` dentro do chip `overlay` do style `panel` e emite o `clicked`
+dele, então a corrente inteira roda — `MouseArea` → `Chip.activated` →
+`IslandEditor.setLayer` → `CliRunner` → `cli/vtnc` → `config.json`.
+Falsificado na marra: trocando o `onActivated` do chip por um `console.log`,
+o teste acusa.
+
+Nada de injeção de input: `wlrctl` não está instalado e o `ydotool` passa
+pelo `uinput` do kernel, que não é escopado por compositor e vazaria para a
+sessão real do Theo. Se um dia um teste precisar de ponteiro de verdade,
+instale um cliente do protocolo `virtual-pointer` do wlroots, que passa pelo
+socket Wayland e portanto atinge só o aninhado.
+
 A camada 4 **precisa de compositor**: sob `QT_QPA_PLATFORM=offscreen` o
 `grabToImage` nunca chama o callback de volta, com qualquer combinação de
 `QT_QUICK_BACKEND` e `QSG_RENDER_LOOP`. Dentro do aninhado ele responde na

@@ -1,2 +1,7 @@
 node_modules/
 *.png
+
+# harnesses copied to the root for `qs -p` (shellDir must be the project root)
+.render-test.qml
+.settings-write-boundary-test.qml
+.settings-click-path-test.qml
