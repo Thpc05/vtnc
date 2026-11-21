@@ -1,4 +1,5 @@
 import QtQuick
+import "../../core/config-shape.mjs" as ConfigShape
 import "../../core"
 import "./styles/panel"
 
@@ -25,8 +26,17 @@ Item {
     readonly property string pageName: island.page ?? ""
     readonly property var pageNames: Object.keys(Config.data.pages ?? {})
 
+    // 0.505: autohide/autohideMode are optional per-island overrides
+    // (decision 11.2c) — resolved the same way Island.qml resolves them,
+    // so the toggle shown here always reflects what's actually in effect,
+    // whether this island set its own or is just inheriting the global.
+    readonly property var resolvedAutohide: ConfigShape.resolveAutohide(Config.data, island)
+    readonly property bool autohide: resolvedAutohide.enabled
+    readonly property string autohideMode: resolvedAutohide.mode
+
     readonly property var edges: ["top", "bottom", "left", "right"]
     readonly property var layers: ["background", "bottom", "top", "overlay"]
+    readonly property var autohideModes: ["always", "window", "fullscreen"]
 
     function setAnchorEdge(edge, value) {
         const next = { top: !!anchor.top, bottom: !!anchor.bottom, left: !!anchor.left, right: !!anchor.right };
@@ -52,6 +62,14 @@ Item {
 
     function setLayer(value) {
         CliRunner.run(["island", islandName, "set", "layer", value]);
+    }
+
+    function setAutohide(value) {
+        CliRunner.run(["island", islandName, "set", "autohide", value ? "true" : "false"]);
+    }
+
+    function setAutohideMode(value) {
+        CliRunner.run(["island", islandName, "set", "autohideMode", value]);
     }
 
     function setPage(value) {
@@ -81,12 +99,17 @@ Item {
             pageNames: root.pageNames
             edges: root.edges
             layers: root.layers
+            autohideModes: root.autohideModes
+            autohide: root.autohide
+            autohideMode: root.autohideMode
             setAnchorEdge: root.setAnchorEdge
             nudgeOffset: root.nudgeOffset
             nudgeSize: root.nudgeSize
             nudgeGap: root.nudgeGap
             setLayer: root.setLayer
             setPage: root.setPage
+            setAutohide: root.setAutohide
+            setAutohideMode: root.setAutohideMode
         }
     }
 }

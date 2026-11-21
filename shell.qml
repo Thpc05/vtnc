@@ -1,5 +1,6 @@
 import Quickshell
 import Quickshell.Io
+import "./core/config-shape.mjs" as ConfigShape
 import "./core"
 import "./island"
 import "./services"
@@ -35,10 +36,12 @@ ShellRoot {
                 anchor: island.anchor ?? {},
                 offset: island.offset ?? { x: 0, y: 0 },
                 size: island.size ?? { w: 1, h: 1 },
+                gap: island.gap ?? 0,
                 layer: island.layer ?? "top",
                 idlePage: island.page ?? "",
                 calledPage: calledPage,
                 page: calledPage !== "" ? calledPage : (island.page ?? ""),
+                autohide: ConfigShape.resolveAutohide(Config.data, island),
             });
         }
 
@@ -49,9 +52,23 @@ ShellRoot {
                 anchor: island.anchor ?? {},
                 offset: island.offset ?? { x: 0, y: 0 },
                 size: island.size ?? { w: 1, h: 1 },
+                gap: island.gap ?? 0,
                 layer: island.layer ?? "top",
                 page: IslandState.calledPage(island.name) || (island.page ?? ""),
+                autohide: ConfigShape.resolveAutohide(Config.data, island),
             })));
+        }
+    }
+
+    // Global autohide config (0.505, decision 11.2c/12.4): no target name,
+    // so it only answers `list`, the same grammar `page list` uses for a
+    // nameless read. `set` writes config.json directly (decision 4b.4) and
+    // never comes through here.
+    IpcHandler {
+        target: "autohide"
+
+        function list(): string {
+            return JSON.stringify(Config.data.autohide ?? ConfigShape.defaultAutohide());
         }
     }
 

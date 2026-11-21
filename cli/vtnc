@@ -9,13 +9,19 @@ import { dirname, join } from "node:path";
 import { execFileSync } from "node:child_process";
 import { readConfig, writeConfig } from "./lib/store.js";
 import { ipcCall } from "./lib/ipc.js";
-import { findIsland, validateIslandSet, parseIslandSetValue } from "../core/config-shape.mjs";
+import {
+    findIsland, validateIslandSet, parseIslandSetValue,
+    validateAutohideGlobalSet, parseAutohideGlobalValue, defaultAutohide,
+} from "../core/config-shape.mjs";
 
 const VERBS = new Set(["set", "call", "get", "list"]);
 // The full namespace list from decision 4b.3 — widget/monitor/preset/theme
 // are listed even though they have no verbs yet (also decision 4b.3).
-const NAMESPACES = new Set(["island", "page", "widget", "service", "monitor", "preset", "theme"]);
-const NAMESPACES_WITH_VERBS = new Set(["island", "page", "service"]);
+// `autohide` (0.505) is one of the "futuros" 4b.3 already names the list
+// as open to — it's global, not per-island, so it has no target name, the
+// same grammar `page list`/`service list` already use.
+const NAMESPACES = new Set(["island", "page", "widget", "service", "monitor", "preset", "theme", "autohide"]);
+const NAMESPACES_WITH_VERBS = new Set(["island", "page", "service", "autohide"]);
 
 // The shell's own source folder — one level up from cli/ — doubles as its
 // quickshell config name (vtnc-dev while developing, vtnc once installed),
@@ -28,13 +34,21 @@ function usage() {
        vtnc                                 start the shell
        vtnc help                            this message
 
-namespaces: island, page, widget, service, monitor, preset, theme
+namespaces: island, page, widget, service, monitor, preset, theme, autohide
   (widget, monitor, preset and theme have no verbs yet)
 verbs: set, call, get, list
 
-island set keys: page, layer, anchor, offset, size, gap
+island set keys: page, layer, anchor, offset, size, gap, autohide, autohideMode
   (anchor/offset/size take one JSON object argument; gap is one whole number
-   of cells — never four sides, it only reserves on the anchored edge)
+   of cells — never four sides, it only reserves on the anchored edge;
+   autohide is true/false; autohideMode is one of always/window/fullscreen.
+   autohide/autohideMode left unset on an island fall back to the global
+   autohide values below.)
+
+autohide set keys: enabled, mode, distance
+  (global, not per-island: enabled/mode are the fallback for islands that
+   don't set their own; distance (cells) is global-only, it also decides
+   which of the two hide animations an island gets — see island/README.md)
 
 examples:
   vtnc island bar call launcher     momentary: wears launcher until the next call
@@ -43,22 +57,22 @@ examples:
   vtnc island bar set offset '{"x":2,"y":0}'
   vtnc island bar set size '{"w":20,"h":6}'
   vtnc island bar set gap 2
+  vtnc island bar set autohide true
+  vtnc island bar set autohideMode window
   vtnc island bar get               current state, as JSON
   vtnc island list                  all islands, as JSON
   vtnc page list                    all pages, as JSON
   vtnc service list                 which services are on and who's holding them
-  vtnc service clock get            one service's state, as JSON`);
+  vtnc service clock get            one service's state, as JSON
+  vtnc autohide set distance 3      global trigger distance, in cells
+  vtnc autohide list                current global autohide config, as JSON`);
 }
 
 function startShell() {
     execFileSync("qs", ["-p", shellRoot], { stdio: "inherit" });
 }
 
-function cmdSet(namespace, name, args) {
-    if (namespace !== "island") {
-        console.error(`vtnc: set is not supported on namespace "${namespace}" yet`);
-        process.exit(1);
-    }
+function cmdSetIsland(name, args) {
     const [key, rawValue] = args;
     if (!key || rawValue === undefined) {
         console.error("vtnc: set needs a key and a value, e.g. set page dashboard");
@@ -83,6 +97,44 @@ function cmdSet(namespace, name, args) {
     island[key] = value;
     writeConfig(config);
     console.log(JSON.stringify(island));
+}
+
+// `vtnc autohide set <key> <value>` (0.505): global, no island name — the
+// same `vtnc <namespace> <verb> <args>` grammar `page list` already uses.
+// distance is global-only by decision 12.4; enabled/mode are the fallback
+// an island falls back to when it doesn't set its own autohide/
+// autohideMode (decision 11.2c).
+function cmdSetAutohide(args) {
+    const [key, rawValue] = args;
+    if (!key || rawValue === undefined) {
+        console.error("vtnc: set needs a key and a value, e.g. set distance 2");
+        process.exit(1);
+    }
+
+    const config = readConfig();
+    const value = parseAutohideGlobalValue(key, rawValue);
+    const error = validateAutohideGlobalSet(key, value);
+    if (error) {
+        console.error(`vtnc: ${error}`);
+        process.exit(1);
+    }
+
+    config.autohide = { ...defaultAutohide(), ...config.autohide, [key]: value };
+    writeConfig(config);
+    console.log(JSON.stringify(config.autohide));
+}
+
+function cmdSet(namespace, name, args) {
+    if (namespace === "island") {
+        cmdSetIsland(name, args);
+        return;
+    }
+    if (namespace === "autohide") {
+        cmdSetAutohide(args);
+        return;
+    }
+    console.error(`vtnc: set is not supported on namespace "${namespace}" yet`);
+    process.exit(1);
 }
 
 const argv = process.argv.slice(2);

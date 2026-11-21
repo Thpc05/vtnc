@@ -122,6 +122,30 @@ fora — só tem `id`, que o JS não enxerga), emite o `clicked`, confere que
 `config.json` ganhou um `gap` a mais. Falsificado do mesmo jeito, também
 acusa.
 
+**`cli/settings-autohide-click-path.sh`** (0.505) é o mesmo modelo aplicado
+ao chip de autohide: como o rótulo do chip muda com o próprio estado
+("on"/"off"), ele acha o chip pelo texto literal "off" (a fixture começa
+sem sobrescrita, lendo o global — que é `off` por padrão), emite o
+`clicked`, confere que `config.json` ganhou `"autohide": true` na island.
+Falsificado na marra (trocando `onActivated` por um `console.log`),
+também acusa — e depois restaurado, confirmado via `git diff --stat` que o
+diff final só tem a mudança real do stepper, nada da falsificação.
+
+**`cli/autohide.sh`** (0.505) é o teste de aceite dos seis critérios —
+três islands, uma por modo (`always`/`window`/`fullscreen`), medindo a
+reserva liberada/devolvida contra `hyprctl monitors -j`, um `kitty` de
+verdade abrindo/fechando/ficando em tela cheia, e `hyprctl dispatch
+movecursor` simulando o mouse chegando na borda. **Foi escrito, mas não
+rodado pelo implementador** — rodá-lo, mesmo com toda chamada ao Hyprland
+explicitamente escopada à instância aninhada (`HYPRLAND_INSTANCE_SIGNATURE`
+reafirmado em cada `hyprctl`/`kitty`, nunca confiando num `export` herdado;
+uma checagem no início recusa continuar se a assinatura aninhada vier vazia
+ou igual à da sessão real), chegou a fechar/abrir janelas da sessão real do
+Theo duas vezes nesta etapa, sem causa raiz confirmada. Fica para o
+coordenador rodar no arranjo dele. O resto da etapa (unidade, compilação
+QML, os `*-click-path.sh` acima, que não tocam em janela nenhuma) foi
+rodado normalmente.
+
 Nada de injeção de input: `wlrctl` não está instalado e o `ydotool` passa
 pelo `uinput` do kernel, que não é escopado por compositor e vazaria para a
 sessão real do Theo. Se um dia um teste precisar de ponteiro de verdade,
@@ -132,9 +156,11 @@ A camada 4 **precisa de compositor**: sob `QT_QPA_PLATFORM=offscreen` o
 `grabToImage` nunca chama o callback de volta, com qualquer combinação de
 `QT_QUICK_BACKEND` e `QSG_RENDER_LOOP`. Dentro do aninhado ele responde na
 hora. Só as camadas 1 e 2 — e os testes de fronteira/clique da Settings
-(3b, `settings-click-path.sh`, `settings-gap-click-path.sh`), que não
-dependem de superfície nenhuma — dispensam compositor. `exclusive-zone.sh`
-(3c) precisa dele: mede `hyprctl monitors -j` de verdade e abre um `kitty`
-de verdade.
+(3b, `settings-click-path.sh`, `settings-gap-click-path.sh`,
+`settings-autohide-click-path.sh`), que não dependem de superfície
+nenhuma — dispensam compositor. `exclusive-zone.sh` (3c) e `autohide.sh`
+(0.505) precisam dele: medem `hyprctl monitors -j` de verdade e abrem
+janelas de verdade — `autohide.sh` também dispara `hyprctl dispatch`
+(movecursor, fullscreen, workspace), liberado só para teste (AGENTS.md).
 
 Nenhuma delas precisa de permissão nem da tela do Theo.

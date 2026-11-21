@@ -2,8 +2,9 @@ import QtQuick
 
 // The only style for vtnc.island-editor. Everything the type hands it is
 // listed here (decision 3.5b): the island's current anchor/offset/size/
-// gap/layer/page, the closed lists of edges and layers, and the six
-// functions that are the only way this ever changes anything.
+// gap/layer/page/autohide/autohideMode, the closed lists of edges, layers
+// and autohide modes, and the functions that are the only way this ever
+// changes anything.
 Rectangle {
     id: root
 
@@ -15,14 +16,19 @@ Rectangle {
     required property string islandLayer
     required property string pageName
     required property var pageNames
+    required property bool autohide
+    required property string autohideMode
     required property var edges
     required property var layers
+    required property var autohideModes
     required property var setAnchorEdge
     required property var nudgeOffset
     required property var nudgeSize
     required property var nudgeGap
     required property var setLayer
     required property var setPage
+    required property var setAutohide
+    required property var setAutohideMode
 
     color: "#262626"
     border.color: "#3a3a3a"
@@ -177,6 +183,25 @@ Rectangle {
                     label: modelData
                     active: modelData === root.pageName
                     onActivated: root.setPage(modelData)
+                }
+            }
+        }
+
+        Row {
+            spacing: 8
+            Text { text: "autohide:"; color: "#cccccc"; font.pixelSize: 12; anchors.verticalCenter: parent.verticalCenter }
+            Chip {
+                label: root.autohide ? "on" : "off"
+                active: root.autohide
+                onActivated: root.setAutohide(!root.autohide)
+            }
+            Repeater {
+                model: root.autohideModes
+                delegate: Chip {
+                    required property string modelData
+                    label: modelData
+                    active: modelData === root.autohideMode
+                    onActivated: root.setAutohideMode(modelData)
                 }
             }
         }

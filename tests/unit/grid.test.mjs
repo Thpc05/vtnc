@@ -1,6 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { cellSizePx, islandGeometry, primaryExclusiveEdge, exclusiveZone } from "../../core/grid.mjs";
+import {
+    cellSizePx, islandGeometry, primaryExclusiveEdge, exclusiveZone,
+    nearestBorder, autohideAnimation, modeSaysHide,
+    islandAbsoluteRect, cursorNearBorder, cursorOverRect,
+} from "../../core/grid.mjs";
 
 test("cell size scales with the monitor factor, base stays global", () => {
     const config = { cell: { base: 8 }, monitors: { "HEADLESS-2": { factor: 1.25 } } };
@@ -75,4 +79,67 @@ test("exclusiveZone: a call to a bigger page never changes it — it reads islan
     // Simulates what a `call` leaves untouched: island.size itself never
     // changes, so there is nothing here that could observe a bigger page.
     assert.deepEqual(exclusiveZone(island, 8), before);
+});
+
+// --- 0.505: autohide ---------------------------------------------------
+
+test("nearestBorder: a single anchored edge, offset in cells along its own axis", () => {
+    assert.deepEqual(nearestBorder({ anchor: { top: true }, offset: { x: 0, y: 3 } }), { edge: "top", offsetCells: 3 });
+    assert.deepEqual(nearestBorder({ anchor: { left: true }, offset: { x: 5, y: 0 } }), { edge: "left", offsetCells: 5 });
+});
+
+test("nearestBorder: a corner picks whichever of its two anchored edges it rests closer to", () => {
+    assert.deepEqual(
+        nearestBorder({ anchor: { bottom: true, left: true }, offset: { x: 1, y: 4 } }),
+        { edge: "left", offsetCells: 1 },
+    );
+});
+
+test("nearestBorder: no anchor at all means no border and infinite distance", () => {
+    assert.deepEqual(nearestBorder({ anchor: {} }), { edge: null, offsetCells: Infinity });
+});
+
+test("autohideAnimation: slide when strictly closer than the trigger distance, shrink otherwise", () => {
+    const close = { anchor: { top: true }, offset: { x: 0, y: 0 } };
+    const far = { anchor: { top: true }, offset: { x: 0, y: 10 } };
+    assert.equal(autohideAnimation(close, 2), "slide");
+    assert.equal(autohideAnimation(far, 2), "shrink");
+});
+
+test("autohideAnimation: the trigger distance's two extremes force one animation for everyone", () => {
+    const anyIsland = { anchor: { top: true }, offset: { x: 0, y: 7 } };
+    assert.equal(autohideAnimation(anyIsland, 0), "shrink"); // nothing is ever closer than 0
+    assert.equal(autohideAnimation(anyIsland, 9999), "slide"); // everything is closer than 9999
+});
+
+test("autohideAnimation: an island with no anchored edge always shrinks (infinitely far)", () => {
+    assert.equal(autohideAnimation({ anchor: {} }, 9999), "shrink");
+});
+
+test("modeSaysHide: always hides unconditionally; window/fullscreen read the given Hyprland state", () => {
+    assert.equal(modeSaysHide("always", { hasWindows: false, hasFullscreen: false }), true);
+    assert.equal(modeSaysHide("window", { hasWindows: false, hasFullscreen: false }), false);
+    assert.equal(modeSaysHide("window", { hasWindows: true, hasFullscreen: false }), true);
+    assert.equal(modeSaysHide("fullscreen", { hasWindows: true, hasFullscreen: false }), false);
+    assert.equal(modeSaysHide("fullscreen", { hasWindows: true, hasFullscreen: true }), true);
+});
+
+test("islandAbsoluteRect: anchored edges place the island against that side of the monitor", () => {
+    const island = { anchor: { top: true, left: true }, offset: { x: 1, y: 2 }, size: { w: 10, h: 2 } };
+    const monitor = { x: 1920, y: 0, width: 1920, height: 1080 };
+    assert.deepEqual(islandAbsoluteRect(island, 8, monitor), { x: 1920 + 8, y: 0 + 16, width: 80, height: 16 });
+});
+
+test("cursorNearBorder: within the band on the right edge, outside it, and outside the monitor entirely", () => {
+    const monitor = { x: 1920, y: 0, width: 1920, height: 1080 };
+    assert.equal(cursorNearBorder({ x: 3835, y: 500 }, "right", monitor, 20), true);
+    assert.equal(cursorNearBorder({ x: 3000, y: 500 }, "right", monitor, 20), false);
+    assert.equal(cursorNearBorder({ x: 3835, y: 2000 }, "right", monitor, 20), false); // off this monitor
+    assert.equal(cursorNearBorder({ x: 3835, y: 500 }, null, monitor, 20), false);
+});
+
+test("cursorOverRect: inside vs. outside an island's own rectangle", () => {
+    const rect = { x: 100, y: 100, width: 50, height: 20 };
+    assert.equal(cursorOverRect({ x: 120, y: 110 }, rect), true);
+    assert.equal(cursorOverRect({ x: 200, y: 110 }, rect), false);
 });

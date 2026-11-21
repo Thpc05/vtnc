@@ -39,13 +39,19 @@ Window {
         if (name === "Islands") {
             const islands = Config.data.islands ?? [];
             const rowsPerIsland = 12;
+            const globalRows = 3;
             return {
-                grid: { cols: root.contentCols, rows: islands.length * rowsPerIsland },
-                widgets: islands.map((island, index) => ({
-                    type: "vtnc.island-editor",
-                    islandName: island.name,
-                    cell: { x: 0, y: index * rowsPerIsland, w: root.contentCols, h: rowsPerIsland - 1 },
-                })),
+                grid: { cols: root.contentCols, rows: globalRows + islands.length * rowsPerIsland },
+                widgets: [
+                    // The one autohide knob that isn't per-island (decision
+                    // 12.4): shown once, above every island's own editor.
+                    { type: "vtnc.autohide-settings", cell: { x: 0, y: 0, w: root.contentCols, h: globalRows - 1 } },
+                    ...islands.map((island, index) => ({
+                        type: "vtnc.island-editor",
+                        islandName: island.name,
+                        cell: { x: 0, y: globalRows + index * rowsPerIsland, w: root.contentCols, h: rowsPerIsland - 1 },
+                    })),
+                ],
             };
         }
         return {

@@ -2,3 +2,4 @@ singleton Paths 1.0 Paths.qml
 singleton Config 1.0 Config.qml
 singleton IslandState 1.0 IslandState.qml
 singleton CliRunner 1.0 CliRunner.qml
+singleton HoverCursor 1.0 HoverCursor.qml

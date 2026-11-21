@@ -8,6 +8,32 @@ export function defaultConfig() {
         monitors: {},
         islands: [],
         pages: {},
+        autohide: defaultAutohide(),
+    };
+}
+
+// The global autohide defaults (0.505, decision 11.2c/12.4): enabled/mode
+// are the fallback an island uses when it doesn't set its own autohide/
+// autohideMode; distance is global-only, never per-island (12.4). fade/
+// slideSpeed/shrinkSize tune the two animations (11.2b) but, unlike the
+// three above, don't get a CLI verb or a Settings control in 0.505 — the
+// step's own scope names only "os atributos [autohide, autohideMode] e a
+// distância" as entering the CLI and the Settings page; the rest is a
+// config.json-only knob for now, not the "resto do sistema de animação"
+// that's explicitly out of scope.
+export function defaultAutohide() {
+    return { enabled: false, mode: "always", distance: 2, fade: 150, slideSpeed: 150, shrinkSize: 1 };
+}
+
+// island.autohide / island.autohideMode are optional overrides (decision
+// 11.2c): absent means "use the global value". Resolving them here, once,
+// keeps that fallback in one place for the CLI's `get`/`list` and for
+// Island.qml alike.
+export function resolveAutohide(config, island) {
+    const global = config.autohide ?? defaultAutohide();
+    return {
+        enabled: island.autohide ?? global.enabled ?? false,
+        mode: island.autohideMode ?? global.mode ?? "always",
     };
 }
 
@@ -29,9 +55,14 @@ export function listIslands(config) {
 // refused, config.json stays untouched). 0.503 adds anchor/offset/size;
 // 0.504 adds gap — exactly what the Settings Islands page needs, nothing
 // more.
-export const ISLAND_SETTABLE_KEYS = ["page", "layer", "anchor", "offset", "size", "gap"];
+export const ISLAND_SETTABLE_KEYS = ["page", "layer", "anchor", "offset", "size", "gap", "autohide", "autohideMode"];
 export const VALID_LAYERS = ["background", "bottom", "top", "overlay"];
 export const ANCHOR_EDGES = ["top", "bottom", "left", "right"];
+export const AUTOHIDE_MODES = ["always", "window", "fullscreen"];
+
+// What `vtnc autohide set` accepts — the global side of decision 11.2c/
+// 12.4, the same closed-list pattern as ISLAND_SETTABLE_KEYS.
+export const AUTOHIDE_GLOBAL_KEYS = ["enabled", "mode", "distance"];
 
 // anchor/offset/size travel through the CLI as a single JSON-encoded
 // argument (they're objects, not scalars like page/layer); this turns the
@@ -52,7 +83,28 @@ export function parseIslandSetValue(key, raw) {
     if (key === "gap") {
         return Number(raw);
     }
-    return raw;
+    if (key === "autohide") {
+        if (raw === "true") return true;
+        if (raw === "false") return false;
+        return undefined;
+    }
+    return raw; // layer, page, autohideMode: plain strings already
+}
+
+// Same shape as parseIslandSetValue, for the global `vtnc autohide set`
+// (0.505). Kept separate because the two closed key lists don't overlap
+// and mixing them would let a typo'd namespace silently parse the other
+// one's keys.
+export function parseAutohideGlobalValue(key, raw) {
+    if (key === "enabled") {
+        if (raw === "true") return true;
+        if (raw === "false") return false;
+        return undefined;
+    }
+    if (key === "distance") {
+        return Number(raw);
+    }
+    return raw; // mode
 }
 
 function isPlainObject(value) {
@@ -99,5 +151,32 @@ export function validateIslandSet(key, value, config) {
         return Number.isInteger(value) && value >= 0 ? null : `invalid gap: must be a whole number of cells, zero or more`;
     }
 
+    if (key === "autohide") {
+        return typeof value === "boolean" ? null : `invalid autohide: must be true or false`;
+    }
+
+    if (key === "autohideMode") {
+        return AUTOHIDE_MODES.includes(value) ? null : `invalid autohideMode: "${value}" (must be one of: ${AUTOHIDE_MODES.join(", ")})`;
+    }
+
+    return null;
+}
+
+// Returns an error string, or null if `value` (already run through
+// parseAutohideGlobalValue) is fine for `key` on the global autohide
+// config (0.505, decision 12.4: distance is global-only, never per-island).
+export function validateAutohideGlobalSet(key, value) {
+    if (!AUTOHIDE_GLOBAL_KEYS.includes(key)) {
+        return `unknown key "${key}" for autohide set (try: ${AUTOHIDE_GLOBAL_KEYS.join(", ")})`;
+    }
+    if (key === "enabled") {
+        return typeof value === "boolean" ? null : `invalid enabled: must be true or false`;
+    }
+    if (key === "mode") {
+        return AUTOHIDE_MODES.includes(value) ? null : `invalid mode: "${value}" (must be one of: ${AUTOHIDE_MODES.join(", ")})`;
+    }
+    if (key === "distance") {
+        return Number.isInteger(value) && value >= 0 ? null : `invalid distance: must be a whole number of cells, zero or more`;
+    }
     return null;
 }

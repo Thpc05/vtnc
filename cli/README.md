@@ -36,3 +36,19 @@ Desde a 0.504, `gap` entrou na mesma lista: um número inteiro só, nunca
 quatro lados (decisão 2d.3) — `vtnc island bar set gap 2`. É o gap exclusivo
 que soma ao retângulo da island na hora de pedir a reserva de espaço ao
 Hyprland; ver `island/README.md` para a conta.
+
+Desde a 0.505, `autohide` (booleano) e `autohideMode` (`always`/`window`/
+`fullscreen`) também entraram na lista — `vtnc island bar set autohide true`,
+`vtnc island bar set autohideMode window`. Os dois são sobrescritas
+opcionais: ausentes, a island usa o valor global.
+
+O namespace `autohide` (0.505) é global, sem nome de alvo — a mesma gramática
+de `page list`/`service list`: `vtnc autohide set <chave> <valor>` aceita
+`enabled`, `mode` e `distance` (decisão 12.4: a distância de gatilho é
+global, nunca por island — é ela que decide qual das duas animações do
+autohide uma island recebe, ver `island/README.md`); `vtnc autohide list`
+devolve o objeto global inteiro. `fade`, `slideSpeed` e `shrinkSize` também
+moram em `config.autohide`, mas não ganharam verbo aqui nem controle na
+Settings nesta etapa — só o que o passo pediu explicitamente
+(`autohide`/`autohideMode`/distância) entrou na CLI; os três ficam editáveis
+só à mão no `config.json` por enquanto.

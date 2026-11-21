@@ -2,6 +2,7 @@ import QtQuick
 import "../widgets/square"
 import "../widgets/clock"
 import "../widgets/island-editor"
+import "../widgets/autohide-settings"
 import "../widgets/not-built"
 
 // A page: a reusable group of widget instances with its own grid (decision
@@ -32,6 +33,7 @@ Item {
                 case "vtnc.square": return squareComponent;
                 case "vtnc.clock": return clockComponent;
                 case "vtnc.island-editor": return islandEditorComponent;
+                case "vtnc.autohide-settings": return autohideSettingsComponent;
                 case "vtnc.not-built": return notBuiltComponent;
                 default: return null;
                 }
@@ -56,6 +58,11 @@ Item {
     Component {
         id: islandEditorComponent
         IslandEditor {}
+    }
+
+    Component {
+        id: autohideSettingsComponent
+        AutohideSettings {}
     }
 
     Component {

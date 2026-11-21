@@ -1,6 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { validateIslandSet, parseIslandSetValue } from "../../core/config-shape.mjs";
+import {
+    validateIslandSet, parseIslandSetValue,
+    validateAutohideGlobalSet, parseAutohideGlobalValue, resolveAutohide,
+} from "../../core/config-shape.mjs";
 
 const config = {
     islands: [{ name: "bar", page: "clock" }],
@@ -64,4 +67,54 @@ test("set gap only accepts a whole number, zero or more — never four sides", (
 test("parseIslandSetValue turns gap's raw string into a number", () => {
     assert.equal(parseIslandSetValue("gap", "2"), 2);
     assert.ok(Number.isNaN(parseIslandSetValue("gap", "two")));
+});
+
+// --- 0.505: autohide -----------------------------------------------------
+
+test("parseIslandSetValue turns autohide's raw string into a real boolean, never a truthy string", () => {
+    assert.equal(parseIslandSetValue("autohide", "true"), true);
+    assert.equal(parseIslandSetValue("autohide", "false"), false);
+    assert.equal(parseIslandSetValue("autohide", "banana"), undefined);
+});
+
+test("set autohide only accepts a real boolean", () => {
+    assert.equal(validateIslandSet("autohide", true, config), null);
+    assert.equal(validateIslandSet("autohide", false, config), null);
+    assert.match(validateIslandSet("autohide", undefined, config), /must be true or false/);
+});
+
+test("set autohideMode only accepts the three known modes", () => {
+    assert.equal(validateIslandSet("autohideMode", "always", config), null);
+    assert.equal(validateIslandSet("autohideMode", "window", config), null);
+    assert.equal(validateIslandSet("autohideMode", "fullscreen", config), null);
+    assert.match(validateIslandSet("autohideMode", "sideways", config), /invalid autohideMode/);
+});
+
+test("parseAutohideGlobalValue: enabled is a real boolean, distance is a number, mode passes through", () => {
+    assert.equal(parseAutohideGlobalValue("enabled", "true"), true);
+    assert.equal(parseAutohideGlobalValue("enabled", "false"), false);
+    assert.equal(parseAutohideGlobalValue("distance", "3"), 3);
+    assert.equal(parseAutohideGlobalValue("mode", "window"), "window");
+});
+
+test("validateAutohideGlobalSet: the three global keys, nothing else", () => {
+    assert.equal(validateAutohideGlobalSet("enabled", true), null);
+    assert.equal(validateAutohideGlobalSet("mode", "fullscreen"), null);
+    assert.equal(validateAutohideGlobalSet("distance", 0), null);
+    assert.match(validateAutohideGlobalSet("distance", -1), /invalid distance/);
+    assert.match(validateAutohideGlobalSet("mode", "sideways"), /invalid mode/);
+    assert.match(validateAutohideGlobalSet("gap", 2), /unknown key/);
+});
+
+test("resolveAutohide: an island's own autohide/autohideMode override the global default", () => {
+    const cfg = { autohide: { enabled: false, mode: "always" } };
+    assert.deepEqual(resolveAutohide(cfg, {}), { enabled: false, mode: "always" });
+    assert.deepEqual(resolveAutohide(cfg, { autohide: true, autohideMode: "window" }), { enabled: true, mode: "window" });
+    // Only the key an island actually set is overridden — the other still
+    // falls back to global (decision 11.2c: two independent overrides).
+    assert.deepEqual(resolveAutohide(cfg, { autohide: true }), { enabled: true, mode: "always" });
+});
+
+test("resolveAutohide: with no global autohide config at all, falls back to off/always", () => {
+    assert.deepEqual(resolveAutohide({}, {}), { enabled: false, mode: "always" });
 });

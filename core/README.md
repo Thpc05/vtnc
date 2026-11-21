@@ -19,6 +19,10 @@ A base que não conhece ninguém acima dela: nenhum arquivo aqui importa
   (`Quickshell.shellDir` acha onde ele mora). A Settings usa isto para toda
   mudança (decisão 6.3): nunca escreve em `Config` nem no arquivo
   diretamente.
+- `HoverCursor.qml` (0.505) — pergunta a posição do mouse a `hyprctl
+  cursorpos` de tempos em tempos (só leitura — ver `island/README.md`'s
+  seção de autohide para o motivo de não dar para fazer isso com uma
+  superfície de verdade).
 
 Os tipos QML daqui são expostos via `qmldir` (singletons), não por import de
 arquivo único — ver nota em `../AGENTS.md`-adjacente: imports de arquivo
