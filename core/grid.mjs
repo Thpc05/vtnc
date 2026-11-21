@@ -38,3 +38,47 @@ export function islandGeometry(island, cellPx) {
         height: cellsToPx(island.size?.h ?? 1, cellPx),
     };
 }
+
+// Which single edge (if any) a layer-shell surface anchored this way can
+// reserve space on. Measured empirically against Hyprland 0.57 in the
+// nested compositor (0.504), with WlrLayershell.exclusionMode forced to
+// Normal and a fixed exclusiveZone, rather than taken from the protocol
+// spec: a lone edge reserves; that edge plus both of its perpendicular
+// edges (a full-width/height strip, e.g. top+left+right) also reserves,
+// on the lone edge only; anything else — a bare corner (e.g. top+left), or
+// both opposite edges with no perpendicular pair (e.g. top+bottom) — is
+// ambiguous to Hyprland and reserves nothing, confirming the risk recorded
+// in the graph (a corner-anchored island that doesn't span its edge was
+// drawn over, not pushed into). Returns null when no single edge applies.
+export function primaryExclusiveEdge(anchor) {
+    const top = !!anchor.top;
+    const bottom = !!anchor.bottom;
+    const left = !!anchor.left;
+    const right = !!anchor.right;
+
+    const verticalSingle = top !== bottom;
+    const horizontalSingle = left !== right;
+    const horizontalPairedOrNeither = left === right;
+    const verticalPairedOrNeither = top === bottom;
+
+    if (verticalSingle && horizontalPairedOrNeither) return top ? "top" : "bottom";
+    if (horizontalSingle && verticalPairedOrNeither) return left ? "left" : "right";
+    return null;
+}
+
+// The exclusive-zone reservation for an island (decision 1d.5/2d.3/2d.4):
+// the island's own rectangle, on its anchored edge only, plus its optional
+// gap — in pixels, ready for WlrLayershell.exclusiveZone. Frozen to the
+// island's configured size, never the page actually on screen (decision
+// 2d.4), and zero whenever there's no idle page or no single anchored edge
+// to reserve on (decision 2d.4/1d.5): island without an idle page, or
+// without one coverable edge, never pushes anything.
+export function exclusiveZone(island, cellPx) {
+    const hasIdlePage = !!island.page;
+    const edge = hasIdlePage ? primaryExclusiveEdge(island.anchor ?? {}) : null;
+    if (!edge) return { edge: null, px: 0 };
+
+    const gapPx = cellsToPx(island.gap ?? 0, cellPx);
+    const sizeCells = edge === "top" || edge === "bottom" ? (island.size?.h ?? 1) : (island.size?.w ?? 1);
+    return { edge, px: cellsToPx(sizeCells, cellPx) + gapPx };
+}

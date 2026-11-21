@@ -52,3 +52,16 @@ test("parseIslandSetValue decodes JSON only for the object-shaped keys", () => {
     assert.equal(parseIslandSetValue("page", "dashboard"), "dashboard");
     assert.equal(parseIslandSetValue("anchor", "not json"), undefined);
 });
+
+test("set gap only accepts a whole number, zero or more — never four sides", () => {
+    assert.equal(validateIslandSet("gap", 0, config), null);
+    assert.equal(validateIslandSet("gap", 3, config), null);
+    assert.match(validateIslandSet("gap", -1, config), /invalid gap/);
+    assert.match(validateIslandSet("gap", 1.5, config), /invalid gap/);
+    assert.match(validateIslandSet("gap", NaN, config), /invalid gap/);
+});
+
+test("parseIslandSetValue turns gap's raw string into a number", () => {
+    assert.equal(parseIslandSetValue("gap", "2"), 2);
+    assert.ok(Number.isNaN(parseIslandSetValue("gap", "two")));
+});

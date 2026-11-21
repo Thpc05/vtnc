@@ -5,3 +5,4 @@ node_modules/
 .render-test.qml
 .settings-write-boundary-test.qml
 .settings-click-path-test.qml
+.settings-gap-click-path-test.qml

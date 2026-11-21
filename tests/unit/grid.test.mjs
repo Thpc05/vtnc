@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { cellSizePx, islandGeometry } from "../../core/grid.mjs";
+import { cellSizePx, islandGeometry, primaryExclusiveEdge, exclusiveZone } from "../../core/grid.mjs";
 
 test("cell size scales with the monitor factor, base stays global", () => {
     const config = { cell: { base: 8 }, monitors: { "HEADLESS-2": { factor: 1.25 } } };
@@ -27,4 +27,52 @@ test("anchor + offset, never absolute pixels: margin is 0 on edges not anchored"
     assert.equal(geometry.margins.left, 0);
     assert.equal(geometry.margins.right, 0);
     assert.equal(geometry.margins.bottom, 0);
+});
+
+// Measured against Hyprland 0.57 in the nested test compositor (0.504), not
+// deduced from the layer-shell protocol spec, which leaves corner anchors
+// undefined. See island/README.md for the full table.
+test("primaryExclusiveEdge: a lone edge, or that edge spanning the full width/height, reserves", () => {
+    assert.equal(primaryExclusiveEdge({ top: true }), "top");
+    assert.equal(primaryExclusiveEdge({ bottom: true }), "bottom");
+    assert.equal(primaryExclusiveEdge({ left: true }), "left");
+    assert.equal(primaryExclusiveEdge({ right: true }), "right");
+    assert.equal(primaryExclusiveEdge({ top: true, left: true, right: true }), "top");
+    assert.equal(primaryExclusiveEdge({ left: true, top: true, bottom: true }), "left");
+});
+
+test("primaryExclusiveEdge: a bare corner or opposite edges with no perpendicular pair is ambiguous", () => {
+    assert.equal(primaryExclusiveEdge({ top: true, left: true }), null);
+    assert.equal(primaryExclusiveEdge({ bottom: true, left: true }), null);
+    assert.equal(primaryExclusiveEdge({ top: true, bottom: true }), null);
+    assert.equal(primaryExclusiveEdge({ left: true, right: true }), null);
+    assert.equal(primaryExclusiveEdge({}), null);
+});
+
+test("exclusiveZone: the island's own rectangle on the anchored edge, plus the gap, in px", () => {
+    const island = { page: "dashboard", anchor: { top: true }, size: { w: 20, h: 6 }, gap: 2 };
+    assert.deepEqual(exclusiveZone(island, 8), { edge: "top", px: 48 + 16 }); // 6*8 + 2*8
+});
+
+test("exclusiveZone: left/right anchors measure width, not height", () => {
+    const island = { page: "dock", anchor: { left: true }, size: { w: 10, h: 30 }, gap: 0 };
+    assert.deepEqual(exclusiveZone(island, 8), { edge: "left", px: 80 });
+});
+
+test("exclusiveZone: no idle page means no reservation, even if anchored", () => {
+    const island = { anchor: { top: true }, size: { w: 10, h: 4 }, gap: 3 };
+    assert.deepEqual(exclusiveZone(island, 8), { edge: null, px: 0 });
+});
+
+test("exclusiveZone: an ambiguous (corner) anchor means no reservation, even with a gap", () => {
+    const island = { page: "dock", anchor: { bottom: true, left: true }, size: { w: 10, h: 4 }, gap: 3 };
+    assert.deepEqual(exclusiveZone(island, 8), { edge: null, px: 0 });
+});
+
+test("exclusiveZone: a call to a bigger page never changes it — it reads island.size, not the page on screen", () => {
+    const island = { page: "idle", anchor: { top: true }, size: { w: 10, h: 4 }, gap: 0 };
+    const before = exclusiveZone(island, 8);
+    // Simulates what a `call` leaves untouched: island.size itself never
+    // changes, so there is nothing here that could observe a bigger page.
+    assert.deepEqual(exclusiveZone(island, 8), before);
 });

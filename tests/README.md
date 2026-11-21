@@ -30,6 +30,28 @@ As quatro camadas da decisão 17.2:
    da 0.503: a Settings aparece em `hyprctl clients` e nunca em
    `hyprctl layers` (critério 1), já que ela é janela comum, não
    layer-shell (decisão 1d.6).
+3c. **`cli/exclusive-zone.sh`** — os quatro primeiros critérios da 0.504,
+   contra o `reserved` de `hyprctl monitors -j`, que é a medida exata (não
+   depende de interpretar o tamanho de uma janela). Quatro islands, uma por
+   canto do critério 4: `bar` (faixa de borda a borda, reserva), `dock`
+   (canto puro, ambíguo para o Hyprland mesmo com zona explícita — ver
+   `core/grid.mjs`), `float` (sem âncora nenhuma) e `silent` (ancorada, mas
+   sem page idle) — as três últimas não devem somar nada ao que `bar`
+   reserva sozinha. Confirma também com uma janela de verdade (`kitty`,
+   liberado para teste): ela tem de aparecer abaixo da faixa reservada, não
+   por baixo dela — fácil de repetir na tela real do Theo.
+
+   Pegadinha encontrada aqui: depois de um `set gap`, `IslandManager.qml`
+   reconstrói o `Variants` inteiro de islands (o modelo é
+   `config.data.islands`, e qualquer mudança no config troca a identidade
+   do array inteiro) — por um instante a superfície antiga e a nova
+   coexistem, e o Hyprland soma as duas zonas exclusivas. Ler
+   `hyprctl monitors -j` cedo demais pegou 32+56=88px uma vez; o teste
+   agora espera meio segundo depois de cada `set` antes de medir. Isto é
+   uma característica de arquitetura de antes da 0.504 (o `Variants` nunca
+   diferenciou by-key), não algo que este passo tenha introduzido — vale a
+   pena o coordenador saber que existe, caso afete algum teste futuro mais
+   sensível a tempo.
 
    Cuidado observado aqui: o Hyprland aninhado sempre reporta **três**
    monitores, não dois — além dos dois `HEADLESS-*` que `nested.sh` declara,
@@ -79,6 +101,13 @@ dele, então a corrente inteira roda — `MouseArea` → `Chip.activated` →
 Falsificado na marra: trocando o `onActivated` do chip por um `console.log`,
 o teste acusa.
 
+**`cli/settings-gap-click-path.sh`** (0.504) é o mesmo modelo aplicado ao
+botão "+" do novo Stepper de gap: acha o `MouseArea` pelo texto "+" do seu
+próprio filho (o `Stepper` não dá outro jeito de diferenciar de "-" por
+fora — só tem `id`, que o JS não enxerga), emite o `clicked`, confere que
+`config.json` ganhou um `gap` a mais. Falsificado do mesmo jeito, também
+acusa.
+
 Nada de injeção de input: `wlrctl` não está instalado e o `ydotool` passa
 pelo `uinput` do kernel, que não é escopado por compositor e vazaria para a
 sessão real do Theo. Se um dia um teste precisar de ponteiro de verdade,
@@ -88,7 +117,10 @@ socket Wayland e portanto atinge só o aninhado.
 A camada 4 **precisa de compositor**: sob `QT_QPA_PLATFORM=offscreen` o
 `grabToImage` nunca chama o callback de volta, com qualquer combinação de
 `QT_QUICK_BACKEND` e `QSG_RENDER_LOOP`. Dentro do aninhado ele responde na
-hora. Só as camadas 1 e 2 — e o teste de fronteira de escrita da Settings
-(3b), que não depende de superfície nenhuma — dispensam compositor.
+hora. Só as camadas 1 e 2 — e os testes de fronteira/clique da Settings
+(3b, `settings-click-path.sh`, `settings-gap-click-path.sh`), que não
+dependem de superfície nenhuma — dispensam compositor. `exclusive-zone.sh`
+(3c) precisa dele: mede `hyprctl monitors -j` de verdade e abre um `kitty`
+de verdade.
 
 Nenhuma delas precisa de permissão nem da tela do Theo.

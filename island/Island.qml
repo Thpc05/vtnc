@@ -25,6 +25,7 @@ PanelWindow {
     readonly property string currentPageName: calledPageName !== "" ? calledPageName : idlePageName
 
     readonly property var geometry: Grid.islandGeometry(islandConfig, cellPx)
+    readonly property var exclusive: Grid.exclusiveZone(islandConfig, cellPx)
 
     anchors.left: geometry.anchors.left
     anchors.right: geometry.anchors.right
@@ -49,6 +50,17 @@ PanelWindow {
         }
     }
     WlrLayershell.namespace: "vtnc-island-" + islandName
+
+    // The reservation has to be asked for explicitly (the risk recorded in
+    // the graph for 0.504): PanelWindow's automatic exclusionMode only
+    // reserves when the surface spans its whole anchored edge, which a
+    // corner-anchored island like a dock never does. Forcing Normal and
+    // setting exclusiveZone ourselves — from Grid.exclusiveZone, which is
+    // zero whenever there's no idle page or no single reservable edge —
+    // means an island that shouldn't reserve anything simply asks for zero,
+    // rather than leaving the decision to the surface's own geometry.
+    WlrLayershell.exclusionMode: ExclusionMode.Normal
+    WlrLayershell.exclusiveZone: root.exclusive.px
 
     Page {
         anchors.fill: parent

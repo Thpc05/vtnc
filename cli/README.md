@@ -31,3 +31,8 @@ Settings — `anchor`, `offset` e `size`. As três últimas são objetos, não
 escalares, então chegam como um único argumento JSON
 (`set anchor '{"top":true,"left":true}'`); `core/config-shape.mjs` faz o
 parse e valida o formato antes de qualquer coisa chegar perto do arquivo.
+
+Desde a 0.504, `gap` entrou na mesma lista: um número inteiro só, nunca
+quatro lados (decisão 2d.3) — `vtnc island bar set gap 2`. É o gap exclusivo
+que soma ao retângulo da island na hora de pedir a reserva de espaço ao
+Hyprland; ver `island/README.md` para a conta.

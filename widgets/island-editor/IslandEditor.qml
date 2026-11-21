@@ -20,6 +20,7 @@ Item {
     readonly property var anchor: island.anchor ?? {}
     readonly property var offset: island.offset ?? { x: 0, y: 0 }
     readonly property var size: island.size ?? { w: 1, h: 1 }
+    readonly property int gap: island.gap ?? 0
     readonly property string islandLayer: island.layer ?? "top"
     readonly property string pageName: island.page ?? ""
     readonly property var pageNames: Object.keys(Config.data.pages ?? {})
@@ -43,6 +44,10 @@ Item {
         const next = { w: size.w ?? 1, h: size.h ?? 1 };
         next[axis] = Math.max(1, (next[axis] ?? 1) + delta);
         CliRunner.run(["island", islandName, "set", "size", JSON.stringify(next)]);
+    }
+
+    function nudgeGap(delta) {
+        CliRunner.run(["island", islandName, "set", "gap", String(Math.max(0, gap + delta))]);
     }
 
     function setLayer(value) {
@@ -70,6 +75,7 @@ Item {
             anchor: root.anchor
             offset: root.offset
             size: root.size
+            gap: root.gap
             islandLayer: root.islandLayer
             pageName: root.pageName
             pageNames: root.pageNames
@@ -78,6 +84,7 @@ Item {
             setAnchorEdge: root.setAnchorEdge
             nudgeOffset: root.nudgeOffset
             nudgeSize: root.nudgeSize
+            nudgeGap: root.nudgeGap
             setLayer: root.setLayer
             setPage: root.setPage
         }

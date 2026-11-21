@@ -26,9 +26,10 @@ export function listIslands(config) {
 // What the CLI's `set` accepts on an island, and what makes a value valid
 // (decision 0.502i: a fixed list, not inferred from the config's shape — an
 // unknown key or a value pointing at something that doesn't exist is
-// refused, config.json stays untouched). 0.503 adds anchor/offset/size:
-// exactly what the Settings Islands page needs, nothing more.
-export const ISLAND_SETTABLE_KEYS = ["page", "layer", "anchor", "offset", "size"];
+// refused, config.json stays untouched). 0.503 adds anchor/offset/size;
+// 0.504 adds gap — exactly what the Settings Islands page needs, nothing
+// more.
+export const ISLAND_SETTABLE_KEYS = ["page", "layer", "anchor", "offset", "size", "gap"];
 export const VALID_LAYERS = ["background", "bottom", "top", "overlay"];
 export const ANCHOR_EDGES = ["top", "bottom", "left", "right"];
 
@@ -37,7 +38,9 @@ export const ANCHOR_EDGES = ["top", "bottom", "left", "right"];
 // raw command-line string into the value validateIslandSet checks and
 // island[key] eventually stores. Invalid JSON becomes undefined, which the
 // shape checks below already reject with a clear message — no special case
-// needed for "that wasn't JSON at all".
+// needed for "that wasn't JSON at all". gap (0.504) is a plain number, one
+// cell count, never four sides (decision 2d.3) — Number() on a non-numeric
+// string gives NaN, which the gap check below also rejects on its own.
 export function parseIslandSetValue(key, raw) {
     if (key === "anchor" || key === "offset" || key === "size") {
         try {
@@ -45,6 +48,9 @@ export function parseIslandSetValue(key, raw) {
         } catch (error) {
             return undefined;
         }
+    }
+    if (key === "gap") {
+        return Number(raw);
     }
     return raw;
 }
@@ -87,6 +93,10 @@ export function validateIslandSet(key, value, config) {
             if (key === "size" && value[field] <= 0) return `invalid size: "${field}" must be greater than zero`;
         }
         return null;
+    }
+
+    if (key === "gap") {
+        return Number.isInteger(value) && value >= 0 ? null : `invalid gap: must be a whole number of cells, zero or more`;
     }
 
     return null;

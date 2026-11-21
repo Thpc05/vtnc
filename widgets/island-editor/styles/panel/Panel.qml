@@ -2,8 +2,8 @@ import QtQuick
 
 // The only style for vtnc.island-editor. Everything the type hands it is
 // listed here (decision 3.5b): the island's current anchor/offset/size/
-// layer/page, the closed lists of edges and layers, and the five functions
-// that are the only way this ever changes anything.
+// gap/layer/page, the closed lists of edges and layers, and the six
+// functions that are the only way this ever changes anything.
 Rectangle {
     id: root
 
@@ -11,6 +11,7 @@ Rectangle {
     required property var anchor
     required property var offset
     required property var size
+    required property int gap
     required property string islandLayer
     required property string pageName
     required property var pageNames
@@ -19,6 +20,7 @@ Rectangle {
     required property var setAnchorEdge
     required property var nudgeOffset
     required property var nudgeSize
+    required property var nudgeGap
     required property var setLayer
     required property var setPage
 
@@ -142,6 +144,12 @@ Rectangle {
                 value: root.size.h ?? 1
                 onDecremented: root.nudgeSize("h", -1)
                 onIncremented: root.nudgeSize("h", 1)
+            }
+            Stepper {
+                label: "gap"
+                value: root.gap
+                onDecremented: root.nudgeGap(-1)
+                onIncremented: root.nudgeGap(1)
             }
         }
 

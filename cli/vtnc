@@ -32,8 +32,9 @@ namespaces: island, page, widget, service, monitor, preset, theme
   (widget, monitor, preset and theme have no verbs yet)
 verbs: set, call, get, list
 
-island set keys: page, layer, anchor, offset, size
-  (anchor/offset/size take one JSON object argument)
+island set keys: page, layer, anchor, offset, size, gap
+  (anchor/offset/size take one JSON object argument; gap is one whole number
+   of cells — never four sides, it only reserves on the anchored edge)
 
 examples:
   vtnc island bar call launcher     momentary: wears launcher until the next call
@@ -41,6 +42,7 @@ examples:
   vtnc island bar set anchor '{"top":true,"left":true}'
   vtnc island bar set offset '{"x":2,"y":0}'
   vtnc island bar set size '{"w":20,"h":6}'
+  vtnc island bar set gap 2
   vtnc island bar get               current state, as JSON
   vtnc island list                  all islands, as JSON
   vtnc page list                    all pages, as JSON
