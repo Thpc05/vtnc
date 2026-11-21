@@ -41,6 +41,20 @@ As quatro camadas da decisão 17.2:
    liberado para teste): ela tem de aparecer abaixo da faixa reservada, não
    por baixo dela — fácil de repetir na tela real do Theo.
 
+   Duas coisas que o coordenador ajustou ao verificar a 0.504. Primeira: o
+   teste lia só o lado `top` do `reserved`, então uma reserva vazando para
+   outra borda passaria sem ser vista — agora ele compara os quatro lados de
+   uma vez (`[0, 32, 0, 0]`) e o `silent` ficou ancorado em `right`, para
+   que um vazamento dele caia num lado que o `bar` não ocupa. Segunda: a
+   regra de canto do `primaryExclusiveEdge` **não é observável daqui**. Quem
+   a impõe é o próprio Hyprland: o protocolo `wlr-layer-shell` diz que uma
+   zona positiva numa âncora de canto (ou em duas bordas opostas, ou nas
+   quatro) é tratada como zero. Quebrei a regra no `grid.mjs` de propósito e
+   o `reserved` não se mexeu. Quem cobre essa regra são os testes unitários,
+   não este. A falsificação que este teste de fato acusa é a da page idle:
+   com `hasIdlePage` forçado a `true`, ele reprova cinco das seis linhas e
+   sai com 1.
+
    Pegadinha encontrada aqui: depois de um `set gap`, `IslandManager.qml`
    reconstrói o `Variants` inteiro de islands (o modelo é
    `config.data.islands`, e qualquer mudança no config troca a identidade

@@ -14,7 +14,9 @@
 #            axis): ambiguous to Hyprland even with an explicit exclusive
 #            zone (measured in 0.504, see core/grid.mjs), reserves nothing.
 #   float  — not anchored to any edge at all: reserves nothing (1d.5).
-#   silent — anchored top, but with no idle page: reserves nothing (2d.4).
+#   silent — anchored right, but with no idle page: reserves nothing (2d.4).
+#            On `right`, not `top`, so a leak here lands on a side `bar`
+#            doesn't occupy and can't hide inside its total (coordinator).
 
 set -euo pipefail
 
@@ -49,7 +51,7 @@ cat >"$tmp_config_dir/config.json" <<'EOF'
     { "name": "bar", "anchor": { "top": true, "left": true, "right": true }, "offset": { "x": 0, "y": 0 }, "size": { "w": 40, "h": 4 }, "gap": 0, "layer": "top", "page": "idle" },
     { "name": "dock", "anchor": { "bottom": true, "left": true }, "offset": { "x": 2, "y": 2 }, "size": { "w": 20, "h": 6 }, "gap": 3, "layer": "top", "page": "idle" },
     { "name": "float", "anchor": {}, "offset": { "x": 0, "y": 0 }, "size": { "w": 10, "h": 4 }, "gap": 5, "layer": "top", "page": "idle" },
-    { "name": "silent", "anchor": { "top": true }, "offset": { "x": 0, "y": 0 }, "size": { "w": 10, "h": 4 }, "gap": 5, "layer": "top", "page": "" }
+    { "name": "silent", "anchor": { "right": true }, "offset": { "x": 0, "y": 0 }, "size": { "w": 10, "h": 4 }, "gap": 5, "layer": "top", "page": "" }
   ],
   "pages": {
     "idle": { "grid": { "cols": 10, "rows": 4 }, "widgets": [ { "type": "vtnc.square", "style": "default", "text": "idle", "cell": { "x": 0, "y": 0, "w": 6, "h": 4 } } ] },
@@ -72,12 +74,14 @@ for _ in $(seq 1 50); do
 done
 sleep 0.5
 
-reserved_top() {
+# All four sides, not just the anchored one: reading only `top` let a
+# reservation leaking onto another edge pass unseen (coordinator).
+reserved_all() {
     hyprctl monitors -j | python3 -c '
 import json, sys
 for m in json.load(sys.stdin):
     if m["name"] == "HEADLESS-1":
-        print(m["reserved"][1])  # [left, top, right, bottom]
+        print(m["reserved"])  # [left, top, right, bottom]
 '
 }
 
@@ -85,12 +89,17 @@ for m in json.load(sys.stdin):
 # own height on the top edge — 4 * 8 = 32px. dock/float/silent all have a
 # gap configured too, so if any of them leaked a reservation this would be
 # higher than 32.
-check "bar alone reserves exactly its height in px (criterion 1)" "$(reserved_top)" "32"
+check "bar alone reserves exactly its height in px, and nothing on the other three sides (criterion 1 + 4)" "$(reserved_all)" "[0, 32, 0, 0]"
 
 # Criterion 4: island not anchored to a usable edge (float), without an
 # idle page (silent), or anchored to a bare corner (dock) — all contribute
 # zero, confirmed by the total staying at bar's own 32px.
-check "dock (bare corner), float (no edge) and silent (no idle page) add nothing (criterion 4)" "$(reserved_top)" "32"
+# Criterion 4, isolated: each of the three is given an edge of its own to
+# leak onto, so the assertion above pins all four sides at once. Note that
+# dock's bare corner is refused by Hyprland itself, not only by our code —
+# the layer-shell spec treats a positive zone on a corner anchor as zero,
+# so breaking primaryExclusiveEdge's corner rule changes nothing visible
+# here. That rule is covered by the unit tests, not by this one.
 
 # Criterion 2: the gap adds exactly N cells in px, only on the anchored
 # side. 3 cells * 8px = 24 more, landing on top (bar's edge) — nothing else
@@ -100,17 +109,17 @@ check "dock (bare corner), float (no edge) and silent (no idle page) add nothing
 # 32+56=88, a transient double-count, not a real bug.
 "$here/cli/vtnc" island bar set gap 3 >/dev/null
 sleep 0.5
-check "gap of 3 cells adds exactly 24px to the reservation (criterion 2)" "$(reserved_top)" "56"
+check "gap of 3 cells adds exactly 24px to the reservation (criterion 2)" "$(reserved_all)" "[0, 56, 0, 0]"
 "$here/cli/vtnc" island bar set gap 0 >/dev/null
 sleep 0.5
-check "gap back to 0 returns the reservation to 32px" "$(reserved_top)" "32"
+check "gap back to 0 returns the reservation to 32px" "$(reserved_all)" "[0, 32, 0, 0]"
 
 # Criterion 3: a call to a page that would make bar's content far taller
 # than its own 4-cell height does not move the reservation — it's frozen to
 # island.size (which a call never touches), not to whatever the page needs.
 "$here/cli/vtnc" island bar call big >/dev/null
 sleep 0.3
-check "a call to a bigger page leaves the reservation untouched (criterion 3)" "$(reserved_top)" "32"
+check "a call to a bigger page leaves the reservation untouched (criterion 3)" "$(reserved_all)" "[0, 32, 0, 0]"
 "$here/cli/vtnc" island bar call idle >/dev/null
 
 # Second, independent confirmation with a real client window (liberated for
