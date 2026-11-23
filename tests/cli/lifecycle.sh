@@ -93,6 +93,17 @@ check "page <nome> call <island> troca a page ao vivo (critério 1)" "$(pg)" "p1
 check "o espelho do monitor em foco veste a page chamada (critério 3)" "$(mirror HEADLESS-1)" "p1"
 check "o espelho do outro monitor continua na idle (critério 3)" "$(mirror HEADLESS-2)" "idle"
 
+# Decisão 1e.3b: o monitor é o que estava em foco NO INSTANTE do call, e a
+# page fica nele. Sem trocar o foco depois do call, as duas leituras — foco
+# gravado e foco ao vivo — dão a mesma resposta, e as duas asserções acima
+# passam em ambas. É esta que as separa.
+nd 'hl.dsp.focus({ monitor = "HEADLESS-2" })'
+sleep 0.8
+check "mudar o foco NÃO arrasta a page chamada junto (1e.3b)" "$(mirror HEADLESS-1)" "p1"
+check "e o monitor que ganhou o foco continua na idle (1e.3b)" "$(mirror HEADLESS-2)" "idle"
+nd 'hl.dsp.focus({ monitor = "HEADLESS-1" })'
+sleep 0.4
+
 # Critério 2: a pilha guarda cinco. Seis chamadas, e a mais velha cai.
 for p in p2 p3 p4 p5 p6; do "$here/cli/vtnc" page "$p" call bar >/dev/null; sleep 0.15; done
 sleep 0.4

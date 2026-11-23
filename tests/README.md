@@ -215,6 +215,13 @@ cada **espelho** está vestindo, lido do campo `mirrors` que o
 `&& isFocusedMonitor` do `showingCalled`: o espelho do outro monitor passa a
 mostrar a page chamada e o teste acusa.
 
+Uma asserção dele merece nota, porque as duas óbvias não bastavam: medir os
+espelhos **logo depois** do call dá a mesma resposta tanto na leitura "foco
+gravado no instante do call" quanto na "foco ao vivo". O que separa as duas é
+**trocar o foco de monitor depois** e conferir que a page chamada não vai
+junto (decisão 1e.3b). Falsificado voltando os quatro arquivos de código ao
+commit anterior: a page migra, e só essas duas asserções acusam.
+
 O critério 4 não está aqui de propósito: provar Esc exige teclar de verdade,
 e não há injeção de input escopada a um compositor nesta máquina. Ele vive em
 `tools/manual/lifecycle.sh`.
