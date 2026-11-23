@@ -11,8 +11,10 @@ import "../page"
 // wears one page at a time (decision 1e.1 — the island itself owns none of
 // the lifecycle, the page does; the island only renders whichever page is
 // currently assigned to it). An island can be mirrored across screens
-// (decision 1c.4); each mirror is one of these, but they all read the same
-// IslandState entry, since a `call` isn't tied to a monitor.
+// (decision 1c.4); each mirror is one of these, and they all read the same
+// IslandState call stack — a `call` isn't tied to a monitor — but only the
+// mirror on the focused monitor actually wears it (decision 1e.3); the
+// others keep showing idle.
 PanelWindow {
     id: root
 
@@ -24,7 +26,42 @@ PanelWindow {
     readonly property string islandName: islandConfig.name
     readonly property string idlePageName: islandConfig.page ?? ""
     readonly property string calledPageName: IslandState.calledPage(islandName)
-    readonly property string currentPageName: calledPageName !== "" ? calledPageName : idlePageName
+
+    // --- Lifecycle (0.506) -------------------------------------------------
+    //
+    // A called page appears only on the focused monitor; every other mirror
+    // keeps wearing whatever it had (decision 1e.3). The 0.505 autohide
+    // window-mode already reads "each monitor's own workspace, decided by
+    // that mirror alone" — this follows the same shape: a live, reactive
+    // comparison against Hyprland.focusedMonitor, not something fixed at
+    // call-time. A consequence worth flagging: if focus moves to a
+    // different monitor while a call is still active, rendering follows
+    // focus live — the called page would appear to "jump" mirrors. The
+    // graph doesn't say which of the two readings it means; this is the
+    // simpler one, and the one "cada espelho decide por si" reads most
+    // naturally as.
+    readonly property string monitorName: hyprMonitor ? hyprMonitor.name : (root.screen ? root.screen.name : "")
+    readonly property bool isFocusedMonitor: Hyprland.focusedMonitor !== null
+        && hyprMonitor !== null
+        && Hyprland.focusedMonitor.name === hyprMonitor.name
+    readonly property bool showingCalled: calledPageName !== "" && isFocusedMonitor
+    readonly property string currentPageName: showingCalled ? calledPageName : idlePageName
+
+    // Observability for criterion 3 — which page each mirror draws, read
+    // back through `vtnc island <name> get`'s `mirrors` field without
+    // comparing a pixel.
+    onCurrentPageNameChanged: IslandState.setMirrorPage(islandName, monitorName, currentPageName)
+    Component.onCompleted: IslandState.setMirrorPage(islandName, monitorName, currentPageName)
+
+    // The called page's own declared lifecycle (decisions 1e.0/1e.1): a
+    // page is "called" by default, or declares "popup"/"lock". Idle has no
+    // lifecycle of its own to read — it's just the absence of a call.
+    readonly property string currentLifecycle: showingCalled
+        ? ConfigShape.pageLifecycle(configRef.page(calledPageName))
+        : "idle"
+    readonly property bool isPopup: currentLifecycle === "popup"
+    readonly property bool isLock: currentLifecycle === "lock"
+    readonly property bool pageNeedsKeyboard: showingCalled && ConfigShape.pageNeedsKeyboard(configRef.page(calledPageName))
 
     readonly property var geometry: Grid.islandGeometry(islandConfig, cellPx)
     readonly property var exclusive: Grid.exclusiveZone(islandConfig, cellPx)
@@ -69,13 +106,11 @@ PanelWindow {
         ? (Grid.cursorNearBorder(HoverCursor.pos, edgeInfo.edge, monitorPx, hoverBandPx)
             || (absoluteRect !== null && Grid.cursorOverRect(HoverCursor.pos, absoluteRect)))
         : false
-    // A call to the island's own idle page counts as "the call ended"
-    // (decision 1e.2: idle is the fallback the call stack rests at) — there
-    // is no separate "end the call" verb yet (core/IslandState.clearCall
-    // exists but nothing calls it; Esc/click-outside is keybind/lifecycle
-    // work, out of 0.505's scope), so this reuses the one mechanism that
-    // already exists: calling the idle page back.
-    readonly property bool revealedByCall: calledPageName !== "" && calledPageName !== idlePageName
+    // 0.506 superseded the 0.505 slang here: a real call stack and a real
+    // `end` exist now (core/IslandState.qml), and revealing-by-call only
+    // applies to the mirror actually showing the called page — the focused
+    // one (decision 1e.3).
+    readonly property bool revealedByCall: showingCalled
 
     readonly property bool modeWantsHide: Grid.modeSaysHide(resolvedAutohide.mode, {
         hasWindows: hyprHasWindows,
@@ -140,6 +175,72 @@ PanelWindow {
     WlrLayershell.exclusionMode: ExclusionMode.Normal
     WlrLayershell.exclusiveZone: root.effectiveExclusiveZonePx
 
+    // --- Esc and click-outside (0.506, criterion 4) ------------------------
+    //
+    // Esc needs keyboard focus on this surface, and grabbing it outright is
+    // the difference between closing a popup and hijacking Theo's keyboard
+    // (decision 1e.5): only a page that declares needsKeyboard gets
+    // Exclusive; every other called/popup page gets OnDemand — eligible for
+    // focus once the user clicks into it, never forced. Idle never asks for
+    // focus at all. The lock exception (1e.4) doesn't need a separate
+    // branch here: a lock page simply never shows Esc's handler armed
+    // below, so there's nothing for a stray Escape to do.
+    WlrLayershell.keyboardFocus: root.showingCalled
+        ? (root.pageNeedsKeyboard ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.OnDemand)
+        : WlrKeyboardFocus.None
+
+    // Click-outside has no clean answer in wlr-layer-shell — the same
+    // family of problem as 0.505's hover band: there is no "receives a
+    // click outside me" region, only "receives this click" or "doesn't",
+    // and a fullscreen transparent catcher would steal every click behind
+    // it from whoever it belongs to, which this step explicitly rules out.
+    // What Hyprland *does* expose, read-only, is which toplevel is active
+    // (Quickshell.Hyprland's activeToplevel) — clicking a real window
+    // changes it, even while this surface holds exclusive keyboard focus,
+    // because Hyprland's active-toplevel tracking is independent of
+    // layer-shell keyboard grabs. Ending the call when that changes covers
+    // the overwhelmingly common case (clicking some other real window) but
+    // NOT clicking empty desktop space or another one of vtnc's own
+    // layer-shell surfaces — neither is a toplevel, neither fires this
+    // event. That gap is real and unclosed by this step; see
+    // island/README.md.
+    //
+    // `clickOutsideArmed` exists because the moment a surface first grabs
+    // keyboard focus is exactly the kind of focus churn that could fire
+    // activeToplevelChanged on its own — arming it 50ms after showingCalled
+    // turns true, rather than the instant it does, avoids a call closing
+    // itself before anyone had a chance to see it. This mirrors the settle
+    // delay autohide already uses for the opposite reason (hiding, not
+    // showing) a few lines up.
+    property bool clickOutsideArmed: false
+    Timer {
+        id: armClickOutside
+        interval: 50
+        running: root.showingCalled && !root.isLock
+        onTriggered: root.clickOutsideArmed = true
+    }
+    onShowingCalledChanged: if (!showingCalled) root.clickOutsideArmed = false
+
+    Connections {
+        target: Hyprland
+        enabled: root.showingCalled && !root.isLock && root.clickOutsideArmed
+        function onActiveToplevelChanged() {
+            IslandState.end(root.islandName);
+        }
+    }
+
+    // The popup lifecycle's own auto-dismiss (decision 1e.0): restarted on
+    // every new popup push, not just started once, since two popups called
+    // back to back never toggle `isPopup` itself (it stays true both
+    // times) — only calledPageNameChanged tells them apart.
+    Timer {
+        id: popupTimer
+        interval: ConfigShape.pagePopupTimeout(configRef.page(root.calledPageName))
+        running: root.isPopup
+        onTriggered: IslandState.end(root.islandName)
+    }
+    onCalledPageNameChanged: if (isPopup) popupTimer.restart()
+
     // Hidden: no input anywhere on the surface, so a click meant for
     // whatever is behind it reaches that window instead of this one —
     // wlr-layer-shell has no "hover but let the click through" region, so
@@ -197,6 +298,43 @@ PanelWindow {
             anchors.fill: parent
             pageConfig: configRef.page(root.currentPageName) ?? { grid: { cols: 1, rows: 1 }, widgets: [] }
             cellPx: root.cellPx
+        }
+
+        // Esc (decision 1e.4): only armed while showing a called/popup page
+        // that isn't lock — this Item never consumes a mouse click (it's
+        // not a MouseArea), it only ever reacts to a key, and only once it
+        // actually has focus (WlrKeyboardFocus above decides whether that
+        // happens on its own or waits for a click into the surface first).
+        Item {
+            anchors.fill: parent
+            focus: root.showingCalled && !root.isLock
+            Keys.onEscapePressed: IslandState.end(root.islandName)
+        }
+
+        // The popup lifecycle's other way out (decision 1e.0): the x in
+        // the corner, alongside the timeout above. Deliberately minimal —
+        // no chrome at all for called/lock, which never show this.
+        Rectangle {
+            visible: root.isPopup
+            anchors.top: parent.top
+            anchors.right: parent.right
+            anchors.margins: 4
+            width: 16
+            height: 16
+            radius: 8
+            color: "#80000000"
+
+            Text {
+                anchors.centerIn: parent
+                text: "×"
+                color: "white"
+                font.pixelSize: 12
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: IslandState.end(root.islandName)
+            }
         }
     }
 }

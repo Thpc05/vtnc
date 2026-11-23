@@ -20,11 +20,15 @@ ShellRoot {
     // later step's job, out of 0.503's scope.
     Settings {}
 
+    // The island declares no trigger (decision 1b.5) — `call` lives on
+    // `page` below. `end` is the one lifecycle verb that does belong here:
+    // unstacking doesn't need to name a page, just which island to pop
+    // (decision 1e.2).
     IpcHandler {
         target: "island"
 
-        function call(name: string, page: string) {
-            IslandState.call(name, page);
+        function end(name: string) {
+            IslandState.end(name);
         }
 
         function get(name: string): string {
@@ -42,6 +46,11 @@ ShellRoot {
                 calledPage: calledPage,
                 page: calledPage !== "" ? calledPage : (island.page ?? ""),
                 autohide: ConfigShape.resolveAutohide(Config.data, island),
+                // Which page each mirror actually draws (0.506 criterion
+                // 3) — a called page reaches only the focused monitor's
+                // mirror; the rest report their own idle page, read back
+                // without comparing a single pixel.
+                mirrors: IslandState.mirrorPagesFor(name),
             });
         }
 
@@ -56,6 +65,7 @@ ShellRoot {
                 layer: island.layer ?? "top",
                 page: IslandState.calledPage(island.name) || (island.page ?? ""),
                 autohide: ConfigShape.resolveAutohide(Config.data, island),
+                mirrors: IslandState.mirrorPagesFor(island.name),
             })));
         }
     }
@@ -74,6 +84,13 @@ ShellRoot {
 
     IpcHandler {
         target: "page"
+
+        // The trigger lives here, not on `island` (decision 1b.5):
+        // `vtnc page <name> call <island>` pushes this page onto that
+        // island's stack.
+        function call(name: string, island: string) {
+            IslandState.call(island, name);
+        }
 
         function list(): string {
             const pages = Config.data.pages ?? {};

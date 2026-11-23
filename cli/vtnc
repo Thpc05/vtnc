@@ -14,7 +14,7 @@ import {
     validateAutohideGlobalSet, parseAutohideGlobalValue, defaultAutohide,
 } from "../core/config-shape.mjs";
 
-const VERBS = new Set(["set", "call", "get", "list"]);
+const VERBS = new Set(["set", "call", "get", "list", "end"]);
 // The full namespace list from decision 4b.3 — widget/monitor/preset/theme
 // are listed even though they have no verbs yet (also decision 4b.3).
 // `autohide` (0.505) is one of the "futuros" 4b.3 already names the list
@@ -36,7 +36,13 @@ function usage() {
 
 namespaces: island, page, widget, service, monitor, preset, theme, autohide
   (widget, monitor, preset and theme have no verbs yet)
-verbs: set, call, get, list
+verbs: set, call, get, list, end
+
+0.506: the trigger lives on the page, not the island (decision 1b.5) — call
+a page onto an island with "page <name> call <island>", never the other
+way around. Ending a call is per-island, not per-page — it just pops
+whatever's on top ("island <name> end"); it lands back on the idle page by
+itself once the stack (up to 5 deep) empties.
 
 island set keys: page, layer, anchor, offset, size, gap, autohide, autohideMode
   (anchor/offset/size take one JSON object argument; gap is one whole number
@@ -51,7 +57,8 @@ autohide set keys: enabled, mode, distance
    which of the two hide animations an island gets — see island/README.md)
 
 examples:
-  vtnc island bar call launcher     momentary: wears launcher until the next call
+  vtnc page launcher call bar       momentary: stacks launcher onto bar
+  vtnc island bar end               unstacks one level (back to idle if empty)
   vtnc island bar set page dashboard   permanent: writes config.json
   vtnc island bar set anchor '{"top":true,"left":true}'
   vtnc island bar set offset '{"x":2,"y":0}'
@@ -181,6 +188,19 @@ if (!VERBS.has(verb)) {
     process.exit(1);
 }
 
+// 0.506: the trigger moved to the page (decision 1b.5) and ending moved to
+// the island (it unstacks, it doesn't need to name a page) — catch the two
+// swapped forms here with a message that says where the verb went, instead
+// of letting them fail inside the IPC call with "function not found".
+if (namespace === "island" && verb === "call") {
+    console.error('vtnc: island declares no trigger — call it from the page instead: vtnc page <name> call <island>');
+    process.exit(1);
+}
+if (namespace === "page" && verb === "end") {
+    console.error('vtnc: ending a call is per-island, not per-page: vtnc island <name> end');
+    process.exit(1);
+}
+
 switch (verb) {
 case "set":
     cmdSet(namespace, name, args);
@@ -193,5 +213,8 @@ case "get":
     break;
 case "list":
     console.log(ipcCall(shellRoot, namespace, "list", []));
+    break;
+case "end":
+    console.log(ipcCall(shellRoot, namespace, "end", [name, ...args]));
     break;
 }

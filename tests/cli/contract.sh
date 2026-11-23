@@ -68,7 +68,9 @@ has_fields=$(echo "$list_json" | python3 -c 'import json,sys; i=json.load(sys.st
 check "list reports anchor/size/layer" "$has_fields" "True"
 
 # Criterion 2: call switches the page live, get shows it.
-"$here/cli/vtnc" island bar call launcher >/dev/null
+# 0.506 moved the trigger to the page (decision 1b.5): `island <name> call`
+# no longer exists, it's `page <name> call <island>` now.
+"$here/cli/vtnc" page launcher call bar >/dev/null
 got_page=$(echo "$("$here/cli/vtnc" island bar get)" | python3 -c 'import json,sys; print(json.load(sys.stdin)["page"])')
 check "call switches page live" "$got_page" "launcher"
 
@@ -100,26 +102,25 @@ done
 check "help lists all seven namespaces" "$missing" "0"
 
 # 0.502 criterion 1/2/3: the clock service is off until a visible clock
-# widget needs it, and two islands showing it share one instance. Every
-# island mirrors across every screen (decision 1c.4) — and the nested
-# compositor's own host window counts as one more screen (WAYLAND-1)
-# besides the two HEADLESS outputs, so "one island showing a clock" means
-# one clock widget per screen, not one total.
-screen_count=$(hyprctl monitors -j | python3 -c 'import json,sys; print(len(json.load(sys.stdin)))')
-
+# widget needs it, and two islands showing it share one instance.
 check "clock service is off before any clock widget is visible" \
     "$("$here/cli/vtnc" service list | python3 -c 'import json,sys; s=[x for x in json.load(sys.stdin) if x["name"]=="clock"][0]; print(s["running"], s["holders"])')" \
     "False 0"
 
-"$here/cli/vtnc" island bar call dashboard >/dev/null
-"$here/cli/vtnc" island dock call dashboard-compact >/dev/null
+"$here/cli/vtnc" page dashboard call bar >/dev/null
+"$here/cli/vtnc" page dashboard-compact call dock >/dev/null
 sleep 0.3
+# Not screen_count * 2 any more: 0.506 (decision 1e.3) means a called page
+# reaches only the focused monitor's mirror, the others keep wearing idle
+# (clock/launcher, neither of which uses the clock widget) — so each island
+# contributes exactly one holder, regardless of how many screens it mirrors
+# across.
 check "clock turns on and is shared by two islands (two different styles)" \
     "$("$here/cli/vtnc" service list | python3 -c 'import json,sys; s=[x for x in json.load(sys.stdin) if x["name"]=="clock"][0]; print(s["running"], s["holders"])')" \
-    "True $((screen_count * 2))"
+    "True 2"
 
-"$here/cli/vtnc" island bar call launcher >/dev/null
-"$here/cli/vtnc" island dock call launcher >/dev/null
+"$here/cli/vtnc" island bar end >/dev/null
+"$here/cli/vtnc" island dock end >/dev/null
 sleep 0.3
 check "clock turns back off once the last clock widget leaves" \
     "$("$here/cli/vtnc" service list | python3 -c 'import json,sys; s=[x for x in json.load(sys.stdin) if x["name"]=="clock"][0]; print(s["running"], s["holders"])')" \

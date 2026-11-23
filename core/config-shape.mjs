@@ -37,6 +37,56 @@ export function resolveAutohide(config, island) {
     };
 }
 
+// The page lifecycle (0.506, decisions 1e.0/1e.1/1e.2/1e.4/1e.5): how a
+// called page behaves once it's on top of an island's stack. Declared on
+// the page itself, not the island (1e.1) — a page is "called" by default,
+// "popup" adds the auto-dismiss timer and the corner close button, "lock"
+// ignores Esc and the click-outside watcher below (1e.4's exception) and
+// only ever leaves by the CLI's own `island <name> end` (or another call
+// replacing it). "idle" isn't a lifecycle a page declares — it's just
+// whatever island.page points at, with nothing on the stack above it.
+export const PAGE_LIFECYCLES = ["called", "popup", "lock"];
+
+export function pageLifecycle(page) {
+    return page?.lifecycle ?? "called";
+}
+
+// Decision 1e.5: a page declares whether it needs the keyboard; only a page
+// that says yes steals it (WlrKeyboardFocus.Exclusive in island/Island.qml)
+// while it's on top. Everything else gets OnDemand — eligible for focus
+// once the user clicks into it, never grabbed outright.
+export function pageNeedsKeyboard(page) {
+    return page?.needsKeyboard ?? false;
+}
+
+// How long a "popup" lifecycle page stays up before it dismisses itself
+// (decision 1e.0's "some por tempo"). Only read when pageLifecycle(page)
+// is "popup" — called/lock pages ignore it entirely.
+export function pagePopupTimeout(page) {
+    return page?.popupTimeout ?? 5000;
+}
+
+// The call stack an island's mirror renders from (decision 1e.2): invoking
+// a page pushes it, keeping at most this many entries — the oldest falls
+// off the bottom first, never the page just invoked.
+export const CALL_STACK_LIMIT = 5;
+
+export function pushCall(stack, pageName) {
+    return [...(stack ?? []), pageName].slice(-CALL_STACK_LIMIT);
+}
+
+// Unstacking: drop the top entry. An empty result means "back to idle" —
+// island/Island.qml's currentPageName falls back there on its own, nothing
+// special-cased here.
+export function popCall(stack) {
+    return (stack ?? []).slice(0, -1);
+}
+
+export function topOfCall(stack) {
+    const current = stack ?? [];
+    return current.length > 0 ? current[current.length - 1] : "";
+}
+
 export function findIsland(config, name) {
     return (config.islands ?? []).find((island) => island.name === name);
 }

@@ -9,6 +9,7 @@ sobrando.
 | | |
 |---|---|
 | `autohide-window.sh` | o autohide no modo `window`: abra e feche uma janela e veja a island sumir e voltar |
+| `lifecycle.sh` | o ciclo de vida das pages (0.506): Esc com/sem `needsKeyboard`, popup (tempo e x), lock (ignora os dois), e o lado de clique-fora que dá para construir — reage a trocar de janela ativa no Hyprland, não a qualquer clique |
 
 ## A pegadinha que todos eles precisam evitar
 

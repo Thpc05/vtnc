@@ -115,3 +115,67 @@ diretamente.
 
 `fade`, `slideSpeed` e `distance` moram em `config.autohide` (global);
 `shrinkSize` também, mas sem verbo de CLI — ver `cli/README.md`.
+
+## Ciclo de vida (0.506)
+
+O gatilho mora na page, não na island (decisão 1b.5) — `vtnc island <nome>
+call` não existe mais; é `vtnc page <nome> call <island>`. A island não
+declara nada disso, ela só lê `core/IslandState.qml`: uma pilha por island,
+até 5 pages de fundo (decisão 1e.2, `ConfigShape.pushCall`/`popCall`, puros
+e testados em node), com a idle como fundo do poço — quando a pilha
+esvazia, `currentPageName` já cai nela sozinho, sem caso especial.
+`vtnc island <nome> end` desempilha um nível; é o único verbo que faz isso
+— `core/IslandState.clearCall` da 0.505 não existia de verdade (nada o
+chamava) e foi substituído por este.
+
+**Só o monitor focado veste a page chamada** (decisão 1e.3): cada espelho
+compara `Hyprland.focusedMonitor` contra o seu próprio, ao vivo — a mesma
+forma que o modo `window` do autohide já lia "o workspace em foco de cada
+monitor" na 0.505, "cada espelho decide por si". Consequência que a decisão
+não fecha e que esta implementação assume: se o foco mudar de monitor com
+uma call ainda ativa, a renderização segue o foco ao vivo, não fica onde
+nasceu — a page chamada "pula" de espelho. Era a leitura mais simples das
+duas que "cada espelho decide por si" admite.
+
+**A page declara o próprio ciclo** (`pages.<nome>.lifecycle`, decisões
+1e.0/1e.1): `called` (padrão) fecha com Esc/clique-fora/`end`; `popup` é
+igual, mas também some sozinha depois de `popupTimeout` ms (padrão 5000) ou
+pelo × no canto superior direito; `lock` ignora Esc e o clique-fora por
+completo — só `vtnc island <nome> end` (ou outra call por cima) a tira. A
+exceção de "ilha do sistema" da decisão 1e.4 não tem ainda nenhuma ilha
+concreta para testar contra (nada no catálogo de hoje é "do sistema") —
+não criei um sinalizador para algo que nada usa; quando essa ilha existir,
+dar `lifecycle: "lock"` à sua page já cobre a mesma exigência, ou uma
+decisão futura vai dizer o contrário.
+
+**Esc precisa de foco de teclado, e pegá-lo sem pedir é a diferença entre
+fechar um popup e sequestrar o teclado do Theo** (decisão 1e.5): a page
+declara `needsKeyboard` (padrão `false`). Só quem diz que sim ganha
+`WlrKeyboardFocus.Exclusive` enquanto está chamada; todo o resto ganha
+`OnDemand` — elegível para foco assim que o usuário clicar na island, nunca
+antes. idle nunca pede foco nenhum. `lock` não precisa de um caso especial
+aqui: o `Item` que escuta Esc só fica com `focus: true` fora do `lock`, uma
+tecla perdida nele não tem o que fazer.
+
+**Clique fora não tem resposta limpa no wlr-layer-shell** — a mesma família
+de problema da faixa de hover da 0.505: não existe região que "recebe
+hover/clique fora, mas deixa passar o clique de quem está atrás"; uma
+superfície transparente cobrindo a tela inteira resolveria tecnicamente,
+mas rouba o clique de todo mundo atrás dela, e o passo pede explicitamente
+para não fazer isso. O que o Hyprland expõe, só leitura, é qual toplevel
+está ativo (`Quickshell.Hyprland.activeToplevel`) — clicar numa janela de
+verdade muda isso, mesmo com esta superfície segurando foco de teclado
+exclusivo, porque o rastreamento de janela ativa do Hyprland é independente
+do keyboard grab do layer-shell. Encerrar a call quando isso muda cobre o
+caso de longe mais comum (clicar numa janela de verdade) mas **não** cobre
+clicar no desktop vazio nem clicar noutra superfície do próprio vtnc —
+nenhum dos dois troca o toplevel ativo, nenhum dos dois dispara o evento.
+Essa lacuna é real e não fechada nesta etapa; `tools/manual/lifecycle.sh`
+deixa isso explícito para o Theo olhar.
+
+Um `clickOutsideArmed`, de 50ms, atrasa quando esse observador liga: o
+instante em que a superfície primeiro pede foco de teclado é exatamente o
+tipo de troca que poderia por si só disparar `activeToplevelChanged` — sem
+o atraso, a call fecharia sozinha antes de alguém ter chance de vê-la. É o
+mesmo desenho do `settledHidden` do autohide, usado para o motivo oposto
+(esconder, não mostrar).

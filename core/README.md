@@ -12,9 +12,14 @@ A base que não conhece ninguém acima dela: nenhum arquivo aqui importa
   para o ambiente de teste descartável.
 - `Config.qml` — lê `config.json` com `FileView`/`watchChanges`, para captar
   um `set` da CLI sem round-trip de IPC.
-- `IslandState.qml` — só em memória: qual page um `call` pôs por cima da
-  idle de cada island. Nunca grava em disco; é isso que faz `call` ser
-  momentâneo e `set` permanente.
+- `IslandState.qml` — só em memória: a pilha de pages que um `call` empilha
+  por cima da idle de cada island (até 5, decisão 1e.2), e qual page cada
+  espelho está de fato desenhando (0.506, para o critério 3 — observável
+  por `vtnc island <nome> get`'s `mirrors`, sem olhar pixel). Nunca grava em
+  disco; é isso que faz `call` ser momentâneo e `set` permanente. A pilha e
+  o desempilhar (`end`) são `ConfigShape.pushCall`/`popCall`/`topOfCall`,
+  puros e testados em node — este arquivo só guarda o estado reativo por
+  cima.
 - `CliRunner.qml` — a única porta para o binário `cli/vtnc` de verdade
   (`Quickshell.shellDir` acha onde ele mora). A Settings usa isto para toda
   mudança (decisão 6.3): nunca escreve em `Config` nem no arquivo

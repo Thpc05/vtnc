@@ -291,15 +291,16 @@ ndispatch "hl.dsp.cursor.move({ x = $away_x, y = $away_y })"
 sleep 0.9 # poll + the 150ms settle delay, with margin
 check "moving away hides bar again" "$(reserved_all)" "[160, 0, 0, 32]"
 
-# Criterion 4: a call reveals a hidden island; calling the idle page back
-# ends it (there's no separate "end call" verb yet — see island/Island.qml
-# — so this reuses the one mechanism that already exists).
-"$here/cli/vtnc" island bar call barcalled >/dev/null
+# Criterion 4: a call reveals a hidden island; `island bar end` ends it.
+# 0.506 moved the trigger to the page (decision 1b.5, `page <name> call
+# <island>`) and gave `end` its real verb — the 0.505 slang of calling the
+# idle page back to end a call is gone.
+"$here/cli/vtnc" page barcalled call bar >/dev/null
 sleep 0.3 # reveal is immediate, not settle-gated
 check "a call reveals bar even with the mouse away (top reservation back)" "$(reserved_all)" "[160, 32, 0, 32]"
 
-"$here/cli/vtnc" island bar call idle >/dev/null
+"$here/cli/vtnc" island bar end >/dev/null
 sleep 0.9
-check "calling the idle page back ends the call, and bar hides again" "$(reserved_all)" "[160, 0, 0, 32]"
+check "ending the call closes it, and bar hides again" "$(reserved_all)" "[160, 0, 0, 32]"
 
 exit $fail

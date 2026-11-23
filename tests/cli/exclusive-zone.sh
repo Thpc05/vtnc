@@ -117,10 +117,12 @@ check "gap back to 0 returns the reservation to 32px" "$(reserved_all)" "[0, 32,
 # Criterion 3: a call to a page that would make bar's content far taller
 # than its own 4-cell height does not move the reservation — it's frozen to
 # island.size (which a call never touches), not to whatever the page needs.
-"$here/cli/vtnc" island bar call big >/dev/null
+# 0.506 moved the trigger to the page (decision 1b.5): `island <name> call`
+# no longer exists, it's `page <name> call <island>` now.
+"$here/cli/vtnc" page big call bar >/dev/null
 sleep 0.3
 check "a call to a bigger page leaves the reservation untouched (criterion 3)" "$(reserved_all)" "[0, 32, 0, 0]"
-"$here/cli/vtnc" island bar call idle >/dev/null
+"$here/cli/vtnc" island bar end >/dev/null
 
 # Second, independent confirmation with a real client window (liberated for
 # test — AGENTS.md): a freshly opened kitty, tiled, must start below bar's

@@ -211,6 +211,51 @@ sessão real do Theo. Se um dia um teste precisar de ponteiro de verdade,
 instale um cliente do protocolo `virtual-pointer` do wlroots, que passa pelo
 socket Wayland e portanto atinge só o aninhado.
 
+**0.506 (o ciclo de vida das pages)** moveu o gatilho da island para a page
+(decisão 1b.5: `vtnc island <nome> call` virou `vtnc page <nome> call
+<island>`) e deu um verbo de verdade a desempilhar (`vtnc island <nome>
+end`, substituindo o `core/IslandState.clearCall` da 0.505, que nunca era
+chamado por ninguém). Isso quebrou três testes já existentes de passos
+anteriores — `contract.sh` (0.501/0.502), `exclusive-zone.sh` (0.504) e
+`autohide.sh` (0.505) — que ainda falavam a gramática velha; os três foram
+corrigidos aqui para a nova (`page <nome> call <island>` / `island <nome>
+end`), já que o próprio AGENTS.md autoriza mexer num teste existente que o
+passo quebrou, sem precisar de aviso.
+
+`contract.sh` também precisou de um ajuste de expectativa, não só de
+gramática: a contagem de holders do service `clock` esperava
+`screen_count * 2` depois de chamar `dashboard`/`dashboard-compact` nas
+duas islands — contava com toda ilha mirrando em toda tela (decisão 1c.4).
+A 0.506 (decisão 1e.3) faz uma page chamada aparecer só no espelho do
+monitor focado; os outros continuam na idle, que não usa o widget de
+relógio. A expectativa agora é `2` (um holder por island, não um por
+tela × island) — não é uma correção de teste quebrado por acaso, é o
+critério novo mudando o que o critério velho media.
+
+Nenhuma dessas três correções foi **rodada** pelo implementador — abrem
+janela de verdade e/ou mandam `hyprctl dispatch` contra o aninhado, e a
+regra em vigor desde o incidente da 0.505 (a sessão real do Theo foi
+perturbada duas vezes rodando `autohide.sh`, mesmo escopado) é não rodar
+teste de janela real por conta própria. As três foram só editadas, por
+texto, para a gramática/expectativa novas — ficam para o coordenador
+confirmar que ainda passam.
+
+**`tests/unit/lifecycle.test.mjs`** (0.506) cobre a parte pura e testável
+em node sem compositor nenhum: `pageLifecycle`/`pageNeedsKeyboard`/
+`pagePopupTimeout` (os defaults de uma page que não declara nada) e
+`pushCall`/`popCall`/`topOfCall` — o limite de 5, a ordem de desempilhar,
+o pouso na idle (string vazia) quando a pilha esvazia. Rodado, 49/49 com o
+resto da suíte.
+
+**`tools/manual/lifecycle.sh`** (0.506, novo) é para o Theo olhar, não para
+rodar sozinho: Esc com e sem `needsKeyboard` (a diferença entre OnDemand e
+Exclusive), popup por tempo e pelo ×, lock ignorando os dois, e — o ponto
+mais incerto do critério 4 — o lado de clique-fora que esta etapa consegue
+construir (reage a `Quickshell.Hyprland.activeToplevel` mudar, isto é,
+clicar numa janela de verdade; não clicar no desktop vazio, nem noutra
+superfície do vtnc). Ver `island/README.md` para o raciocínio inteiro por
+trás dessa escolha e da lacuna que ela deixa.
+
 A camada 4 **precisa de compositor**: sob `QT_QPA_PLATFORM=offscreen` o
 `grabToImage` nunca chama o callback de volta, com qualquer combinação de
 `QT_QUICK_BACKEND` e `QSG_RENDER_LOOP`. Dentro do aninhado ele responde na

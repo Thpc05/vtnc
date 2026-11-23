@@ -42,6 +42,16 @@ Desde a 0.505, `autohide` (booleano) e `autohideMode` (`always`/`window`/
 `vtnc island bar set autohideMode window`. Os dois são sobrescritas
 opcionais: ausentes, a island usa o valor global.
 
+Desde a 0.506, o gatilho mora na page, não na island (decisão 1b.5):
+`vtnc island <nome> call` não existe mais — a CLI recusa com uma mensagem
+dizendo para onde foi, em vez de falhar na IPC sem explicação. A forma
+certa é `vtnc page <nome> call <island>`, que empilha `<nome>` por cima da
+idle do `<island>` (até 5 de fundo, decisão 1e.2). Desempilhar é por
+island, não por page — `vtnc island <nome> end` tira um nível (volta à
+anterior, ou à idle quando a pilha esvazia); é o mesmo verbo que Esc,
+clique-fora, o × do popup e o tempo do popup chamam por baixo
+(`core/IslandState.end`, ver `island/README.md`).
+
 O namespace `autohide` (0.505) é global, sem nome de alvo — a mesma gramática
 de `page list`/`service list`: `vtnc autohide set <chave> <valor>` aceita
 `enabled`, `mode` e `distance` (decisão 12.4: a distância de gatilho é
