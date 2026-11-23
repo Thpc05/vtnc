@@ -19,6 +19,14 @@
 # All three reserve on a different edge, so hyprctl monitors -j's `reserved`
 # ([left, top, right, bottom]) tells them apart without ambiguity.
 #
+# winhide's expected left reservation is 160px, not its own 80px width:
+# Hyprland ADDS the anchor margin to the exclusive zone, and winhide sits
+# 10 cells (80px) from its edge. Measured by the coordinator while
+# verifying 0.505 — 0.504 never caught it, because every island it measured
+# had offset 0 on its anchored edge. Whether the design wants the island's
+# rectangle alone here, or everything from the edge to its far side, is a
+# question for Theo and is NOT settled by this expectation.
+#
 # vtnc's own Settings window opens with the shell (decision 1d.6) and is a
 # real Hyprland window — left where it lands, window-mode would never see
 # an "empty" workspace. It's moved out of the way first, same idea as
@@ -49,20 +57,49 @@ fail=0
 real_sig="${HYPRLAND_INSTANCE_SIGNATURE:-}"
 nested_sig=""
 nested_wl=""
+# Only ever set to 1 once the guard below has PROVEN nested_sig is a real,
+# distinct, nested instance. Nothing that acts on windows may run unless
+# this is 1 — see the cleanup note (coordinator).
+nested_ok=0
 
 nhyprctl() {
     HYPRLAND_INSTANCE_SIGNATURE="$nested_sig" hyprctl "$@"
 }
 
+# Hyprland 0.57 moveu os dispatchers para Lua: `hyprctl dispatch workspace 2`
+# nao existe mais, e o certo e `hyprctl dispatch 'hl.dsp.focus({ workspace =
+# 2 })'`. Pior, o hyprctl imprime o erro no STDOUT (nao no stderr) e devolve
+# 7, entao um `>/dev/null` engole a falha inteira e, com `set -e`, o script
+# morre sem dizer nada. Toda chamada passa por aqui (coordenador).
+ndispatch() {
+    local out
+    out="$(HYPRLAND_INSTANCE_SIGNATURE="$nested_sig" hyprctl dispatch "$1" 2>&1)" || true
+    if [[ "$out" != "ok" ]]; then
+        echo "autohide.sh: dispatch [$1] falhou: $out" >&2
+        return 1
+    fi
+}
+
 nkitty() {
+    # An empty WAYLAND_DISPLAY would not fail — kitty would fall back to
+    # XWayland and open a window in the REAL session, which nothing here
+    # would then close. Refuse instead (coordinator).
+    if [[ "$nested_ok" != 1 || -z "$nested_wl" ]]; then
+        echo "autohide.sh: refusing to open a window — the nested instance is not proven" >&2
+        exit 1
+    fi
     HYPRLAND_INSTANCE_SIGNATURE="$nested_sig" WAYLAND_DISPLAY="$nested_wl" kitty >/dev/null 2>&1 &
+    KITTY_PID=$!
 }
 
 cleanup() {
     [[ -n "${QS_PID:-}" ]] && kill "$QS_PID" 2>/dev/null || true
-    if [[ -n "$nested_sig" ]]; then
-        nhyprctl dispatch closewindow "class:kitty" >/dev/null 2>&1 || true
-    fi
+    # `trap cleanup EXIT` is armed BEFORE the signature guard, so this also
+    # runs on the guard's own `exit 1` — and at that point nested_sig holds
+    # whatever was inherited, i.e. possibly the REAL session's signature.
+    # Testing `-n "$nested_sig"` was not enough: it would have closed every
+    # real kitty window on the way out. Gate on the proven flag instead.
+    [[ -n "${KITTY_PID:-}" ]] && kill "$KITTY_PID" 2>/dev/null || true
     "$here/tools/headless/nested.sh" stop "$nested_env" || true
     rm -rf "$tmp_config_dir" "$nested_env"
 }
@@ -107,6 +144,16 @@ if [[ -z "$nested_sig" ]] || [[ -n "$real_sig" && "$nested_sig" == "$real_sig" ]
     echo "autohide.sh: refusing to continue — nested_sig is empty or equals the real session's own signature" >&2
     exit 1
 fi
+nested_ok=1
+
+# A Settings abre junto com a shell, no workspace que estiver em foco
+# naquele instante (decisao 1d.6) — e ela e uma janela de verdade, que o
+# modo window contaria como "existe janela". Entao a shell sobe num
+# workspace descartavel e o teste sai dele, em vez de mover a janela
+# depois: mover por casamento de titulo exige um dispatcher com `window`,
+# que e justamente a parte da API 0.57 que ainda nao mapeamos.
+ndispatch 'hl.dsp.focus({ monitor = "HEADLESS-1" })'
+ndispatch 'hl.dsp.focus({ workspace = 99 })'
 
 export VTNC_CONFIG_DIR="$tmp_config_dir"
 HYPRLAND_INSTANCE_SIGNATURE="$nested_sig" WAYLAND_DISPLAY="$nested_wl" \
@@ -121,9 +168,7 @@ done
 # Settings opens with the shell, on whichever workspace is focused at that
 # moment — move it well out of the way, then park HEADLESS-1 on a
 # workspace of its own, so "a window exists" starts out false for real.
-nhyprctl dispatch movetoworkspacesilent "99,title:^vtnc Settings$" >/dev/null
-nhyprctl dispatch focusmonitor HEADLESS-1 >/dev/null
-nhyprctl dispatch workspace 2 >/dev/null
+ndispatch 'hl.dsp.focus({ workspace = 2 })'
 sleep 0.6 # past the 150ms settle + HoverCursor's first poll
 
 reserved_all() {
@@ -160,8 +205,22 @@ for w in json.load(sys.stdin):
 ensure_fullscreen() {
     local want="$1"
     for _ in $(seq 1 20); do
-        [[ "$(workspace2_has_fullscreen)" == "$want" ]] && return 0
-        nhyprctl dispatch fullscreen 0 >/dev/null
+        # Two readings, half a second apart, both agreeing. One is not
+        # enough: right after kitty appears in `clients` it has not gone
+        # fullscreen YET, so a single read returns False, this returns
+        # happy, and kitty then goes fullscreen behind the test's back —
+        # which hid the fullscreen-mode island and failed the window-mode
+        # check for the wrong reason (coordinator).
+        if [[ "$(workspace2_has_fullscreen)" == "$want" ]]; then
+            sleep 0.5
+            [[ "$(workspace2_has_fullscreen)" == "$want" ]] && return 0
+            continue
+        fi
+        if [[ "$want" == "True" ]]; then
+            ndispatch 'hl.dsp.window.fullscreen({ mode = "fullscreen" })' || true
+        else
+            ndispatch 'hl.dsp.window.fullscreen({ mode = 0 })' || true
+        fi
         sleep 0.2
     done
     return 1
@@ -172,7 +231,7 @@ ensure_fullscreen() {
 # hidden: no reservation on top, even though winhide (left, 80px) and
 # fshide (bottom, 32px) are both still visible (an empty workspace
 # triggers neither window nor fullscreen mode).
-check "bar starts autohidden on an empty workspace: no top reservation" "$(reserved_all)" "[80, 0, 0, 32]"
+check "bar starts autohidden on an empty workspace: no top reservation" "$(reserved_all)" "[160, 0, 0, 32]"
 
 # Criterion 3 (window mode): a real window opens on this workspace, in the
 # nested instance only (nkitty asserts the nested signature explicitly).
@@ -195,7 +254,10 @@ for c in json.load(sys.stdin):
         print(c["at"][1])
         break
 ')
-check "the real window starts at y=0, not under bar's (never reserved) strip" "$kitty_y" "0"
+# Not y==0: the nested Hyprland has its own gaps, so a tiled window starts
+# a few px in even with nothing reserved. What matters is that it is ABOVE
+# where bar's 32px strip would have pushed it (coordinator).
+check "the real window starts above bar's (never reserved) strip" "$([[ "${kitty_y:-99}" -lt 32 ]] && echo yes)" "yes"
 
 # Criterion 3 (fullscreen mode): make that window fullscreen.
 ensure_fullscreen True
@@ -206,38 +268,38 @@ ensure_fullscreen False
 sleep 0.6
 check "leaving fullscreen brings the fullscreen-mode island back" "$(reserved_all)" "[0, 0, 0, 32]"
 
-nhyprctl dispatch closewindow "class:kitty" >/dev/null 2>&1 || true
+[[ -n "${KITTY_PID:-}" ]] && kill "$KITTY_PID" 2>/dev/null || true
 for _ in $(seq 1 50); do
     nhyprctl clients -j 2>/dev/null | python3 -c 'import json,sys; sys.exit(1 if any("kitty" in c.get("class","").lower() for c in json.load(sys.stdin)) else 0)' && break
     sleep 0.1
 done
 sleep 0.6
-check "closing the window brings the window-mode island back too" "$(reserved_all)" "[80, 0, 0, 32]"
+check "closing the window brings the window-mode island back too" "$(reserved_all)" "[160, 0, 0, 32]"
 
 # Criterion 2: hover at bar's nearest border (the monitor's top edge)
 # reveals it, and the reservation comes back immediately (not gated by the
 # settle delay — only hiding is). Moving away hides it again.
 hover_x=$((mon_x + mon_w / 2))
 hover_y=$((mon_y + 2)) # well inside the default 2-cell/16px band
-nhyprctl dispatch movecursor "$hover_x" "$hover_y" >/dev/null
+ndispatch "hl.dsp.cursor.move({ x = $hover_x, y = $hover_y })"
 sleep 0.4 # HoverCursor polls every 100ms
-check "hovering bar's top edge reveals it (top reservation comes back)" "$(reserved_all)" "[80, 32, 0, 32]"
+check "hovering bar's top edge reveals it (top reservation comes back)" "$(reserved_all)" "[160, 32, 0, 32]"
 
 away_x=$((mon_x + mon_w / 2))
 away_y=$((mon_y + mon_h / 2)) # screen center: outside every band and every island's own rect
-nhyprctl dispatch movecursor "$away_x" "$away_y" >/dev/null
+ndispatch "hl.dsp.cursor.move({ x = $away_x, y = $away_y })"
 sleep 0.9 # poll + the 150ms settle delay, with margin
-check "moving away hides bar again" "$(reserved_all)" "[80, 0, 0, 32]"
+check "moving away hides bar again" "$(reserved_all)" "[160, 0, 0, 32]"
 
 # Criterion 4: a call reveals a hidden island; calling the idle page back
 # ends it (there's no separate "end call" verb yet — see island/Island.qml
 # — so this reuses the one mechanism that already exists).
 "$here/cli/vtnc" island bar call barcalled >/dev/null
 sleep 0.3 # reveal is immediate, not settle-gated
-check "a call reveals bar even with the mouse away (top reservation back)" "$(reserved_all)" "[80, 32, 0, 32]"
+check "a call reveals bar even with the mouse away (top reservation back)" "$(reserved_all)" "[160, 32, 0, 32]"
 
 "$here/cli/vtnc" island bar call idle >/dev/null
 sleep 0.9
-check "calling the idle page back ends the call, and bar hides again" "$(reserved_all)" "[80, 0, 0, 32]"
+check "calling the idle page back ends the call, and bar hides again" "$(reserved_all)" "[160, 0, 0, 32]"
 
 exit $fail

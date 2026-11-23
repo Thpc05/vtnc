@@ -146,6 +146,51 @@ coordenador rodar no arranjo dele. O resto da etapa (unidade, compilação
 QML, os `*-click-path.sh` acima, que não tocam em janela nenhuma) foi
 rodado normalmente.
 
+**A causa raiz foi encontrada, e eram duas.** Ambas consertadas aqui:
+
+1. O `trap cleanup EXIT` é armado **antes** da checagem de assinatura, e
+   rodava também no `exit 1` dela — momento em que `nested_sig` ainda
+   guarda o que foi herdado, isto é, possivelmente a assinatura da sessão
+   **real**. O `[[ -n "$nested_sig" ]]` não bastava: o cleanup então rodava
+   `hyprctl dispatch closewindow class:kitty` contra a sessão do Theo, e ele
+   tem exatamente duas janelas kitty. Reproduzido com um `nested.sh` falso
+   que escreve um env-file vazio, com o `closewindow` trocado por um aviso:
+   o caminho é alcançado. Agora existe um `nested_ok`, posto em 1 **só**
+   depois da checagem passar, e nada que mexa em janela roda sem ele.
+2. Se `WAYLAND_DISPLAY` chegasse vazio ao `kitty`, ele não falharia — cairia
+   no XWayland (`DISPLAY=:0` existe nesta máquina) e abriria uma janela na
+   sessão **real**, que nada aqui fecharia depois. O `nkitty` agora recusa.
+
+**E o teste não rodava por um terceiro motivo, nada a ver com isso:** o
+Hyprland 0.57 moveu os dispatchers para Lua. `hyprctl dispatch
+movetoworkspacesilent 99,title:...` devolve erro de parse e código 7 — e
+como o `hyprctl` imprime o erro no **stdout**, o `>/dev/null` engolia tudo e
+o `set -e` matava o script antes da primeira asserção, sem uma linha de
+saída. Ver a tabela de sintaxe no `AGENTS.md`. Toda chamada agora passa por
+um `ndispatch` que falha alto, o `movetoworkspacesilent` sumiu (a shell sobe
+num workspace descartável e o teste sai dele, em vez de mover a Settings
+depois) e o `closewindow` virou `kill` do PID que o próprio teste abriu.
+
+Outras duas correções de expectativa, depois que ele passou a rodar:
+
+- `winhide` reserva **160px**, não os 80px da própria largura: o Hyprland
+  **soma a margem da âncora** à zona exclusiva, e ela mora 10 células (80px)
+  da borda. Troquei a altura dela de 160 para 40 para ter certeza de que não
+  era a altura — a reserva não mudou. A 0.504 nunca pegou isso porque todas
+  as islands que ela mediu tinham offset 0 na borda ancorada. **Se a reserva
+  certa é o retângulo da island ou tudo da borda até o lado mais distante
+  dela é pergunta para o Theo**, não algo que esta expectativa decide.
+- A janela não começa em `y=0` e sim no gap do aninhado. O que o critério
+  quer provar é que ela está **acima** da faixa de 32px que o `bar`
+  reservaria — é isso que o teste afere agora.
+
+E uma corrida no próprio teste: `ensure_fullscreen False` lia `False` logo
+depois de o kitty aparecer em `clients`, **antes** de ele virar tela cheia,
+voltava satisfeito, e o kitty virava tela cheia em seguida — escondendo a
+island do modo `fullscreen` e reprovando o critério do modo `window` pelo
+motivo errado. Agora exige duas leituras iguais, meio segundo apart.
+Com isso, 10 de 10 verdes, três rodadas seguidas.
+
 Nada de injeção de input: `wlrctl` não está instalado e o `ydotool` passa
 pelo `uinput` do kernel, que não é escopado por compositor e vazaria para a
 sessão real do Theo. Se um dia um teste precisar de ponteiro de verdade,

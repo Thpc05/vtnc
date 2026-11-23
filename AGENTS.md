@@ -136,7 +136,22 @@ Só para você não consultar o grafo às cegas. O detalhe está lá, não aqui.
   **liberados para teste** — vá para um workspace vazio, faça o que precisa e volte para o do Theo.
   Abrir janelas (`kitty`) para testar zona exclusiva também pode. Fora de teste, não mexa na sessão
   dele.
-- Pesquise sempre no **wiki oficial do Hyprland**, na versão instalada (hoje a 0.57).
+- **Os dispatchers do 0.57 são Lua.** A forma antiga não existe mais:
+  `hyprctl dispatch workspace 2` devolve erro de parse. Passe uma expressão Lua:
+
+  | o que você quer | o comando |
+  |---|---|
+  | ir para um workspace | `hyprctl dispatch 'hl.dsp.focus({ workspace = 2 })'` |
+  | focar um monitor | `hyprctl dispatch 'hl.dsp.focus({ monitor = "HEADLESS-1" })'` |
+  | mover o cursor | `hyprctl dispatch 'hl.dsp.cursor.move({ x = 400, y = 7 })'` |
+  | tela cheia | `hyprctl dispatch 'hl.dsp.window.fullscreen({ mode = "fullscreen" })'`, e `{ mode = 0 }` para sair |
+  | fechar janela | `hl.dsp.window.close()` — mas prefira `kill $PID` da janela que você mesmo abriu |
+
+  **O `hyprctl` imprime o erro no `stdout`, não no stderr, e devolve 7** — um `>/dev/null` engole a
+  falha inteira, e com `set -e` o script morre sem dizer nada. Confira a saída, não só o código.
+- Pesquise sempre no **wiki oficial do Hyprland**, na versão instalada (hoje a 0.57). Hoje ele
+  devolve 404 nas páginas de dispatchers e de `hyprctl`; enquanto isso, a fonte mais confiável é o
+  próprio binário: `strings /usr/bin/Hyprland | grep -E 'hl\.dsp'` traz a config padrão embutida.
 
 ## Testes
 
