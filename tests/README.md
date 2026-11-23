@@ -205,6 +205,20 @@ usa. Sem isso a leitura embaralha — foi exatamente o que estragou a primeira
 tomada na tela real, em que a Settings nasceu no workspace medido e a island
 já apareceu escondida de saída.
 
+**`cli/lifecycle.sh`** (0.506, do coordenador) cobre os critérios 1, 2, 3 e
+5 contra uma shell viva: a gramática velha (`island <nome> call`) recusada
+com um erro que diz para onde ela foi, a pilha de cinco com a mais antiga
+caindo fora e o desempilhar pousando na idle, o `popupTimeout` sumindo
+sozinho, o `lock` não sumindo, e — a afirmação nova do passo — qual page
+cada **espelho** está vestindo, lido do campo `mirrors` que o
+`island <nome> get` ganhou justamente para isso. Falsificado tirando o
+`&& isFocusedMonitor` do `showingCalled`: o espelho do outro monitor passa a
+mostrar a page chamada e o teste acusa.
+
+O critério 4 não está aqui de propósito: provar Esc exige teclar de verdade,
+e não há injeção de input escopada a um compositor nesta máquina. Ele vive em
+`tools/manual/lifecycle.sh`.
+
 Nada de injeção de input: `wlrctl` não está instalado e o `ydotool` passa
 pelo `uinput` do kernel, que não é escopado por compositor e vazaria para a
 sessão real do Theo. Se um dia um teste precisar de ponteiro de verdade,
