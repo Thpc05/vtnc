@@ -191,6 +191,20 @@ island do modo `fullscreen` e reprovando o critério do modo `window` pelo
 motivo errado. Agora exige duas leituras iguais, meio segundo apart.
 Com isso, 10 de 10 verdes, três rodadas seguidas.
 
+**`cli/autohide-per-monitor.sh`** (0.505, do coordenador) fecha a única
+ambiguidade que sobrou da etapa: a decisão dizia "o workspace em foco", no
+singular, e com vários monitores existem vários ao mesmo tempo. Três
+monitores em workspaces vazios, a island visível nos três, uma janela aberta
+em **um** deles — e só aquele espelho some. Repetido na tela real do Theo
+com os dois monitores dele, mesmo resultado.
+
+O arranjo é o que torna isso mensurável, e foi o Theo quem apontou: a shell
+sobe num **workspace descartável**, de modo que a janela da Settings fique
+lá e não conte como "existe janela" em nenhum dos workspaces que o teste
+usa. Sem isso a leitura embaralha — foi exatamente o que estragou a primeira
+tomada na tela real, em que a Settings nasceu no workspace medido e a island
+já apareceu escondida de saída.
+
 Nada de injeção de input: `wlrctl` não está instalado e o `ydotool` passa
 pelo `uinput` do kernel, que não é escopado por compositor e vazaria para a
 sessão real do Theo. Se um dia um teste precisar de ponteiro de verdade,
