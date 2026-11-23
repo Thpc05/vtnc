@@ -1,5 +1,6 @@
 import Quickshell
 import Quickshell.Io
+import Quickshell.Hyprland
 import "./core/config-shape.mjs" as ConfigShape
 import "./core"
 import "./island"
@@ -87,9 +88,11 @@ ShellRoot {
 
         // The trigger lives here, not on `island` (decision 1b.5):
         // `vtnc page <name> call <island>` pushes this page onto that
-        // island's stack.
+        // island's stack. Whatever's focused right now is captured once,
+        // here — decision 1e.3b: the called page sticks to that monitor
+        // until it closes, it doesn't follow focus afterwards.
         function call(name: string, island: string) {
-            IslandState.call(island, name);
+            IslandState.call(island, name, Hyprland.focusedMonitor ? Hyprland.focusedMonitor.name : "");
         }
 
         function list(): string {

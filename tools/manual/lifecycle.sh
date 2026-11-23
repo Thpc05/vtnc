@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# Teste manual do ciclo de vida das pages (0.506): Esc, clique fora, popup
-# e lock, na sua tela, para você olhar.
+# Teste manual do ciclo de vida das pages (0.506): Esc, popup, lock, e uma
+# prova automática de que a page chamada não migra de monitor, na sua tela,
+# para você olhar.
 #
 #   tools/manual/lifecycle.sh
 #
 # Sobe uma shell de teste com UMA island ("testbar") no topo, idle na page
 # "idle", leva você para um workspace vazio e deixa você mesmo chamar as
-# outras três pages pela CLI, noutro terminal. Ctrl-C devolve tudo.
+# outras pages pela CLI, noutro terminal. Ctrl-C devolve tudo.
 #
 # Nada da sua configuração é tocado: a shell de teste roda com um
 # VTNC_CONFIG_DIR temporário, que este script também exporta no terminal
@@ -16,15 +17,14 @@
 #
 # POR QUE ISTO PRECISA SER OLHADO, NÃO MEDIDO
 #
-# O critério 4 da 0.506 tem duas metades. Esc é limpo: ele só funciona
-# quando a superfície tem foco de teclado, e dá para confirmar isso de
-# fora (WlrKeyboardFocus). Clique fora não tem resposta limpa nenhuma no
-# wlr-layer-shell — a implementação aqui reage a QUALQUER troca de janela
-# ativa no Hyprland (Quickshell.Hyprland.activeToplevel), o que cobre
-# "cliquei numa janela de verdade" mas NÃO cobre "cliquei no desktop vazio"
-# nem "cliquei noutra superfície do próprio vtnc" — nenhum dos dois é uma
-# troca de toplevel. Only looking at it proves (or não) qual dessas duas
-# metades funciona do jeito que parece certo.
+# Esc é limpo: ele só funciona quando a superfície tem foco de teclado, e dá
+# para confirmar isso de fora (WlrKeyboardFocus). Clique fora SAIU do
+# contrato desta etapa (decisão 1e.4b) — uma superfície wlr-layer-shell não
+# enxerga clique fora dela, e a única saída direta (uma superfície
+# transparente de tela inteira) rouba o clique de todo mundo atrás dela;
+# meio comportamento (reagir só a clicar numa janela de verdade, não ao
+# desktop vazio nem a outra superfície do vtnc) foi decidido pior que
+# nenhum. Não há passo de clique fora aqui por isso, de propósito.
 set -uo pipefail
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -108,6 +108,55 @@ sleep 0.5
 hyprctl dispatch "hl.dsp.focus({ workspace = $TEST_WS })" >/dev/null
 sleep 0.5
 
+# Prova automática da decisão 1e.3b: a page chamada fica no monitor onde
+# foi chamada, mesmo depois que o foco muda — ela não migra atrás do olhar
+# do usuário. Só roda de verdade com dois monitores físicos; com um só,
+# não há para onde mover o foco, então o script avisa e segue sem ela.
+other_monitor=$(hyprctl monitors -j | python3 -c "
+import json, sys
+mons = [m['name'] for m in json.load(sys.stdin)]
+mons = [m for m in mons if m != '$HOME_FOCUS']
+print(mons[0] if mons else '')")
+
+echo "================================================================"
+if [[ -z "$other_monitor" ]]; then
+    echo "Só um monitor conectado — pulando a prova automática de que a page"
+    echo "chamada não migra (decisão 1e.3b): precisa de dois."
+else
+    echo "Provando a decisão 1e.3b (não migra) entre $HOME_FOCUS e $other_monitor..."
+    "$here/cli/vtnc" page calledplain call testbar >/dev/null
+    sleep 0.4
+    before=$("$here/cli/vtnc" island testbar get)
+    hyprctl dispatch "hl.dsp.focus({ monitor = \"$other_monitor\" })" >/dev/null
+    sleep 0.4
+    after=$("$here/cli/vtnc" island testbar get)
+    hyprctl dispatch "hl.dsp.focus({ monitor = \"$HOME_FOCUS\" })" >/dev/null
+    "$here/cli/vtnc" island testbar end >/dev/null
+
+    python3 -c "
+import json, sys
+home, other = '$HOME_FOCUS', '$other_monitor'
+before, after = json.loads('''$before'''), json.loads('''$after''')
+checks = [
+    ('antes de mudar o foco, $home veste a page chamada',
+        before['mirrors'].get(home) == 'calledplain'),
+    ('antes de mudar o foco, $other continua na idle',
+        before['mirrors'].get(other) == 'idle'),
+    ('depois de mudar o foco para $other, $home AINDA veste a page chamada (não migrou)',
+        after['mirrors'].get(home) == 'calledplain'),
+    ('depois de mudar o foco para $other, $other continua na idle (não herdou)',
+        after['mirrors'].get(other) == 'idle'),
+]
+ok = True
+for desc, passed in checks:
+    print(('OK: ' if passed else 'FAIL: ') + desc)
+    ok = ok and passed
+sys.exit(0 if ok else 1)
+" || echo "AVISO: a prova automática falhou — leia as linhas FAIL acima."
+fi
+echo "================================================================"
+echo
+
 cat <<EOF
 ================================================================
 Você está no workspace $TEST_WS. "testbar" está no topo, mostrando idle.
@@ -124,20 +173,13 @@ rode os comandos abaixo, um de cada vez, e olhe o que acontece.
    -> aparece "called (needs kb)". Aperte Esc direto, SEM clicar.
       Deve fechar na hora — esta page pediu o teclado (Exclusive).
 
-3. vtnc page modal call testbar   (de novo)
-   -> em vez de Esc, abra um terminal de verdade (kitty) neste workspace.
-      A page deve fechar sozinha assim que a janela ganha foco — isso é o
-      lado "clique fora" que ESTE mecanismo cobre (troca de janela ativa
-      no Hyprland). Fechar o terminal: nada deve acontecer sozinho.
-
-4. vtnc page popup call testbar
+3. vtnc page popup call testbar
    -> aparece "popup (8s or x)". Espere 8 segundos: deve sumir sozinha.
       Chame de novo e desta vez clique no x no canto superior direito:
       deve fechar na hora, sem esperar o tempo.
 
-5. vtnc page locked call testbar
-   -> aparece "lock (CLI only)". Esc NÃO deve fechar. Abrir um terminal
-      (clique fora) também NÃO deve fechar. Só isto fecha:
+4. vtnc page locked call testbar
+   -> aparece "lock (CLI only)". Esc NÃO deve fechar. Só isto fecha:
       vtnc island testbar end
 
 Ctrl-C aqui devolve tudo (workspace, monitor, a shell de teste).

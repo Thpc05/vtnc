@@ -254,21 +254,35 @@ teste de janela real por conta própria. As três foram só editadas, por
 texto, para a gramática/expectativa novas — ficam para o coordenador
 confirmar que ainda passam.
 
+**Correção, antes de fechar o passo**: a primeira entrega comparava o
+monitor em foco ao vivo para decidir qual espelho veste a page chamada —
+o coordenador mediu, e mudar o foco com uma call aberta arrastava a page
+junto. Decisão 1e.3b fechou isso: o monitor é gravado uma vez, no instante
+do `call` (`core/IslandState.call`'s terceiro argumento), nunca mais
+comparado ao vivo. E o clique-fora saiu do contrato por inteiro (decisão
+1e.4b) — meio comportamento (só cobre clicar numa janela de verdade) foi
+julgado pior que nenhum. `tests/cli/lifecycle.sh`, do coordenador, não
+precisou de nenhuma mudança: seu fluxo nunca troca o foco depois do
+`call`, então as duas leituras do critério 3 davam o mesmo resultado nele.
+
 **`tests/unit/lifecycle.test.mjs`** (0.506) cobre a parte pura e testável
 em node sem compositor nenhum: `pageLifecycle`/`pageNeedsKeyboard`/
 `pagePopupTimeout` (os defaults de uma page que não declara nada) e
 `pushCall`/`popCall`/`topOfCall` — o limite de 5, a ordem de desempilhar,
-o pouso na idle (string vazia) quando a pilha esvazia. Rodado, 49/49 com o
-resto da suíte.
+o pouso na idle (`null` agora, não mais string vazia — `topOfCall` devolve
+a entrada `{ page, monitor }` inteira, decisão 1e.3b) quando a pilha
+esvazia. Rodado, 50/50 com o resto da suíte.
 
 **`tools/manual/lifecycle.sh`** (0.506, novo) é para o Theo olhar, não para
 rodar sozinho: Esc com e sem `needsKeyboard` (a diferença entre OnDemand e
-Exclusive), popup por tempo e pelo ×, lock ignorando os dois, e — o ponto
-mais incerto do critério 4 — o lado de clique-fora que esta etapa consegue
-construir (reage a `Quickshell.Hyprland.activeToplevel` mudar, isto é,
-clicar numa janela de verdade; não clicar no desktop vazio, nem noutra
-superfície do vtnc). Ver `island/README.md` para o raciocínio inteiro por
-trás dessa escolha e da lacuna que ela deixa.
+Exclusive), popup por tempo e pelo ×, lock não saindo sozinha, e uma prova
+automática (não só para olhar) de que a page chamada não migra de monitor
+quando o foco muda (decisão 1e.3b) — só roda de verdade com dois monitores
+conectados, com um só ela avisa e pula. Não tem mais passo de clique fora:
+a decisão 1e.4b tirou o mecanismo do contrato depois que o coordenador
+mediu a primeira versão deste passo seguindo o foco ao vivo em vez de ficar
+fixa onde foi chamada — ver `island/README.md` para o raciocínio inteiro
+por trás das duas correções.
 
 A camada 4 **precisa de compositor**: sob `QT_QPA_PLATFORM=offscreen` o
 `grabToImage` nunca chama o callback de volta, com qualquer combinação de

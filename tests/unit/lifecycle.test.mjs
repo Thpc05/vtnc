@@ -44,13 +44,21 @@ test("popCall drops the top entry, oldest-first order preserved", () => {
     assert.deepEqual(popCall(undefined), []);
 });
 
-test("topOfCall is the most recently called page, or empty when idle", () => {
+test("topOfCall is the most recently pushed entry, or null when idle", () => {
     assert.equal(topOfCall(["a", "b"]), "b");
-    assert.equal(topOfCall([]), "");
-    assert.equal(topOfCall(undefined), "");
+    assert.equal(topOfCall([]), null);
+    assert.equal(topOfCall(undefined), null);
 });
 
-test("unstacking in reverse order lands back on idle (empty) once exhausted", () => {
+// Real entries are { page, monitor } (decision 1e.3b: a called page sticks
+// to the monitor focused at call time) — topOfCall doesn't care about the
+// shape, it just returns whatever's on top.
+test("topOfCall reads the { page, monitor } shape IslandState actually pushes", () => {
+    const stack = pushCall([], { page: "launcher", monitor: "HEADLESS-1" });
+    assert.deepEqual(topOfCall(stack), { page: "launcher", monitor: "HEADLESS-1" });
+});
+
+test("unstacking in reverse order lands back on idle (null) once exhausted", () => {
     let stack = pushCall(pushCall(pushCall([], "a"), "b"), "c");
     assert.equal(topOfCall(stack), "c");
     stack = popCall(stack);
@@ -58,5 +66,5 @@ test("unstacking in reverse order lands back on idle (empty) once exhausted", ()
     stack = popCall(stack);
     assert.equal(topOfCall(stack), "a");
     stack = popCall(stack);
-    assert.equal(topOfCall(stack), "");
+    assert.equal(topOfCall(stack), null);
 });

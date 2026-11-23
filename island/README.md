@@ -128,25 +128,35 @@ esvazia, `currentPageName` já cai nela sozinho, sem caso especial.
 — `core/IslandState.clearCall` da 0.505 não existia de verdade (nada o
 chamava) e foi substituído por este.
 
-**Só o monitor focado veste a page chamada** (decisão 1e.3): cada espelho
-compara `Hyprland.focusedMonitor` contra o seu próprio, ao vivo — a mesma
-forma que o modo `window` do autohide já lia "o workspace em foco de cada
-monitor" na 0.505, "cada espelho decide por si". Consequência que a decisão
-não fecha e que esta implementação assume: se o foco mudar de monitor com
-uma call ainda ativa, a renderização segue o foco ao vivo, não fica onde
-nasceu — a page chamada "pula" de espelho. Era a leitura mais simples das
-duas que "cada espelho decide por si" admite.
+**A page chamada fica no monitor onde foi chamada** (decisão 1e.3b, que
+substituiu a primeira leitura deste passo): `core/IslandState.call` guarda
+o monitor focado no instante do `call` — capturado uma vez em
+`shell.qml`'s `page` IpcHandler, via `Hyprland.focusedMonitor` — dentro da
+própria entrada da pilha (`{ page, monitor }`). Cada espelho compara esse
+valor gravado contra o seu próprio nome, nunca contra o foco ao vivo. A
+primeira versão deste passo comparava ao vivo, e medir mostrou exatamente
+o problema: mudar o foco para outro monitor arrastava a page chamada atrás
+dele na hora. 1e.3b fechou a pergunta que 1e.3 tinha deixado aberta — um
+launcher chamado de propósito fica onde foi chamado, não segue o olhar.
+**O que acontece se esse monitor some** (desconectado com a call ainda
+aberta) não tem decisão no grafo; a escolha desta implementação é não
+tratar como caso especial: a entrada continua guardando o nome de um
+monitor que não existe mais, nenhum espelho bate com ele, a page chamada
+fica invisível mas não quebrada — `vtnc island <nome> get` ainda mostra
+qual page está no topo, `end` ainda desempilha normalmente. Ela não migra
+para o monitor que sobrou, porque 1e.3b é explícita que uma page chamada
+não acompanha nada depois de colocada.
 
 **A page declara o próprio ciclo** (`pages.<nome>.lifecycle`, decisões
-1e.0/1e.1): `called` (padrão) fecha com Esc/clique-fora/`end`; `popup` é
-igual, mas também some sozinha depois de `popupTimeout` ms (padrão 5000) ou
-pelo × no canto superior direito; `lock` ignora Esc e o clique-fora por
-completo — só `vtnc island <nome> end` (ou outra call por cima) a tira. A
-exceção de "ilha do sistema" da decisão 1e.4 não tem ainda nenhuma ilha
-concreta para testar contra (nada no catálogo de hoje é "do sistema") —
-não criei um sinalizador para algo que nada usa; quando essa ilha existir,
-dar `lifecycle: "lock"` à sua page já cobre a mesma exigência, ou uma
-decisão futura vai dizer o contrário.
+1e.0/1e.1): `called` (padrão) fecha com Esc/`end`; `popup` é igual, mas
+também some sozinha depois de `popupTimeout` ms (padrão 5000) ou pelo × no
+canto superior direito; `lock` ignora Esc por completo — só
+`vtnc island <nome> end` (ou outra call por cima) a tira. A exceção de
+"ilha do sistema" da decisão 1e.4 não tem ainda nenhuma ilha concreta para
+testar contra (nada no catálogo de hoje é "do sistema") — não criei um
+sinalizador para algo que nada usa; quando essa ilha existir, dar
+`lifecycle: "lock"` à sua page já cobre a mesma exigência, ou uma decisão
+futura vai dizer o contrário.
 
 **Esc precisa de foco de teclado, e pegá-lo sem pedir é a diferença entre
 fechar um popup e sequestrar o teclado do Theo** (decisão 1e.5): a page
@@ -157,25 +167,16 @@ antes. idle nunca pede foco nenhum. `lock` não precisa de um caso especial
 aqui: o `Item` que escuta Esc só fica com `focus: true` fora do `lock`, uma
 tecla perdida nele não tem o que fazer.
 
-**Clique fora não tem resposta limpa no wlr-layer-shell** — a mesma família
-de problema da faixa de hover da 0.505: não existe região que "recebe
-hover/clique fora, mas deixa passar o clique de quem está atrás"; uma
-superfície transparente cobrindo a tela inteira resolveria tecnicamente,
-mas rouba o clique de todo mundo atrás dela, e o passo pede explicitamente
-para não fazer isso. O que o Hyprland expõe, só leitura, é qual toplevel
-está ativo (`Quickshell.Hyprland.activeToplevel`) — clicar numa janela de
-verdade muda isso, mesmo com esta superfície segurando foco de teclado
-exclusivo, porque o rastreamento de janela ativa do Hyprland é independente
-do keyboard grab do layer-shell. Encerrar a call quando isso muda cobre o
-caso de longe mais comum (clicar numa janela de verdade) mas **não** cobre
-clicar no desktop vazio nem clicar noutra superfície do próprio vtnc —
-nenhum dos dois troca o toplevel ativo, nenhum dos dois dispara o evento.
-Essa lacuna é real e não fechada nesta etapa; `tools/manual/lifecycle.sh`
-deixa isso explícito para o Theo olhar.
-
-Um `clickOutsideArmed`, de 50ms, atrasa quando esse observador liga: o
-instante em que a superfície primeiro pede foco de teclado é exatamente o
-tipo de troca que poderia por si só disparar `activeToplevelChanged` — sem
-o atraso, a call fecharia sozinha antes de alguém ter chance de vê-la. É o
-mesmo desenho do `settledHidden` do autohide, usado para o motivo oposto
-(esconder, não mostrar).
+**Clique fora saiu do contrato desta etapa** (decisão 1e.4b) — fica só o
+Esc. A primeira versão deste passo reagia a `Quickshell.Hyprland.
+activeToplevel` mudar: cobre clicar numa janela de verdade, mas não clicar
+no desktop vazio nem clicar noutra superfície do próprio vtnc, porque
+nenhum dos dois troca o toplevel ativo. Meio comportamento é pior que
+nenhum — o usuário aprenderia que clicar fora fecha, e um dia não fechar o
+surpreenderia — então 1e.4b tirou o mecanismo inteiro de volta, e com ele o
+`clickOutsideArmed` de 50ms que existia só para atrasar quando ele ligava.
+O motivo de fundo continua o mesmo da faixa de hover da 0.505: uma
+superfície wlr-layer-shell não enxerga clique fora dela, e a única saída
+direta — uma superfície transparente de tela inteira — rouba o clique de
+todo mundo atrás dela. Registrado no grafo como `oq-clique-fora-mecanismo`,
+para quem quiser tentar de novo com outra ideia.

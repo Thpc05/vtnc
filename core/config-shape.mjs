@@ -68,11 +68,18 @@ export function pagePopupTimeout(page) {
 
 // The call stack an island's mirror renders from (decision 1e.2): invoking
 // a page pushes it, keeping at most this many entries — the oldest falls
-// off the bottom first, never the page just invoked.
+// off the bottom first, never the page just invoked. Each entry is
+// { page, monitor } — decision 1e.3b: a called page sticks to whichever
+// monitor was focused at the moment of its own call, not wherever focus
+// is right now (measuring the live-focus reading showed it dragging the
+// page from one mirror to another the instant focus moved, which is not
+// what "aparece no monitor focado" meant). pushCall/popCall don't care
+// what an entry contains — generic push/trim/drop over an array — only
+// topOfCall below reads the shape.
 export const CALL_STACK_LIMIT = 5;
 
-export function pushCall(stack, pageName) {
-    return [...(stack ?? []), pageName].slice(-CALL_STACK_LIMIT);
+export function pushCall(stack, entry) {
+    return [...(stack ?? []), entry].slice(-CALL_STACK_LIMIT);
 }
 
 // Unstacking: drop the top entry. An empty result means "back to idle" —
@@ -82,9 +89,10 @@ export function popCall(stack) {
     return (stack ?? []).slice(0, -1);
 }
 
+// The top entry ({ page, monitor }), or null once the stack is empty.
 export function topOfCall(stack) {
     const current = stack ?? [];
-    return current.length > 0 ? current[current.length - 1] : "";
+    return current.length > 0 ? current[current.length - 1] : null;
 }
 
 export function findIsland(config, name) {
