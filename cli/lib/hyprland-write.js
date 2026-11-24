@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
-import { hyprParentDir, hyprVtncDir, hyprKeybindsFile } from "./hyprland-paths.js";
-import { generateKeybindsLua } from "../../core/hyprland-lua.mjs";
+import { hyprParentDir, hyprVtncDir, hyprKeybindsFile, hyprInitFile } from "./hyprland-paths.js";
+import { generateKeybindsLua, generateInitLua } from "../../core/hyprland-lua.mjs";
 import { defaultHyprland } from "../../core/config-shape.mjs";
 
 // Writes ~/.config/hypr/vtnc/keybinds.lua and reloads Hyprland (decisions
@@ -31,11 +31,15 @@ export function syncHyprlandFiles(config) {
     const file = hyprKeybindsFile();
     mkdirSync(hyprVtncDir(), { recursive: true });
     writeFileSync(file, generateKeybindsLua(hyprland));
+    // O init vai junto, sempre inteiro como todo arquivo gerado (7.2): e ele
+    // que o hyprland.lua do usuario nomeia, e e o que deixa o vtnc ganhar
+    // outros arquivos sem ele reeditar nada (7.6).
+    writeFileSync(hyprInitFile(), generateInitLua());
 
     try {
         execFileSync("hyprctl", ["reload"], { encoding: "utf8" });
-        return { written: true, reloaded: true, path: file };
+        return { written: true, reloaded: true, path: file, init: hyprInitFile() };
     } catch (error) {
-        return { written: true, reloaded: false, reloadError: error.message, path: file };
+        return { written: true, reloaded: false, reloadError: error.message, path: file, init: hyprInitFile() };
     }
 }

@@ -75,7 +75,7 @@ hl.config({ misc = { disable_hyprland_logo = true, force_default_wallpaper = 0 }
 
 hl.bind("SUPER + F3", hl.dsp.exec_cmd("true"))
 
-pcall(require, "vtnc/keybinds")
+pcall(require, "vtnc")
 LUA
 
 export XDG_CONFIG_HOME="$cfgroot"
@@ -137,6 +137,10 @@ v hyprland set enabled true >/dev/null
 wait_for '64+F9' || true
 check "o arquivo Lua passa a existir depois do consentimento (critério 2)" \
     "$([[ -f "$luafile" ]] && echo existe || echo ausente)" "existe"
+# 7.6: o usuário nomeia o init, não o keybinds — é isso que deixa um passo
+# futuro acrescentar arquivo sem ele reeditar o hyprland.lua.
+check "e o init.lua do vtnc também, puxando as partes (7.6)" \
+    "$(grep -c 'require("vtnc/keybinds")' "$vtncdir/init.lua")" "1"
 check "a shell gerou e recarregou sozinha: os dois binds do vtnc entraram (critério 2)" \
     "$(keys)" "64+F10 64+F3 64+F9"
 check "o arquivo é Lua, com hl.bind e hl.unbind (critério 2 / 7.3)" \

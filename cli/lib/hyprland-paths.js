@@ -21,3 +21,11 @@ export function hyprVtncDir() {
 export function hyprKeybindsFile() {
     return join(hyprVtncDir(), "keybinds.lua");
 }
+
+// O ponto de entrada do vtnc dentro da pasta dele. O usuario cola
+// `pcall(require, "vtnc")` uma vez no hyprland.lua e nunca mais mexe: quando
+// o vtnc passar a gerar outros arquivos, eles entram atras deste init
+// (decisao 7.6).
+export function hyprInitFile() {
+    return join(hyprVtncDir(), "init.lua");
+}

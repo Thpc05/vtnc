@@ -91,17 +91,28 @@ O vtnc é dono apenas da própria pasta (decisões 7.2/10.3b), então ele
 config do Hyprland é o usuário, uma vez só:
 
 ```lua
-pcall(require, "vtnc/keybinds")
+pcall(require, "vtnc")
 ```
 
-O `require` do Hyprland resolve a partir da pasta da config, e **não** fica
-em cache entre `hyprctl reload`s — mudar um keybind surte efeito na hora
-(medido, ver `tests/README.md`). O `pcall` não é frescura: um `require` nu
-num arquivo que ainda não existe — consentimento desligado, ou nunca dado —
-aborta a config inteira do Hyprland, e aí ele cai no modo de emergência,
-onde o usuário fica com três atalhos embutidos e mais nenhum. A página
-Keybinds da Settings mostra essa linha, porque sem ela tudo parece ter
+Ela nomeia o **`init.lua`** do vtnc, não um arquivo específico: é o vtnc que
+decide, lá dentro, quais partes puxar. Quando um passo futuro gerar regras de
+janela ou de layer, elas entram atrás desse init e o usuário **não reedita o
+`hyprland.lua` de novo**. O `require` do Hyprland resolve a partir da pasta
+da config (`require("vtnc")` acha `<config>/hypr/vtnc/init.lua`) e **não**
+fica em cache entre `hyprctl reload`s — mudar um keybind surte efeito na
+hora. A página Keybinds mostra essa linha, porque sem ela tudo parece ter
 funcionado e nenhum atalho vincula.
+
+**A linha vai no fim do `hyprland.lua`, depois da configuração do próprio
+usuário.** O Hyprland aplica a config em série, e um erro de Lua aborta dali
+para baixo preservando tudo o que já foi aplicado: com a linha no fim, uma
+falha do vtnc nunca custa um atalho do usuário. O modo de emergência — aquele
+em que sobram só `SUPER+Q`, `SUPER+R` e `SUPER+M` — só aparece quando o erro
+acontece **antes de qualquer bind ter sido registrado**, que é precisamente o
+que a posição no fim impede. Os dois casos estão medidos; ver
+`tests/README.md`. O `pcall`, então, não é proteção contra catástrofe: é só
+para o Hyprland não reclamar de um arquivo ausente enquanto o consentimento
+estiver desligado.
 
 ### O unbind
 

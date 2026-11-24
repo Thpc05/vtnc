@@ -112,19 +112,21 @@ Rectangle {
         // vtnc owns only its own folder (decisions 7.2/10.3b), so it never
         // edits hyprland.lua — the one line that pulls the generated file in
         // is the user's to add, and without it everything here looks like it
-        // worked while no shortcut actually binds. The pcall guard matters:
-        // a bare require on a file that doesn't exist yet (consent off, or
-        // never given) aborts the whole Hyprland config, and Hyprland then
-        // falls back to emergency binds. Measured in the nested compositor,
-        // both ways round -- see tests/cli/hyprland-keybinds.sh.
+        // worked while no shortcut actually binds. It names vtnc's own
+        // init.lua, not a particular file, so later steps can add generated
+        // files behind it without the user touching hyprland.lua again
+        // (decision 7.6). Put it BELOW your own config: a Lua error aborts
+        // the config from that point down and keeps everything already
+        // applied, so a vtnc failure can then never cost you your own binds.
+        // The pcall only keeps Hyprland quiet when the file isn't there yet.
         Text {
-            text: "Add this line to your hyprland.lua once, or nothing below takes effect:"
+            text: "Add this line at the END of your hyprland.lua once, or nothing below takes effect:"
             color: "#999999"
             font.pixelSize: 11
         }
 
         Text {
-            text: "pcall(require, \"vtnc/keybinds\")"
+            text: "pcall(require, \"vtnc\")"
             color: "#cccccc"
             font.pixelSize: 12
             font.family: "monospace"

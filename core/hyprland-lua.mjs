@@ -68,3 +68,19 @@ export function generateKeybindsLua(hyprland) {
 
     return lines.join("\n");
 }
+
+// O init.lua: a unica coisa que o hyprland.lua do usuario nomeia. Puxar as
+// partes daqui, e nao do arquivo do usuario, e o que deixa o vtnc acrescentar
+// arquivos depois sem ele reeditar nada (decisao 7.6). Hoje so ha os
+// keybinds; medido no 0.57, `require("vtnc")` resolve este arquivo e o que
+// vem depois dele no hyprland.lua continua executando normalmente.
+export const VTNC_LUA_PARTS = ["keybinds"];
+
+export function generateInitLua() {
+    const lines = [WARNING_BANNER, ""];
+    for (const part of VTNC_LUA_PARTS) {
+        lines.push(`require("vtnc/${part}")`);
+    }
+    lines.push("");
+    return lines.join("\n");
+}

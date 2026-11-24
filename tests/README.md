@@ -343,12 +343,20 @@ confiável é o binário (`strings /usr/bin/Hyprland`):
   keybinds")` acha `<config>/hypr/vtnc/keybinds.lua`) e **não fica em cache
   entre `reload`s** — se ficasse, mudar um keybind não surtiria efeito e o
   critério 5 cairia. O teste afirma isso explicitamente no último check.
-- **o `pcall` importa.** Com `pcall(require, ...)` e o arquivo ausente, a
-  config segue executando e os binds do usuário sobrevivem. Um `require` nu
-  aborta a config inteira, e um erro de Lua na config põe o Hyprland em modo
-  de emergência: *"A lua config error resulted in no binds being
-  registered"*, com três atalhos embutidos e mais nenhum. É por isso que a
-  página Keybinds mostra a forma com `pcall`.
+- **um erro de Lua aborta dali para baixo, e só.** Tudo o que já tinha sido
+  aplicado continua valendo: com um `require` nu que falha, os binds
+  declarados acima dele sobrevivem e o que vem abaixo não chega a rodar. O
+  modo de emergência — aquele em que sobram só `SUPER+Q`, `SUPER+R` e
+  `SUPER+M` — só aparece quando o erro acontece **antes de qualquer bind ter
+  sido registrado**. Medidos os dois casos. É por isso que a linha do vtnc
+  vai no **fim** do `hyprland.lua`, depois da config do próprio usuário: aí
+  uma falha do vtnc não pode custar um atalho dele nem levá-lo à emergência.
+  O `pcall` deixa de ser proteção contra catástrofe e vira só silêncio para
+  o caso de o arquivo ainda não existir.
+- **`require("vtnc")` resolve `vtnc/init.lua`** (regra padrão do Lua, que o
+  Hyprland mantém), e o que vem depois de um require bem-sucedido segue
+  executando. É isso que deixa o usuário nomear um ponto de entrada só, uma
+  vez, e o vtnc acrescentar arquivos atrás dele depois (decisão 7.6).
 
 Precisa de compositor, não precisa de permissão nem da tela do Theo, e em
 nenhum momento toca o `~/.config/hypr` de verdade.

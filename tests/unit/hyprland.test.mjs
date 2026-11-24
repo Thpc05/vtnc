@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {
     defaultHyprland, validateHyprlandSet, parseHyprlandSetValue,
 } from "../../core/config-shape.mjs";
-import { managedKeys, enabledKeybinds, generateKeybindsLua } from "../../core/hyprland-lua.mjs";
+import { managedKeys, enabledKeybinds, generateKeybindsLua, generateInitLua, VTNC_LUA_PARTS } from "../../core/hyprland-lua.mjs";
 
 test("defaultHyprland starts with consent off and no keybinds", () => {
     assert.deepEqual(defaultHyprland(), { enabled: false, keybinds: [] });
@@ -97,4 +97,21 @@ test("generateKeybindsLua with no keybinds at all still produces a valid, empty-
     const lua = generateKeybindsLua(defaultHyprland());
     assert.ok(!lua.includes("hl.bind("));
     assert.ok(!lua.includes("hl.unbind("));
+});
+
+// 7.6: o usuario nomeia o init, nao cada arquivo. Se uma parte nova entrar
+// em VTNC_LUA_PARTS num passo futuro, ela tem de aparecer sozinha aqui, sem
+// ninguem reeditar o hyprland.lua.
+test("generateInitLua requires every part vtnc generates, and carries the warning", () => {
+    const lua = generateInitLua();
+    assert.match(lua, /DO NOT EDIT/i);
+    for (const part of VTNC_LUA_PARTS) {
+        assert.ok(lua.includes(`require("vtnc/${part}")`), `faltou a parte ${part}`);
+    }
+});
+
+test("generateInitLua names keybinds today, and nothing the generator doesn't write", () => {
+    assert.deepEqual(VTNC_LUA_PARTS, ["keybinds"]);
+    const required = [...generateInitLua().matchAll(/require\("vtnc\/([a-z-]+)"\)/g)].map((m) => m[1]);
+    assert.deepEqual(required, VTNC_LUA_PARTS);
 });
