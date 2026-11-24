@@ -10,6 +10,11 @@ import "../../settings"
 Settings {
     id: root
 
+    // 0.507: qual página abrir, para a camada 4 poder olhar mais de uma.
+    // Vazio (ou ausente) mantém o padrão da própria Settings, que é Islands —
+    // é assim que a chamada da 0.503 segue funcionando sem mudar nada.
+    currentPage: Quickshell.env("VTNC_RENDER_PAGE") || "Islands"
+
     Timer {
         running: true
         interval: 500

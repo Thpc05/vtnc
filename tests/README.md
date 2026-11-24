@@ -303,3 +303,52 @@ janelas de verdade — `autohide.sh` também dispara `hyprctl dispatch`
 (movecursor, fullscreen, workspace), liberado só para teste (AGENTS.md).
 
 Nenhuma delas precisa de permissão nem da tela do Theo.
+
+## 0.507 — os keybinds do Hyprland
+
+`tests/cli/hyprland-keybinds.sh` é a camada 3 deste passo, e `hyprctl binds
+-j` é a medida exata dele, do mesmo jeito que o `reserved` do `monitors -j`
+foi o da 0.504: lista as teclas que o compositor **de fato** registrou, com
+`modmask` (64 é SUPER) e `key`. O `arg` do dispatcher vem como **número**,
+não como o texto do comando, então este teste afirma tecla e modificador —
+o conteúdo do comando se confere lendo o arquivo gerado, não os binds.
+
+Ele é o primeiro teste que faz a shell escrever **fora** da pasta de
+configuração dela e rodar `hyprctl reload` depois, que é o risco
+`gerar-arquivo-no-hypr-real`. A guarda é a mesma forma do trap da 0.505: a
+flag `safe` só vira 1 depois da prova, e nada que escreva roda sem ela. E a
+prova **não olha a variável de ambiente** — ela pergunta ao próprio
+`cli/lib/hyprland-paths.js`, com o ambiente que a shell vai receber, para
+onde o caminho resolve, e recusa se não for a pasta descartável ou se for
+igual ao real. Conferir `XDG_CONFIG_HOME` não provaria nada: o que importa é
+o caminho resolvido.
+
+`tools/headless/nested.sh` ganhou `NESTED_HYPR_CONFIG` para isto. A config
+padrão do aninhado não declara bind nenhum nem faz `require` do arquivo do
+vtnc, e os dois são o objeto deste passo — uma config própria resolve sem
+mexer no que os outros testes usam. Quem passa uma config por ali é
+responsável pelas próprias regras de monitor.
+
+Quatro coisas foram medidas no aninhado antes de escrever o teste, porque o
+wiki do Hyprland segue devolvendo 404 nas páginas de dispatchers e a fonte
+confiável é o binário (`strings /usr/bin/Hyprland`):
+
+- **`hl.unbind` existe** como função global do 0.57 e aceita a tecla como
+  string. Ele não aparece num `grep 'hl\.'` do binário porque a mensagem de
+  erro dele é `unbind: bad argument 1`, sem o prefixo — o nome está no
+  cluster de strings registrado na tabela `hl`, junto de `define_submap`,
+  `exec_cmd` e `is_key_down`. Desvincular uma tecla que nunca esteve
+  vinculada é inócuo.
+- **`require` resolve a partir da pasta da config** (`require("vtnc/
+  keybinds")` acha `<config>/hypr/vtnc/keybinds.lua`) e **não fica em cache
+  entre `reload`s** — se ficasse, mudar um keybind não surtiria efeito e o
+  critério 5 cairia. O teste afirma isso explicitamente no último check.
+- **o `pcall` importa.** Com `pcall(require, ...)` e o arquivo ausente, a
+  config segue executando e os binds do usuário sobrevivem. Um `require` nu
+  aborta a config inteira, e um erro de Lua na config põe o Hyprland em modo
+  de emergência: *"A lua config error resulted in no binds being
+  registered"*, com três atalhos embutidos e mais nenhum. É por isso que a
+  página Keybinds mostra a forma com `pcall`.
+
+Precisa de compositor, não precisa de permissão nem da tela do Theo, e em
+nenhum momento toca o `~/.config/hypr` de verdade.

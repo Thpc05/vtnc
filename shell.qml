@@ -16,6 +16,12 @@ ShellRoot {
         configRef: Config
     }
 
+    // 0.507: writes ~/.config/hypr/vtnc/keybinds.lua and reloads Hyprland
+    // whenever config.hyprland changes and consent has been given.
+    HyprlandSync {
+        configRef: Config
+    }
+
     // A plain window, not a layer-shell surface (decision 1d.6) — opens
     // with the shell for now; a toggle/keybind to show it on demand is a
     // later step's job, out of 0.503's scope.
@@ -80,6 +86,18 @@ ShellRoot {
 
         function list(): string {
             return JSON.stringify(Config.data.autohide ?? ConfigShape.defaultAutohide());
+        }
+    }
+
+    // Global hyprland config (0.507, decision 10.3b): no target name, same
+    // nameless grammar as "autohide" above. `set` writes config.json
+    // directly and never comes through here; `generate` is a local
+    // write+reload (cli/vtnc), not IPC, so it doesn't appear here either.
+    IpcHandler {
+        target: "hyprland"
+
+        function list(): string {
+            return JSON.stringify(Config.data.hyprland ?? ConfigShape.defaultHyprland());
         }
     }
 

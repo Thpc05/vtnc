@@ -12,16 +12,19 @@ import { ipcCall } from "./lib/ipc.js";
 import {
     findIsland, validateIslandSet, parseIslandSetValue,
     validateAutohideGlobalSet, parseAutohideGlobalValue, defaultAutohide,
+    validateHyprlandSet, parseHyprlandSetValue, defaultHyprland,
 } from "../core/config-shape.mjs";
+import { syncHyprlandFiles } from "./lib/hyprland-write.js";
 
-const VERBS = new Set(["set", "call", "get", "list", "end"]);
+const VERBS = new Set(["set", "call", "get", "list", "end", "generate"]);
 // The full namespace list from decision 4b.3 — widget/monitor/preset/theme
 // are listed even though they have no verbs yet (also decision 4b.3).
 // `autohide` (0.505) is one of the "futuros" 4b.3 already names the list
 // as open to — it's global, not per-island, so it has no target name, the
-// same grammar `page list`/`service list` already use.
-const NAMESPACES = new Set(["island", "page", "widget", "service", "monitor", "preset", "theme", "autohide"]);
-const NAMESPACES_WITH_VERBS = new Set(["island", "page", "service", "autohide"]);
+// same grammar `page list`/`service list` already use. `hyprland` (0.507)
+// is the same shape as `autohide`: global, no target name.
+const NAMESPACES = new Set(["island", "page", "widget", "service", "monitor", "preset", "theme", "autohide", "hyprland"]);
+const NAMESPACES_WITH_VERBS = new Set(["island", "page", "service", "autohide", "hyprland"]);
 
 // The shell's own source folder — one level up from cli/ — doubles as its
 // quickshell config name (vtnc-dev while developing, vtnc once installed),
@@ -34,9 +37,9 @@ function usage() {
        vtnc                                 start the shell
        vtnc help                            this message
 
-namespaces: island, page, widget, service, monitor, preset, theme, autohide
+namespaces: island, page, widget, service, monitor, preset, theme, autohide, hyprland
   (widget, monitor, preset and theme have no verbs yet)
-verbs: set, call, get, list, end
+verbs: set, call, get, list, end, generate
 
 0.506: the trigger lives on the page, not the island (decision 1b.5) — call
 a page onto an island with "page <name> call <island>", never the other
@@ -56,6 +59,15 @@ autohide set keys: enabled, mode, distance
    don't set their own; distance (cells) is global-only, it also decides
    which of the two hide animations an island gets — see island/README.md)
 
+hyprland set keys: enabled, keybinds
+  (0.507: "enabled" is consent (decision 10.3b) — nothing is written under
+   ~/.config/hypr/vtnc until this is true. "keybinds" replaces the whole
+   array in one JSON argument, each entry shaped like
+   {"key":"SUPER + Q","commands":["..."],"enabled":true,"description":""}.
+   "generate" writes the Lua file and runs hyprctl reload — the running
+   shell calls this on its own whenever the config changes and consent is
+   given; calling it by hand is harmless and always available.)
+
 examples:
   vtnc page launcher call bar       momentary: stacks launcher onto bar
   vtnc island bar end               unstacks one level (back to idle if empty)
@@ -72,7 +84,10 @@ examples:
   vtnc service list                 which services are on and who's holding them
   vtnc service clock get            one service's state, as JSON
   vtnc autohide set distance 3      global trigger distance, in cells
-  vtnc autohide list                current global autohide config, as JSON`);
+  vtnc autohide list                current global autohide config, as JSON
+  vtnc hyprland set enabled true    consent: the shell starts writing/reloading
+  vtnc hyprland set keybinds '[{"key":"SUPER + Return","commands":["kitty"],"enabled":true}]'
+  vtnc hyprland list                current hyprland config, as JSON`);
 }
 
 function startShell() {
@@ -131,6 +146,42 @@ function cmdSetAutohide(args) {
     console.log(JSON.stringify(config.autohide));
 }
 
+// `vtnc hyprland set <key> <value>` (0.507): same nameless grammar as
+// autohide. This only ever writes config.json (decision 4b.4) — it never
+// touches ~/.config/hypr/vtnc itself and never calls hyprctl; that's
+// `generate`'s job, run by the shell reacting to this write, not by `set`
+// directly.
+function cmdSetHyprland(args) {
+    const [key, rawValue] = args;
+    if (!key || rawValue === undefined) {
+        console.error("vtnc: set needs a key and a value, e.g. set enabled true");
+        process.exit(1);
+    }
+
+    const config = readConfig();
+    const value = parseHyprlandSetValue(key, rawValue);
+    const error = validateHyprlandSet(key, value);
+    if (error) {
+        console.error(`vtnc: ${error}`);
+        process.exit(1);
+    }
+
+    config.hyprland = { ...defaultHyprland(), ...config.hyprland, [key]: value };
+    writeConfig(config);
+    console.log(JSON.stringify(config.hyprland));
+}
+
+// `vtnc hyprland generate`: writes ~/.config/hypr/vtnc/keybinds.lua from
+// whatever's in config.json right now and runs `hyprctl reload` (decision
+// 7.2). core/HyprlandSync.qml spawns exactly this from the running shell
+// whenever config.hyprland changes — "a shell roda hyprctl reload sozinha"
+// is this call, made by the shell. Calling it by hand does the same thing
+// and is harmless (it's a no-op without consent — see syncHyprlandFiles).
+function cmdGenerateHyprland() {
+    const config = readConfig();
+    console.log(JSON.stringify(syncHyprlandFiles(config)));
+}
+
 function cmdSet(namespace, name, args) {
     if (namespace === "island") {
         cmdSetIsland(name, args);
@@ -138,6 +189,10 @@ function cmdSet(namespace, name, args) {
     }
     if (namespace === "autohide") {
         cmdSetAutohide(args);
+        return;
+    }
+    if (namespace === "hyprland") {
+        cmdSetHyprland(args);
         return;
     }
     console.error(`vtnc: set is not supported on namespace "${namespace}" yet`);
@@ -200,6 +255,13 @@ if (namespace === "page" && verb === "end") {
     console.error('vtnc: ending a call is per-island, not per-page: vtnc island <name> end');
     process.exit(1);
 }
+// `generate` is hyprland-only (0.507) — it's a local write+reload, not an
+// IPC verb, so every other namespace rejects it here instead of failing
+// inside ipcCall with a confusing "function not found".
+if (verb === "generate" && namespace !== "hyprland") {
+    console.error(`vtnc: "generate" is only for the hyprland namespace`);
+    process.exit(1);
+}
 
 switch (verb) {
 case "set":
@@ -216,5 +278,8 @@ case "list":
     break;
 case "end":
     console.log(ipcCall(shellRoot, namespace, "end", [name, ...args]));
+    break;
+case "generate":
+    cmdGenerateHyprland();
     break;
 }

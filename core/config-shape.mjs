@@ -9,7 +9,19 @@ export function defaultConfig() {
         islands: [],
         pages: {},
         autohide: defaultAutohide(),
+        hyprland: defaultHyprland(),
     };
+}
+
+// 0.507: consent (decision 10.3b) plus the keybinds themselves. `enabled`
+// gates every write under ~/.config/hypr/vtnc — false (the default) means
+// nothing on disk, ever, regardless of what `keybinds` holds; the Settings
+// Keybinds page keeps editing this array freely either way (config.json
+// always receives the edit), only generation is gated. Each keybind is
+// { key, commands, enabled, description } (decision 7.5) — `enabled` here
+// is per-bind (on/off), unrelated to the top-level consent flag above.
+export function defaultHyprland() {
+    return { enabled: false, keybinds: [] };
 }
 
 // The global autohide defaults (0.505, decision 11.2c/12.4): enabled/mode
@@ -122,6 +134,12 @@ export const AUTOHIDE_MODES = ["always", "window", "fullscreen"];
 // 12.4, the same closed-list pattern as ISLAND_SETTABLE_KEYS.
 export const AUTOHIDE_GLOBAL_KEYS = ["enabled", "mode", "distance"];
 
+// What `vtnc hyprland set` accepts (0.507). Same closed-list pattern again:
+// "enabled" is the consent flag (decision 10.3b), "keybinds" replaces the
+// whole array in one shot, the same way anchor/offset/size travel as one
+// JSON object for `island set` below.
+export const HYPRLAND_SETTABLE_KEYS = ["enabled", "keybinds"];
+
 // anchor/offset/size travel through the CLI as a single JSON-encoded
 // argument (they're objects, not scalars like page/layer); this turns the
 // raw command-line string into the value validateIslandSet checks and
@@ -163,6 +181,56 @@ export function parseAutohideGlobalValue(key, raw) {
         return Number(raw);
     }
     return raw; // mode
+}
+
+// Same shape as parseIslandSetValue, for `vtnc hyprland set` (0.507).
+// "keybinds" is the whole array, JSON-encoded the same way anchor/offset/
+// size are for `island set` — invalid JSON becomes undefined, which
+// validateHyprlandSet below already rejects on its own.
+export function parseHyprlandSetValue(key, raw) {
+    if (key === "enabled") {
+        if (raw === "true") return true;
+        if (raw === "false") return false;
+        return undefined;
+    }
+    if (key === "keybinds") {
+        try {
+            return JSON.parse(raw);
+        } catch (error) {
+            return undefined;
+        }
+    }
+    return raw;
+}
+
+function isValidKeybind(value) {
+    if (!isPlainObject(value)) return false;
+    if (typeof value.key !== "string" || value.key.trim() === "") return false;
+    if (!Array.isArray(value.commands) || !value.commands.every((c) => typeof c === "string")) return false;
+    if (typeof value.enabled !== "boolean") return false;
+    if (value.description !== undefined && typeof value.description !== "string") return false;
+    return true;
+}
+
+// Returns an error string, or null if `value` (already run through
+// parseHyprlandSetValue) is fine for `key` on the global hyprland config.
+export function validateHyprlandSet(key, value) {
+    if (!HYPRLAND_SETTABLE_KEYS.includes(key)) {
+        return `unknown key "${key}" for hyprland set (try: ${HYPRLAND_SETTABLE_KEYS.join(", ")})`;
+    }
+    if (key === "enabled") {
+        return typeof value === "boolean" ? null : `invalid enabled: must be true or false`;
+    }
+    if (key === "keybinds") {
+        if (!Array.isArray(value)) return `invalid keybinds: must be a JSON array`;
+        for (const keybind of value) {
+            if (!isValidKeybind(keybind)) {
+                return `invalid keybinds: each entry needs a non-empty "key" (string), a "commands" array of strings and an "enabled" boolean — "description" is an optional string`;
+            }
+        }
+        return null;
+    }
+    return null;
 }
 
 function isPlainObject(value) {

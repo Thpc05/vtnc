@@ -62,3 +62,54 @@ moram em `config.autohide`, mas não ganharam verbo aqui nem controle na
 Settings nesta etapa — só o que o passo pediu explicitamente
 (`autohide`/`autohideMode`/distância) entrou na CLI; os três ficam editáveis
 só à mão no `config.json` por enquanto.
+
+## O namespace `hyprland` (0.507)
+
+Global, sem nome de alvo, igual ao `autohide`. `vtnc hyprland set <chave>
+<valor>` aceita duas chaves:
+
+- `enabled` — **o consentimento** (decisão 10.3b). Falso por omissão.
+  Enquanto for falso, **nada** é escrito sob `~/.config/hypr/vtnc`, não
+  importa o que `keybinds` tenha: a Settings continua editando a lista à
+  vontade e o `config.json` recebe tudo; só a geração é que está trancada.
+- `keybinds` — a lista inteira de uma vez, num só argumento JSON (do mesmo
+  jeito que `anchor`/`offset`/`size` viajam para o `island set`). Cada
+  entrada é `{ key, commands, enabled, description }` (decisão 7.5), onde
+  `commands` é uma **lista** e o `enabled` de dentro é o liga/desliga
+  daquele atalho — não tem relação com o consentimento global acima.
+
+`vtnc hyprland list` devolve o objeto global. `vtnc hyprland generate`
+escreve `~/.config/hypr/vtnc/keybinds.lua` e roda `hyprctl reload`; é o
+único verbo da CLI que faz isso, e é ele que `core/HyprlandSync.qml` dispara
+da shell em execução a cada mudança. Chamar à mão é inócuo e sempre
+permitido — sem consentimento ele não faz nada e diz por quê.
+
+### A linha que o usuário tem de colar
+
+O vtnc é dono apenas da própria pasta (decisões 7.2/10.3b), então ele
+**nunca** edita o `hyprland.lua` de ninguém. Quem liga o arquivo gerado à
+config do Hyprland é o usuário, uma vez só:
+
+```lua
+pcall(require, "vtnc/keybinds")
+```
+
+O `require` do Hyprland resolve a partir da pasta da config, e **não** fica
+em cache entre `hyprctl reload`s — mudar um keybind surte efeito na hora
+(medido, ver `tests/README.md`). O `pcall` não é frescura: um `require` nu
+num arquivo que ainda não existe — consentimento desligado, ou nunca dado —
+aborta a config inteira do Hyprland, e aí ele cai no modo de emergência,
+onde o usuário fica com três atalhos embutidos e mais nenhum. A página
+Keybinds da Settings mostra essa linha, porque sem ela tudo parece ter
+funcionado e nenhum atalho vincula.
+
+### O unbind
+
+O arquivo gerado desvincula, antes de vincular, **somente** as teclas que
+aparecem na lista do vtnc (decisão 7.4) — a tecla que o usuário vinculou por
+conta própria, em qualquer lugar fora da pasta do vtnc, nunca é nomeada ali,
+logo nunca é tocada. O unbind vem primeiro por dois motivos: desligar um
+atalho de fato o tira do compositor em vez de deixar um bind velho do
+`reload` anterior, e uma tecla reaproveitada não termina vinculada duas
+vezes. Desvincular uma tecla que não estava vinculada é inócuo.
+

@@ -28,6 +28,22 @@ A base que não conhece ninguém acima dela: nenhum arquivo aqui importa
   cursorpos` de tempos em tempos (só leitura — ver `island/README.md`'s
   seção de autohide para o motivo de não dar para fazer isso com uma
   superfície de verdade).
+- `HyprlandSync.qml` (0.507) — fica de olho na seção `hyprland` da config e,
+  quando ela muda **e** o consentimento foi dado (decisão 10.3b), dispara
+  `vtnc hyprland generate`. É isto que quer dizer "a shell roda `hyprctl
+  reload` sozinha" (decisão 7.2): quem dispara é a shell em execução, nunca
+  o `vtnc hyprland set`, que só escreve o `config.json` como todo `set`
+  (decisão 4b.4). Compara `JSON.stringify` da seção, não a config inteira,
+  para não re-gerar quando o que mudou foi uma island; e como a assinatura
+  começa vazia, uma shell recém-aberta re-sincroniza por conta própria se o
+  consentimento já tinha sido dado antes.
+- `hyprland-lua.mjs` (0.507) — a geração do texto Lua, pura, sem I/O (quem
+  escreve e recarrega é `cli/lib/hyprland-write.js`). Fica separada do
+  `config-shape.mjs` porque trata da sintaxe do Hyprland, não da forma do
+  documento de config. As teclas saem em `[[...]]` (string de colchete longo
+  do Lua) porque uma tecla ou comando digitado pelo usuário pode conter
+  aspas ou contrabarra; isso só quebra se o texto contiver `]]`, contra o
+  que nada aqui protege.
 
 Os tipos QML daqui são expostos via `qmldir` (singletons), não por import de
 arquivo único — ver nota em `../AGENTS.md`-adjacente: imports de arquivo

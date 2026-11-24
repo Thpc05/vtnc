@@ -21,7 +21,8 @@ Window {
     visible: true
     color: "#1b1b1b"
 
-    // The ten Settings pages (decision 8.1); only Islands is built in 0.503.
+    // The ten Settings pages (decision 8.1); Islands (0.503) and Keybinds
+    // (0.507) are built, the rest still say so (vtnc.not-built).
     readonly property var pageNames: [
         "Appearance", "Islands", "Pages", "Monitors", "Keybinds",
         "Services", "Extensions", "Dependencies", "Presets", "About",
@@ -51,6 +52,21 @@ Window {
                         islandName: island.name,
                         cell: { x: 0, y: globalRows + index * rowsPerIsland, w: root.contentCols, h: rowsPerIsland - 1 },
                     })),
+                ],
+            };
+        }
+        if (name === "Keybinds") {
+            const keybindRows = ((Config.data.hyprland ?? {}).keybinds ?? []).length;
+            // 8 células pagam o cabeçalho fixo (consentimento, as duas linhas
+            // da instrução do `require`, os rótulos das colunas e o botão de
+            // acrescentar); cada keybind come 2, que é a linha de 28 px mais o
+            // espaçamento. Com menos que isso o painel fica curto e as linhas
+            // vazam para fora dele — foi o que a camada 4 pegou.
+            const rows = 8 + 2 * keybindRows;
+            return {
+                grid: { cols: root.contentCols, rows: rows },
+                widgets: [
+                    { type: "vtnc.keybinds-editor", cell: { x: 0, y: 0, w: root.contentCols, h: rows } },
                 ],
             };
         }

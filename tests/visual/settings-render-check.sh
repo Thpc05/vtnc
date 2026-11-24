@@ -12,6 +12,9 @@ set -uo pipefail
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 root="$(cd "$here/../.." && pwd)"
 out="${1:-$here/settings-render.png}"
+# 0.507: qual página da Settings renderizar. Vazio mantém o padrão da
+# própria Settings (Islands), que é o que a 0.503 pediu.
+page="${VTNC_RENDER_PAGE:-}"
 own_nest=""
 tmp_config_dir=$(mktemp -d)
 # `qs -p <file>` scopes qmldir import resolution to that file's own
@@ -53,12 +56,20 @@ cat >"$tmp_config_dir/config.json" <<'EOF'
   "pages": {
     "clock": { "grid": { "cols": 10, "rows": 4 }, "widgets": [] },
     "launcher": { "grid": { "cols": 10, "rows": 6 }, "widgets": [] }
+  },
+  "hyprland": {
+    "enabled": true,
+    "keybinds": [
+      { "key": "SUPER + Return", "commands": ["kitty"], "enabled": true, "description": "terminal" },
+      { "key": "SUPER + D", "commands": ["vtnc page launcher call bar"], "enabled": true, "description": "launcher" },
+      { "key": "SUPER + L", "commands": ["vtnc page lock call bar"], "enabled": false, "description": "lock screen" }
+    ]
   }
 }
 EOF
 
 rm -f "$out"
-log=$(VTNC_CONFIG_DIR="$tmp_config_dir" VTNC_RENDER_OUT="$out" timeout 30 env QT_QPA_PLATFORM=wayland qs -p "$harness" -n 2>&1)
+log=$(VTNC_CONFIG_DIR="$tmp_config_dir" VTNC_RENDER_OUT="$out" VTNC_RENDER_PAGE="$page" timeout 30 env QT_QPA_PLATFORM=wayland qs -p "$harness" -n 2>&1)
 status=$?
 
 if [[ $status -eq 124 ]]; then

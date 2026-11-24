@@ -11,6 +11,12 @@
 # HYPRLAND_INSTANCE_SIGNATURE pointed at the nested instance, plus NESTED_PID.
 # Two virtual outputs are created to match Theo's real hardware: a FullHD
 # laptop panel and a QuadHD monitor.
+#
+# Set NESTED_HYPR_CONFIG to use another config file instead of
+# tools/headless/hyprland.lua. 0.507 needs it: that step's tests have to
+# measure a config that declares a bind of its own and then requires vtnc's
+# generated file, which the shared default config deliberately doesn't do.
+# A config passed this way is responsible for its own monitor rules.
 
 set -euo pipefail
 
@@ -70,7 +76,7 @@ attempt() {
     # WAYLAND_DISPLAY, fails to lock the host's, and falls through to the
     # next free one — the "unable to lock lockfile" line in the log is
     # expected and harmless.
-    Hyprland --config "$here/hyprland.lua" >"$log" 2>&1 &
+    Hyprland --config "${NESTED_HYPR_CONFIG:-$here/hyprland.lua}" >"$log" 2>&1 &
     pid=$!
 
     # Wait for the instance to register: hyprctl only lists it once it has

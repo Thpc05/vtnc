@@ -35,6 +35,15 @@ widgets/<type>/
   só, acima de cada `island-editor`. Mesma fronteira de escrita que
   `island-editor` — lê `core/Config.qml`, escreve só via `CliRunner`
   (`autohide set distance`).
+- `keybinds-editor` (0.507) — a página Keybinds da Settings inteira: o
+  consentimento (decisão 10.3b) e a lista de keybinds (decisão 7.5). Mesma
+  fronteira de escrita que `island-editor`/`autohide-settings` — lê
+  `core/Config.qml`, escreve só via `CliRunner` (`hyprland set enabled` /
+  `hyprland set keybinds`). Nunca toca `~/.config/hypr` — isso só acontece
+  quando o consentimento está ligado e a shell em execução reage à mudança
+  (`core/HyprlandSync.qml`, ver `cli/README.md`). Primeiro widget da
+  Settings com texto livre — introduz `TextInput`, só confirmado em
+  `onEditingFinished`, nunca por tecla.
 - `not-built` (0.503) — o que aparece nas nove páginas da Settings que
   ainda não existem (decisão 8.1). Mesmo o placeholder é um widget de
   verdade, para a Settings inteira ficar dentro do mecanismo de pages e
