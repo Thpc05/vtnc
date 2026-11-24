@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Window
 import "../core"
+import "../core/widget-registry.mjs" as Registry
 import "../page"
 
 // The Settings: a plain Hyprland window, not a layer-shell surface
@@ -58,15 +59,36 @@ Window {
         }
         if (name === "Pages") {
             // Altura: um cabecalho fixo (a lista de pages, criar/apagar, a
-            // grade e o menu de acrescentar) mais duas celulas por widget da
+            // grade e o menu de acrescentar) mais o custo de cada widget da
             // page aberta. Como a page aberta e estado interno do widget, e
-            // nao da config, aqui nao da para saber quantas linhas ela tem —
-            // usa-se a maior page, que e o pior caso e nunca fica curto.
+            // nao da config, aqui nao da para saber qual e — usa-se a page
+            // mais cara, que e o pior caso e nunca fica curto.
+            //
+            // 0.510: um widget nao ocupa mais uma linha so. Ele tem a linha
+            // das celulas, a linha dos styles e UMA LINHA POR OPCAO do style
+            // vestido — e, como o style vestido tambem e escolha do momento,
+            // conta-se o style mais cheio daquele type. Sem isto a lista
+            // vaza para fora do painel, que foi o defeito que a camada 4
+            // pegou duas vezes, na 0.508 e na 0.507.
             const pages = Config.data.pages ?? {};
             let widest = 0;
-            for (const key of Object.keys(pages))
-                widest = Math.max(widest, ((pages[key].widgets ?? []).length));
-            const rows = 12 + 2 * widest;
+            for (const key of Object.keys(pages)) {
+                let cost = 0;
+                for (const widget of (pages[key].widgets ?? [])) {
+                    // Uma linha por opcao, e uma linha A MAIS por opcao de
+                    // cor: os sete papeis nao cabem numa linha so e o Flow
+                    // os quebra em duas.
+                    let options = 0;
+                    for (const style of Registry.stylesOf(widget.type)) {
+                        const declared = style.options ?? [];
+                        const roles = declared.filter((option) => option.kind === "role").length;
+                        options = Math.max(options, declared.length + roles);
+                    }
+                    cost += 4 + options;
+                }
+                widest = Math.max(widest, cost);
+            }
+            const rows = 12 + widest;
             return {
                 grid: { cols: root.contentCols, rows: rows },
                 widgets: [

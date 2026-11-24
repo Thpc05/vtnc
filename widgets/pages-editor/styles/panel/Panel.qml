@@ -25,6 +25,11 @@ Rectangle {
     required property var removeWidget
     required property var nudgeCell
     required property var setStyle
+    required property var optionSchemaOf
+    required property var optionValuesOf
+    required property var optionProblemsOf
+    required property var setOption
+    required property var colorRoles
 
     color: "#262626"
     border.color: "#3a3a3a"
@@ -52,6 +57,34 @@ Rectangle {
         MouseArea {
             anchors.fill: parent
             onClicked: chip.activated()
+        }
+    }
+
+    // Sete papeis de cor em fila nao cabem na largura util do painel: a
+    // camada 4 pegou a fila inteira vazando para fora. Chip menor e, ainda
+    // assim, dentro de um Flow que quebra a linha — um papel novo na lista
+    // da 3.4c nao pode voltar a estourar a borda.
+    component RoleChip: Rectangle {
+        id: roleChip
+        property string label
+        property bool active
+        signal activated
+
+        width: label.length * 5.5 + 12
+        height: 18
+        radius: 9
+        color: active ? "#3a6ea5" : "#3a3a3a"
+
+        Text {
+            anchors.centerIn: parent
+            text: roleChip.label
+            color: "white"
+            font.pixelSize: 9
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: roleChip.activated()
         }
     }
 
@@ -284,6 +317,149 @@ Rectangle {
                             active: modelData.style === root.styleOfWidget(widgetRow.modelData)
                             onActivated: root.setStyle(widgetRow.index, modelData.style)
                         }
+                    }
+                }
+
+                // --- as opcoes do style vestido (0.510, decisao 3.4) ----
+                //
+                // Nada aqui conhece opcao nenhuma pelo nome: o painel
+                // desenha o controle que a declaracao pediu, e so os
+                // cinco da 3.4b existem. Um style novo traz as opcoes
+                // dele e esta tela nao muda.
+                Repeater {
+                    model: root.optionSchemaOf(widgetRow.modelData)
+
+                    delegate: Row {
+                        id: optionRow
+                        required property var modelData
+
+                        readonly property var values: root.optionValuesOf(widgetRow.modelData)
+                        readonly property var value: values[modelData.key]
+
+                        spacing: 6
+                        leftPadding: 90
+
+                        Text {
+                            text: optionRow.modelData.title + ":"
+                            color: "#777777"
+                            font.pixelSize: 11
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        // toggle
+                        Chip {
+                            visible: optionRow.modelData.kind === "toggle"
+                            label: optionRow.value ? "on" : "off"
+                            active: !!optionRow.value
+                            onActivated: root.setOption(widgetRow.index, optionRow.modelData.key, !optionRow.value)
+                        }
+
+                        // number: o passo vem da declaracao, e o limite e
+                        // imposto aqui tambem - o botao nao oferece sair
+                        // da faixa que o style pediu.
+                        Row {
+                            visible: optionRow.modelData.kind === "number"
+                            spacing: 4
+                            Chip {
+                                label: "-"
+                                onActivated: root.setOption(widgetRow.index, optionRow.modelData.key,
+                                    Math.max(optionRow.modelData.min,
+                                             optionRow.value - (optionRow.modelData.step ?? 1)))
+                            }
+                            Text {
+                                text: String(optionRow.value)
+                                color: "white"
+                                font.pixelSize: 12
+                                width: 26
+                                horizontalAlignment: Text.AlignHCenter
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                            Chip {
+                                label: "+"
+                                onActivated: root.setOption(widgetRow.index, optionRow.modelData.key,
+                                    Math.min(optionRow.modelData.max,
+                                             optionRow.value + (optionRow.modelData.step ?? 1)))
+                            }
+                            Text {
+                                visible: (optionRow.modelData.unit ?? "plain") !== "plain"
+                                text: optionRow.modelData.unit ?? ""
+                                color: "#666666"
+                                font.pixelSize: 10
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+
+                        // choice
+                        Row {
+                            visible: optionRow.modelData.kind === "choice"
+                            spacing: 4
+                            Repeater {
+                                model: optionRow.modelData.choices ?? []
+                                delegate: Chip {
+                                    required property var modelData
+                                    label: modelData.title
+                                    active: modelData.value === optionRow.value
+                                    onActivated: root.setOption(widgetRow.index, optionRow.modelData.key, modelData.value)
+                                }
+                            }
+                        }
+
+                        // role: papel do esquema, nunca uma cor digitada
+                        // (decisao 3.4b/3.4c).
+                        Flow {
+                            visible: optionRow.modelData.kind === "role"
+                            width: root.width - 200
+                            spacing: 3
+                            Repeater {
+                                model: root.colorRoles
+                                delegate: RoleChip {
+                                    required property string modelData
+                                    label: modelData
+                                    active: modelData === optionRow.value
+                                    onActivated: root.setOption(widgetRow.index, optionRow.modelData.key, modelData)
+                                }
+                            }
+                        }
+
+                        // text: confirmado so no fim da edicao, nunca a
+                        // cada tecla - cada confirmacao e uma escrita.
+                        Rectangle {
+                            visible: optionRow.modelData.kind === "text"
+                            width: 150
+                            height: 22
+                            color: "#1b1b1b"
+                            border.color: optionField.activeFocus ? "#3a6ea5" : "#3a3a3a"
+                            border.width: 1
+                            radius: 3
+
+                            TextInput {
+                                id: optionField
+                                anchors.fill: parent
+                                anchors.margins: 5
+                                verticalAlignment: TextInput.AlignVCenter
+                                color: "white"
+                                font.pixelSize: 11
+                                clip: true
+                                selectByMouse: true
+                                text: optionRow.modelData.kind === "text" ? (optionRow.value ?? "") : ""
+                                onEditingFinished: root.setOption(widgetRow.index, optionRow.modelData.key, text)
+                            }
+                        }
+                    }
+                }
+
+                // O que a shell RECUSOU do meta do style, dito em voz alta
+                // (decisao 3.4d). Nao desenhar e esconder o problema; o
+                // autor do style precisa saber que aquela opcao sumiu.
+                Repeater {
+                    model: root.optionProblemsOf(widgetRow.modelData)
+
+                    delegate: Text {
+                        required property var modelData
+                        leftPadding: 90
+                        text: "⚠ option rejected: " + modelData.error
+                        color: "#b06a4a"
+                        font.pixelSize: 10
                     }
                 }
             }

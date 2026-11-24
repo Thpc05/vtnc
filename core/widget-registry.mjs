@@ -114,3 +114,11 @@ export function providesOf(type) {
 // nao algo que este ou aquele type inventou. O teste da 3.5b pula este
 // nome por isso. (O conteudo das options e a 3.4, que espera a oq-8-5.)
 export const FRAMEWORK_PROPERTIES = ["options"];
+
+// O schema de opcoes que um style declara (decisao 3.4). Vem do meta do
+// proprio style, nunca de uma lista central: e isso que deixa um style de
+// terceiro trazer as suas opcoes sem tocar na Settings. Quem decide se a
+// declaracao serve e core/style-schema.mjs, nao este arquivo.
+export function optionSchemaOf(type, style) {
+    return styleMeta(type, style)?.options ?? [];
+}

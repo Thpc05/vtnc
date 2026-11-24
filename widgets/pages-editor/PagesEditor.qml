@@ -2,6 +2,7 @@ import QtQuick
 import "../../core"
 import "../../core/widget-catalog.mjs" as Catalog
 import "../../core/widget-registry.mjs" as Registry
+import "../../core/style-schema.mjs" as StyleSchema
 
 // O type: vtnc.pages-editor. A pagina Pages da Settings (0.508).
 //
@@ -107,6 +108,46 @@ Item {
         return widget.style ?? Registry.defaultStyleOf(widget.type);
     }
 
+    // --- as opcoes do style (0.510, decisao 3.4) -------------------------
+    //
+    // O editor nao conhece opcao nenhuma pelo nome: ele pede o schema ao
+    // registro e desenha os controles a partir dele. Acrescentar uma opcao
+    // a um style nao encosta neste arquivo nem no painel.
+
+    // So as declaracoes que passaram pela validacao da shell. Uma
+    // declaracao ruim some daqui (3.4d) em vez de derrubar a tela.
+    function optionSchemaOf(widget) {
+        return StyleSchema.usableSchema(
+            Registry.optionSchemaOf(widget.type, root.styleOfWidget(widget)));
+    }
+
+    // O que mostrar em cada controle: o guardado quando serve, o default
+    // quando nao. Sem traduzir papel em cor - aqui o usuario escolhe o
+    // PAPEL, e e a shell que resolve a cor na hora de desenhar o widget.
+    function optionValuesOf(widget) {
+        return StyleSchema.resolveOptions(
+            Registry.optionSchemaOf(widget.type, root.styleOfWidget(widget)),
+            StyleSchema.storedOptionsFor(widget, root.styleOfWidget(widget)));
+    }
+
+    // As declaracoes que a shell recusou, para a tela poder DIZER que
+    // recusou em vez de simplesmente nao desenhar nada (3.4d).
+    function optionProblemsOf(widget) {
+        return StyleSchema.partitionSchema(
+            Registry.optionSchemaOf(widget.type, root.styleOfWidget(widget))).rejected;
+    }
+
+    // Guardadas por nome de style, e por isso trocar de style e voltar nao
+    // perde nada (decisao 4.4): as opcoes do style antigo continuam ali,
+    // debaixo do nome dele.
+    function setOption(index, key, value) {
+        const style = root.styleOfWidget(root.selectedWidgets[index]);
+        const next = root.selectedWidgets.map(function (widget, i) {
+            return i !== index ? widget : StyleSchema.withOption(widget, style, key, value);
+        });
+        root.writeWidgets(next);
+    }
+
     // Trocar o style de um widget (decisao 3.3, a escala de widget). As
     // outras duas escalas - por page e por island, um for-each disto - sao
     // de outro passo.
@@ -152,7 +193,12 @@ Item {
             addWidget: Qt.binding(() => root.addWidget),
             removeWidget: Qt.binding(() => root.removeWidget),
             nudgeCell: Qt.binding(() => root.nudgeCell),
-            setStyle: Qt.binding(() => root.setStyle)
+            setStyle: Qt.binding(() => root.setStyle),
+            optionSchemaOf: Qt.binding(() => root.optionSchemaOf),
+            optionValuesOf: Qt.binding(() => root.optionValuesOf),
+            optionProblemsOf: Qt.binding(() => root.optionProblemsOf),
+            setOption: Qt.binding(() => root.setOption),
+            colorRoles: Qt.binding(() => StyleSchema.COLOR_ROLES)
         });
     }
 

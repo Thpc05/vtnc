@@ -430,3 +430,42 @@ outros click-paths. O chip de style e o mais frágil de achar que temos: o
 rótulo é o **título** do style, que vem do meta pelo registro, e não um
 texto escrito no painel — se o registro deixar de ser lido, o chip não
 existe e o teste reprova por não encontrá-lo.
+
+## 0.510 — o schema de opcoes
+
+`tests/unit/style-schema.test.mjs` e o grosso. Quase todo teste ali existe
+por causa da decisao 3.4d — o style descreve, a shell decide — e conferem
+que a shell recusa e limita por conta propria, sem depender de o style ter
+se comportado: controle fora da lista fechada, chave que nao e
+identificador, default que nao serve para o proprio controle, numero fora
+da faixa, escolha fora da lista, papel de cor inventado, texto acima do
+teto. Ha tambem o caso do schema que nem e uma lista (`undefined`, numero,
+objeto): ele devolve vazio em vez de explodir, porque um meta de terceiro
+pode ser qualquer coisa.
+
+Um teste anda junto com os styles de verdade: **todo style que existe tem
+de declarar opcoes que a shell aceita inteiras**. Se um dia alguem escrever
+uma declaracao torta, ela e descartada em silencio na tela — este teste e
+quem grita.
+
+`tests/cli/style-options.sh` e a camada 3, nove medidas, e mede o que o
+node nao alcanca: que o caminho inteiro, da CLI ate a shell viva, obedece.
+Os defaults declarados aparecem no `island get` sem nada guardado; mudar
+uma opcao chega; as tres recusas (faixa, lista, papel) acontecem **antes**
+do `config.json` e nao mexem no que ja estava la; trocar de style mostra as
+opcoes do novo e voltar reencontra as do antigo intactas (4.4). O ultimo
+caso escreve `fontSize: 999` **direto no arquivo**, por fora da CLI, para
+provar que um valor impossivel editado a mao cai no default em vez de
+chegar torto ao style.
+
+`tests/cli/settings-option-click-path.sh` e o mais indireto dos
+click-paths: o chip "on" que ele procura nao existe escrito em lugar
+nenhum. Ele aparece porque o meta do style `digital` declara uma opcao
+`showSeconds` do tipo toggle, o registro entrega a declaracao ao editor e o
+painel desenha o controle que a declaracao pediu. Qualquer elo que quebre
+tira o chip da tela, e o teste reprova por nao acha-lo.
+
+A camada 4 pegou defeito de novo, o mesmo de sempre: os sete papeis de cor
+em fila vazavam para fora do painel. Viraram chip menor dentro de um
+`Flow`, e a conta de altura da Settings passou a reservar uma linha a mais
+por opcao de cor, porque o `Flow` quebra em duas.

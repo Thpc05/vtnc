@@ -63,6 +63,22 @@ A base que não conhece ninguém acima dela: nenhum arquivo aqui importa
   central. Os imports aqui ainda sao escritos a mao, um a um; o catalogo
   automatico por varredura (3b/4.x) e outro passo, e quando vier troca so
   estas linhas, porque todo o resto ja pergunta ao registro.
+- `style-schema.mjs` (0.510) — o que um style pode declarar como opcao, e
+  o que a shell aceita como valor. A decisao 3.4d da a forma ao arquivo
+  inteiro: o style DESCREVE, a shell DECIDE. Por isso `min`/`max`, a lista
+  do `choice`, os papeis de cor e o teto do texto sao impostos aqui, de
+  fora, e por isso uma declaracao ruim e DESCARTADA (`partitionSchema`) em
+  vez de derrubar o style inteiro — a shell tem de ser modulavel e
+  confiavel ao mesmo tempo, e um meta mal escrito de terceiro nao pode
+  tirar tudo do ar. `resolveOptions` entrega so o que o style declarou, com
+  o default no lugar de qualquer valor que nao sirva mais; `withOption` e
+  `storedOptionsFor` guardam por nome de style, que e o que faz a 4.4
+  funcionar sem codigo nenhum "lembrando" das opcoes antigas.
+- `palette.mjs` (0.510) — papel de cor em cor de verdade, **provisorio**
+  (decisao 3.4c) ate o bloco de Appearance existir. Nenhum style conhece
+  estes valores: a cor ja chega resolvida a ele. Trocar esta tabela troca a
+  shell inteira de uma vez, que e exatamente o motivo de o controle ser
+  `role` e nao um seletor de cor livre.
 - `hyprland-lua.mjs` (0.507) — a geração do texto Lua, pura, sem I/O (quem
   escreve e recarrega é `cli/lib/hyprland-write.js`). Fica separada do
   `config-shape.mjs` porque trata da sintaxe do Hyprland, não da forma do

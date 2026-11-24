@@ -54,8 +54,45 @@ raiz e reprova se alguma não estiver publicada no meta do type. Sem ele,
 propriedade exigida e passar a entregá-la na mão.
 
 `options` é a única exceção, listada em `FRAMEWORK_PROPERTIES`: é o canal
-que o vtnc dá a todo style, não algo que este ou aquele type inventou. O
-conteúdo dele é a 3.4, que espera a `oq-8-5` ser fechada.
+que o vtnc dá a todo style, não algo que este ou aquele type inventou.
+
+## As opções de um style (0.510)
+
+Um style declara as suas opções no próprio meta, em `options`. A tela de
+configuração é montada **a partir dessa declaração** — a Settings não
+conhece style nenhum pelo nome (decisão 3.4).
+
+A régua é a decisão 3.4d: **o style descreve, a shell decide.**
+
+- O que o style entrega é **dado, nunca código**. Nenhuma função dele é
+  chamada pela Settings, nenhum QML dele é executado por ela.
+- Os controles são cinco e só cinco (3.4b): `toggle`, `number` (com
+  `min`/`max`/`step` e unidade `plain`/`cell`/`px`), `choice` (lista
+  fechada de `{ value, title }`), `text` e `role`.
+- **Quem valida o valor é a shell**, em `core/style-schema.mjs`: o número
+  fora da faixa, a escolha fora da lista, o papel de cor que não existe e o
+  texto acima do teto são recusados antes de chegar ao `config.json`.
+- Uma **declaração** inválida é descartada com aviso, e o resto do style
+  continua carregando. Um meta mal escrito custa aquela opção, não a shell.
+- `role` é cor **por papel**, nunca hexadecimal (3.4b/3.4c). O style nomeia
+  `accent`; quem traduz papel em cor é `core/palette.mjs`, e o style recebe
+  a cor já pronta. É isso que deixa o bloco de Appearance trocar a shell
+  inteira sem tocar em style nenhum.
+
+O valor chega ao style pelo canal `options`, já resolvido: o guardado
+quando serve, o default declarado quando não. **O style nunca vê uma chave
+que não declarou**, e nunca precisa se defender de um valor torto.
+
+Na instância, as opções ficam guardadas **por nome de style**:
+
+```json
+{ "type": "vtnc.clock", "style": "digital",
+  "options": { "digital": { "fontSize": 32 }, "compact": { "showSeconds": true } } }
+```
+
+É isso, e só isso, que faz a decisão 4.4 funcionar: trocar de style e
+voltar não perde nada, porque as opções do style antigo continuam ali
+debaixo do nome dele. Nenhum código precisa "lembrar" de nada.
 
 ## Os types que existem
 

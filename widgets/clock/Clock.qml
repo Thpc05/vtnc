@@ -1,6 +1,7 @@
 import QtQuick
 import "../../services"
 import "../../core/widget-registry.mjs" as Registry
+import "../../core/style-schema.mjs" as StyleSchema
 
 // The type: vtnc.clock. Consumes the clock service (decision 5.2b) and
 // wears one of its styles, chosen only by config (decision 3.1/3.5).
@@ -23,6 +24,15 @@ Item {
         return clock ? clock.time : "";
     }
 
+    // O canal `options` (decisao 3.4): os valores que ESTE style declarou,
+    // resolvidos contra os padroes dele e com os papeis de cor ja virados
+    // cor. O type nao sabe o que sao essas opcoes nem as interpreta — ele
+    // so entrega. Nao entra no `provides` do meta porque e canal do vtnc,
+    // dado a todo style, e nao algo que este type inventou.
+    readonly property var styleOptions: StyleSchema.resolveStyleOptions(
+        Registry.optionSchemaOf("vtnc.clock", root.styleName),
+        StyleSchema.storedOptionsFor(root.widgetConfig, root.styleName))
+
     Component.onCompleted: ServiceRegistry.acquire("clock")
     Component.onDestruction: ServiceRegistry.release("clock")
 
@@ -34,7 +44,8 @@ Item {
     // publishes travels this way.
     function loadStyle() {
         styleLoader.setSource(Registry.resolvedStylePath("vtnc.clock", root.styleName), {
-            time: Qt.binding(() => root.time)
+            time: Qt.binding(() => root.time),
+            options: Qt.binding(() => root.styleOptions)
         });
     }
 

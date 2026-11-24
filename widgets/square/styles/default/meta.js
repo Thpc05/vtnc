@@ -8,4 +8,9 @@ export default {
     type: "vtnc.square",
     title: "Default",
     component: "Default.qml",
+    options: [
+        { key: "label", kind: "text", title: "Label override", default: "" },
+        { key: "showBorder", kind: "toggle", title: "Border", default: true },
+        { key: "fill", kind: "role", title: "Fill", default: "surfaceAlt" },
+    ],
 };

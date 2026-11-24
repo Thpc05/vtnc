@@ -8,4 +8,10 @@ export default {
     type: "vtnc.clock",
     title: "Compact",
     component: "Compact.qml",
+    // O `showSeconds` existia como codigo: o style cortava a string em
+    // time.slice(0, 5). Era uma opcao disfarcada, e agora e uma opcao.
+    options: [
+        { key: "showSeconds", kind: "toggle", title: "Show seconds", default: false },
+        { key: "fill", kind: "role", title: "Pill colour", default: "accent" },
+    ],
 };

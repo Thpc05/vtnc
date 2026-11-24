@@ -186,3 +186,34 @@ O `vtnc island <nome> get` passou a devolver `widgets`, com o `type` e o
 `config.json` os escreveu. E o que torna a troca observavel de fora sem
 olhar um pixel, pelo mesmo motivo que `mirrors` (0.506) e `widgetCount`
 (0.508) existem.
+
+## As opcoes de style (0.510)
+
+Tambem nao ha verbo novo: as opcoes sao campo da instancia, entao viajam
+dentro do `page <nome> set widgets`, guardadas **por nome de style**
+(decisao 4.4):
+
+```sh
+vtnc page dash set widgets '[{"type":"vtnc.clock","style":"digital",
+  "cell":{"x":0,"y":0,"w":6,"h":2},
+  "options":{"digital":{"fontSize":32},"compact":{"showSeconds":true}}}]'
+```
+
+O validador recusa, com o motivo, o que o style nao pediu — numero fora do
+`min`/`max`, escolha fora da lista, papel de cor que nao existe, texto
+acima do teto (decisao 3.4d: quem decide e a shell, nao o style):
+
+```
+invalid widgets: option "fontSize" of style "digital" on vtnc.clock: precisa estar entre 8 e 72
+```
+
+Duas coisas ele **nao** recusa, de proposito: opcoes guardadas debaixo de
+um style que nao existe mais, e uma chave que o style deixou de declarar.
+As duas sao a memoria da 4.4 — recusa-las faria "trocar de style e voltar"
+perder tudo. O que elas nao fazem e chegar ao style, que so recebe o que
+declarou.
+
+O `vtnc island <nome> get` devolve, em cada widget, as `options` **como a
+shell as resolveu**: o guardado quando serve, o default declarado quando
+nao. Os papeis de cor saem pelo nome, nao ja virados cor — a tabela de
+cores e provisoria (3.4c) e nenhum teste deve depender dela.

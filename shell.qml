@@ -3,6 +3,7 @@ import Quickshell.Io
 import Quickshell.Hyprland
 import "./core/config-shape.mjs" as ConfigShape
 import "./core/widget-registry.mjs" as Registry
+import "./core/style-schema.mjs" as StyleSchema
 import "./core"
 import "./island"
 import "./services"
@@ -71,10 +72,23 @@ ShellRoot {
                 // uma instancia sem `style` veste o padrao do type, e e o
                 // padrao que aparece aqui. E o que torna a troca de style
                 // (3.3) observavel na shell viva, e nao so no config.json.
-                widgets: (((Config.page(calledPage !== "" ? calledPage : (island.page ?? "")) ?? {}).widgets) ?? []).map((widget) => ({
-                    type: widget.type,
-                    style: widget.style ?? Registry.defaultStyleOf(widget.type)
-                })),
+                widgets: (((Config.page(calledPage !== "" ? calledPage : (island.page ?? "")) ?? {}).widgets) ?? []).map((widget) => {
+                    const style = widget.style ?? Registry.defaultStyleOf(widget.type);
+                    return {
+                        type: widget.type,
+                        style: style,
+                        // 0.510: os valores que a shell RESOLVEU para o
+                        // style — o guardado quando serve, o default
+                        // declarado quando nao. Os papeis de cor saem pelo
+                        // nome, e nao ja virados cor: a tabela de cores e
+                        // provisoria (3.4c) e um teste nao deve depender
+                        // dela. O que se quer observar aqui e a resolucao,
+                        // nao a pintura.
+                        options: StyleSchema.resolveOptions(
+                            Registry.optionSchemaOf(widget.type, style),
+                            StyleSchema.storedOptionsFor(widget, style))
+                    };
+                }),
             });
         }
 

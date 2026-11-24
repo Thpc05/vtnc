@@ -21,5 +21,10 @@ export default {
         { name: "removeWidget", kind: "var", doc: "Funcao (index) que tira um widget da page." },
         { name: "nudgeCell", kind: "var", doc: "Funcao (index, campo, delta) que muda x, y, w ou h de um widget." },
         { name: "setStyle", kind: "var", doc: "Funcao (index, style) que veste outro style naquele widget (3.3, escala de widget)." },
+        { name: "optionSchemaOf", kind: "var", doc: "Funcao (widget) que devolve as opcoes que o style dele declara e a shell aceitou (3.4)." },
+        { name: "optionValuesOf", kind: "var", doc: "Funcao (widget) que devolve o valor de cada opcao, o guardado ou o default." },
+        { name: "optionProblemsOf", kind: "var", doc: "Funcao (widget) que devolve as declaracoes de opcao que a shell recusou, com o motivo (3.4d)." },
+        { name: "setOption", kind: "var", doc: "Funcao (index, chave, valor) que muda uma opcao; guardada por style, entao voltar ao style antigo nao perde nada (4.4)." },
+        { name: "colorRoles", kind: "var", doc: "A lista fechada de papeis de cor que um controle role aceita (3.4c)." },
     ],
 };
