@@ -140,6 +140,17 @@ export const AUTOHIDE_GLOBAL_KEYS = ["enabled", "mode", "distance"];
 // JSON object for `island set` below.
 export const HYPRLAND_SETTABLE_KEYS = ["enabled", "keybinds"];
 
+// O que `vtnc page <nome> set` aceita (0.508). Mesma lista fechada de
+// sempre. As duas viajam como um argumento JSON unico, do mesmo jeito que
+// `anchor`/`offset`/`size` do island e `keybinds` do hyprland: a grade e um
+// objeto, e `widgets` e a lista inteira de uma vez - a page e dona das
+// instancias (decisao 6.1), entao trocar a lista e a operacao natural.
+export const PAGE_SETTABLE_KEYS = ["grid", "widgets"];
+
+export function defaultPage() {
+    return { grid: { cols: 10, rows: 4 }, widgets: [] };
+}
+
 // anchor/offset/size travel through the CLI as a single JSON-encoded
 // argument (they're objects, not scalars like page/layer); this turns the
 // raw command-line string into the value validateIslandSet checks and
@@ -226,6 +237,64 @@ export function validateHyprlandSet(key, value) {
         for (const keybind of value) {
             if (!isValidKeybind(keybind)) {
                 return `invalid keybinds: each entry needs a non-empty "key" (string), a "commands" array of strings and an "enabled" boolean — "description" is an optional string`;
+            }
+        }
+        return null;
+    }
+    return null;
+}
+
+// Mesma forma do parseIslandSetValue: as duas chaves do page sao objetos,
+// entao as duas chegam como JSON. JSON invalido vira undefined, que o
+// validatePageSet abaixo ja recusa sozinho.
+export function parsePageSetValue(key, raw) {
+    if (key === "grid" || key === "widgets") {
+        try {
+            return JSON.parse(raw);
+        } catch (error) {
+            return undefined;
+        }
+    }
+    return raw;
+}
+
+function isWholeNumber(value, min) {
+    return typeof value === "number" && Number.isInteger(value) && value >= min;
+}
+
+// Uma celula precisa dos quatro numeros: sem w/h o widget nasce invisivel, e
+// sem x/y ele empilha no canto sem o usuario entender por que.
+function isValidCell(cell) {
+    if (!isPlainObject(cell)) return false;
+    return isWholeNumber(cell.x, 0) && isWholeNumber(cell.y, 0)
+        && isWholeNumber(cell.w, 1) && isWholeNumber(cell.h, 1);
+}
+
+function isValidWidgetInstance(value) {
+    if (!isPlainObject(value)) return false;
+    if (typeof value.type !== "string" || value.type.trim() === "") return false;
+    if (value.style !== undefined && typeof value.style !== "string") return false;
+    return isValidCell(value.cell);
+}
+
+// Devolve uma string de erro, ou null se `value` (ja passado pelo
+// parsePageSetValue) serve para `key` numa page.
+export function validatePageSet(key, value) {
+    if (!PAGE_SETTABLE_KEYS.includes(key)) {
+        return `unknown key "${key}" for page set (try: ${PAGE_SETTABLE_KEYS.join(", ")})`;
+    }
+    if (key === "grid") {
+        if (!isPlainObject(value)) return "invalid grid: must be a JSON object";
+        if (!isWholeNumber(value.cols, 1) || !isWholeNumber(value.rows, 1)) {
+            return "invalid grid: cols and rows must be whole numbers of at least 1";
+        }
+        return null;
+    }
+    if (key === "widgets") {
+        if (!Array.isArray(value)) return "invalid widgets: must be a JSON array";
+        for (const widget of value) {
+            if (!isValidWidgetInstance(widget)) {
+                return 'invalid widgets: each entry needs a non-empty "type" and a "cell" with whole-number x, y (0 or more) and w, h (1 or more) — "style" is an optional string';
             }
         }
         return null;

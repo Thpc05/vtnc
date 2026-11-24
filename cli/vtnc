@@ -10,13 +10,14 @@ import { execFileSync } from "node:child_process";
 import { readConfig, writeConfig } from "./lib/store.js";
 import { ipcCall } from "./lib/ipc.js";
 import {
-    findIsland, validateIslandSet, parseIslandSetValue,
+    findIsland, findPage, validateIslandSet, parseIslandSetValue,
+    validatePageSet, parsePageSetValue, defaultPage,
     validateAutohideGlobalSet, parseAutohideGlobalValue, defaultAutohide,
     validateHyprlandSet, parseHyprlandSetValue, defaultHyprland,
 } from "../core/config-shape.mjs";
 import { syncHyprlandFiles } from "./lib/hyprland-write.js";
 
-const VERBS = new Set(["set", "call", "get", "list", "end", "generate"]);
+const VERBS = new Set(["set", "call", "get", "list", "end", "generate", "create", "delete"]);
 // The full namespace list from decision 4b.3 — widget/monitor/preset/theme
 // are listed even though they have no verbs yet (also decision 4b.3).
 // `autohide` (0.505) is one of the "futuros" 4b.3 already names the list
@@ -59,6 +60,15 @@ autohide set keys: enabled, mode, distance
    don't set their own; distance (cells) is global-only, it also decides
    which of the two hide animations an island gets — see island/README.md)
 
+page set keys: grid, widgets
+  (0.508: os dois sao um argumento JSON so. "grid" e {"cols":N,"rows":N};
+   "widgets" substitui a lista inteira, cada entrada
+   {"type":"vtnc.clock","cell":{"x":0,"y":0,"w":6,"h":2}} com "style"
+   opcional. A page e dona das instancias (decisao 6.1): mexer numa page
+   muda todas as islands que a usam, ao vivo. "create" e "delete" criam e
+   apagam a page em si; apagar uma page em uso deixa as islands que a
+   vestiam no estado empty (decisao 14.3), nao as derruba.)
+
 hyprland set keys: enabled, keybinds
   (0.507: "enabled" is consent (decision 10.3b) — nothing is written under
    ~/.config/hypr/vtnc until this is true. "keybinds" replaces the whole
@@ -87,7 +97,11 @@ examples:
   vtnc autohide list                current global autohide config, as JSON
   vtnc hyprland set enabled true    consent: the shell starts writing/reloading
   vtnc hyprland set keybinds '[{"key":"SUPER + Return","commands":["kitty"],"enabled":true}]'
-  vtnc hyprland list                current hyprland config, as JSON`);
+  vtnc hyprland list                current hyprland config, as JSON
+  vtnc page dashboard create        a new, empty page
+  vtnc page dashboard set grid '{"cols":12,"rows":4}'
+  vtnc page dashboard set widgets '[{"type":"vtnc.clock","cell":{"x":0,"y":0,"w":6,"h":2}}]'
+  vtnc page dashboard delete        islands wearing it fall back to empty`);
 }
 
 function startShell() {
@@ -182,6 +196,75 @@ function cmdGenerateHyprland() {
     console.log(JSON.stringify(syncHyprlandFiles(config)));
 }
 
+// `vtnc page <nome> set <chave> <valor>` (0.508). Escreve o config.json
+// direto como todo `set` (decisao 4b.4); quem percebe a mudanca e redesenha
+// e a shell, por `core/Config.qml`.
+function cmdSetPage(name, args) {
+    const [key, rawValue] = args;
+    if (!key || rawValue === undefined) {
+        console.error("vtnc: set needs a key and a value, e.g. set grid '{\"cols\":10,\"rows\":4}'");
+        process.exit(1);
+    }
+
+    const config = readConfig();
+    const page = findPage(config, name);
+    if (!page) {
+        console.error(`vtnc: no such page: ${name}`);
+        process.exit(1);
+    }
+
+    const value = parsePageSetValue(key, rawValue);
+    const error = validatePageSet(key, value);
+    if (error) {
+        console.error(`vtnc: ${error}`);
+        process.exit(1);
+    }
+
+    page[key] = value;
+    writeConfig(config);
+    console.log(JSON.stringify(page));
+}
+
+// `vtnc page <nome> create`: uma page vazia, com a grade padrao.
+function cmdCreatePage(name) {
+    if (!name) {
+        console.error("vtnc: create needs a page name, e.g. vtnc page dashboard create");
+        process.exit(1);
+    }
+    const config = readConfig();
+    config.pages = config.pages ?? {};
+    if (config.pages[name]) {
+        console.error(`vtnc: page already exists: ${name}`);
+        process.exit(1);
+    }
+    config.pages[name] = defaultPage();
+    writeConfig(config);
+    console.log(JSON.stringify(config.pages[name]));
+}
+
+// `vtnc page <nome> delete`: apaga a page. As islands que a vestiam NAO sao
+// mexidas aqui de proposito - elas continuam apontando para um nome que nao
+// existe mais, e e a shell que desenha o estado empty nesse caso (decisao
+// 14.3). Mexer nas islands aqui faria a CLI reescrever configuracao que o
+// usuario nao pediu para mudar, e ainda perderia o nome que ele quis.
+function cmdDeletePage(name) {
+    if (!name) {
+        console.error("vtnc: delete needs a page name, e.g. vtnc page dashboard delete");
+        process.exit(1);
+    }
+    const config = readConfig();
+    const pages = config.pages ?? {};
+    if (!pages[name]) {
+        console.error(`vtnc: no such page: ${name}`);
+        process.exit(1);
+    }
+    delete pages[name];
+    config.pages = pages;
+    writeConfig(config);
+    const orphaned = (config.islands ?? []).filter((i) => i.page === name).map((i) => i.name);
+    console.log(JSON.stringify({ deleted: name, nowEmpty: orphaned }));
+}
+
 function cmdSet(namespace, name, args) {
     if (namespace === "island") {
         cmdSetIsland(name, args);
@@ -193,6 +276,10 @@ function cmdSet(namespace, name, args) {
     }
     if (namespace === "hyprland") {
         cmdSetHyprland(args);
+        return;
+    }
+    if (namespace === "page") {
+        cmdSetPage(name, args);
         return;
     }
     console.error(`vtnc: set is not supported on namespace "${namespace}" yet`);
@@ -262,6 +349,13 @@ if (verb === "generate" && namespace !== "hyprland") {
     console.error(`vtnc: "generate" is only for the hyprland namespace`);
     process.exit(1);
 }
+// `create`/`delete` so existem no namespace page (0.508) — uma island nao se
+// cria nem se apaga pela CLI ainda, e dizer isso aqui e melhor do que deixar
+// a chamada morrer dentro do ipcCall.
+if ((verb === "create" || verb === "delete") && namespace !== "page") {
+    console.error(`vtnc: "${verb}" is only for the page namespace`);
+    process.exit(1);
+}
 
 switch (verb) {
 case "set":
@@ -281,5 +375,11 @@ case "end":
     break;
 case "generate":
     cmdGenerateHyprland();
+    break;
+case "create":
+    cmdCreatePage(name);
+    break;
+case "delete":
+    cmdDeletePage(name);
     break;
 }

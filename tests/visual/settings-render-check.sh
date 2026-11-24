@@ -54,7 +54,10 @@ cat >"$tmp_config_dir/config.json" <<'EOF'
     { "name": "dock", "anchor": { "bottom": true, "left": true }, "offset": { "x": 2, "y": 2 }, "size": { "w": 20, "h": 6 }, "layer": "overlay", "page": "launcher" }
   ],
   "pages": {
-    "clock": { "grid": { "cols": 10, "rows": 4 }, "widgets": [] },
+    "clock": { "grid": { "cols": 10, "rows": 4 }, "widgets": [
+      { "type": "vtnc.clock", "cell": { "x": 0, "y": 0, "w": 6, "h": 2 } },
+      { "type": "vtnc.square", "cell": { "x": 6, "y": 0, "w": 2, "h": 2 } }
+    ] },
     "launcher": { "grid": { "cols": 10, "rows": 6 }, "widgets": [] }
   },
   "hyprland": {

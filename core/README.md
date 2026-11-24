@@ -37,6 +37,15 @@ A base que não conhece ninguém acima dela: nenhum arquivo aqui importa
   para não re-gerar quando o que mudou foi uma island; e como a assinatura
   começa vazia, uma shell recém-aberta re-sincroniza por conta própria se o
   consentimento já tinha sido dado antes.
+- `widget-catalog.mjs` (0.508) — a lista dos types que o editor de Pages
+  **oferece** para acrescentar, pura e testada em node. Mora aqui, e nao no
+  QML, para que o editor e o `page/Page.qml` nao possam discordar: um teste
+  le o `Page.qml` e falha se um type do catalogo nao tiver `case` la. Nao e
+  o catalogo automatico por `meta.js` que a 3b/4.x pede, com extensao de
+  terceiro se apresentando sozinha — esse e outro passo. Os widgets da
+  propria Settings ficam em `SETTINGS_ONLY_TYPES`: sao desenhaveis (decisao
+  8.3), mas oferecer um island-editor para colocar numa page qualquer seria
+  oferecer uma tela de configuracao solta.
 - `hyprland-lua.mjs` (0.507) — a geração do texto Lua, pura, sem I/O (quem
   escreve e recarrega é `cli/lib/hyprland-write.js`). Fica separada do
   `config-shape.mjs` porque trata da sintaxe do Hyprland, não da forma do

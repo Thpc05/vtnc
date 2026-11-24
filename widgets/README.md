@@ -48,3 +48,13 @@ widgets/<type>/
   ainda não existem (decisão 8.1). Mesmo o placeholder é um widget de
   verdade, para a Settings inteira ficar dentro do mecanismo de pages e
   widgets, sem caso especial por fora.
+
+- `pages-editor` (0.508) — a pagina Pages da Settings. Lista, cria e apaga
+  pages; dentro da page aberta acrescenta e remove widget e mexe na celula
+  de cada um. Le `core/Config.qml` e escreve so via `CliRunner`
+  (`page <nome> create` / `delete` / `set grid` / `set widgets`). O que ele
+  oferece para acrescentar vem de `core/widget-catalog.mjs`, nao de uma
+  lista escrita aqui dentro. A page aberta e uma **ligacao**, nao estado
+  montado na inicializacao: o `Config` pode ainda nao ter lido o arquivo
+  quando o widget nasce.
+

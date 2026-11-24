@@ -124,3 +124,44 @@ atalho de fato o tira do compositor em vez de deixar um bind velho do
 `reload` anterior, e uma tecla reaproveitada não termina vinculada duas
 vezes. Desvincular uma tecla que não estava vinculada é inócuo.
 
+## O namespace `page` ganha verbos (0.508)
+
+Ate a 0.507 o `page` so tinha `call`, `get` e `list`. Agora tem tambem:
+
+- `vtnc page <nome> create` — uma page vazia, com a grade padrao. Recusa se
+  ja existir, em vez de apagar a que estava la.
+- `vtnc page <nome> delete` — apaga a page. Devolve `{"deleted": ...,
+  "nowEmpty": [...]}` dizendo **quais islands ficaram sem ela**.
+- `vtnc page <nome> set grid '{"cols":12,"rows":6}'`
+- `vtnc page <nome> set widgets '[{"type":"vtnc.clock","cell":{"x":0,"y":0,"w":6,"h":2}}]'`
+
+As duas chaves viajam como um argumento JSON so, do mesmo jeito que
+`anchor`/`offset`/`size` do island e `keybinds` do hyprland. `widgets`
+substitui a lista inteira: a page e **dona** das instancias (decisao 6.1),
+entao trocar a lista e a operacao natural, e mexer numa page muda **todas**
+as islands que a usam, ao vivo. Isso e intencional, nao efeito colateral.
+
+Uma celula precisa dos quatro numeros inteiros (`x`/`y` a partir de 0,
+`w`/`h` a partir de 1) e o validador recusa o resto antes de encostar no
+`config.json`: sem `w`/`h` o widget nasceria invisivel e sem `x`/`y`
+empilharia no canto — os dois parecem "o botao nao fez nada" para quem esta
+usando.
+
+`create` e `delete` so existem neste namespace, do mesmo jeito que
+`generate` so existe no `hyprland`; nos outros a CLI recusa dizendo isso, em
+vez de deixar a chamada morrer dentro da IPC.
+
+### Apagar uma page em uso
+
+`delete` **nao mexe nas islands** de proposito. Elas continuam apontando
+para um nome que nao existe mais, e quem desenha o estado empty nesse caso e
+a shell (decisao 14.3): a island vira uma bolinha de 2x2 celulas. Mexer nas
+islands aqui faria a CLI reescrever configuracao que o usuario nao pediu
+para mudar, e ainda perderia o nome que ele tinha escolhido. A bolinha serve
+tambem para a island recem-criada que ainda nao veste nada.
+
+A reserva de espaco encolhe junto com a bolinha, porque as duas saem do
+mesmo retangulo (`Grid.emptyStateIsland`): uma island vazia que seguisse
+reservando quarenta celulas empurraria as janelas do usuario por nada, e ele
+nao teria como ver o porque.
+

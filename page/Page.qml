@@ -4,6 +4,7 @@ import "../widgets/clock"
 import "../widgets/island-editor"
 import "../widgets/autohide-settings"
 import "../widgets/keybinds-editor"
+import "../widgets/pages-editor"
 import "../widgets/not-built"
 
 // A page: a reusable group of widget instances with its own grid (decision
@@ -36,6 +37,7 @@ Item {
                 case "vtnc.island-editor": return islandEditorComponent;
                 case "vtnc.autohide-settings": return autohideSettingsComponent;
                 case "vtnc.keybinds-editor": return keybindsEditorComponent;
+                case "vtnc.pages-editor": return pagesEditorComponent;
                 case "vtnc.not-built": return notBuiltComponent;
                 default: return null;
                 }
@@ -65,6 +67,11 @@ Item {
     Component {
         id: autohideSettingsComponent
         AutohideSettings {}
+    }
+
+    Component {
+        id: pagesEditorComponent
+        PagesEditor {}
     }
 
     Component {

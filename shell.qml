@@ -58,6 +58,13 @@ ShellRoot {
                 // mirror; the rest report their own idle page, read back
                 // without comparing a single pixel.
                 mirrors: IslandState.mirrorPagesFor(name),
+                // 0.508: o que a shell de fato enxerga da page que esta
+                // island veste agora. `widgetCount` torna a decisao 6.1
+                // observavel - duas islands na mesma page mudam juntas, e
+                // isso se le daqui sem olhar pixel; `empty` e o estado da
+                // 14.3, a page que nao existe mais.
+                widgetCount: ((Config.page(calledPage !== "" ? calledPage : (island.page ?? "")) ?? {}).widgets ?? []).length,
+                empty: !Config.page(calledPage !== "" ? calledPage : (island.page ?? "")),
             });
         }
 

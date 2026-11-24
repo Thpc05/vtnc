@@ -360,3 +360,38 @@ confiável é o binário (`strings /usr/bin/Hyprland`):
 
 Precisa de compositor, não precisa de permissão nem da tela do Theo, e em
 nenhum momento toca o `~/.config/hypr` de verdade.
+
+## 0.508 — o editor de Pages
+
+`tests/cli/pages-editor.sh` e a camada 3. Duas coisas se medem ali que nao
+dao para medir em node:
+
+- **a decisao 6.1**, duas islands vestindo a mesma page mudando juntas. Para
+  isso o `island <nome> get` ganhou `widgetCount` e `empty`, pelo mesmo
+  motivo que ganhou `mirrors` na 0.506: um campo que existe para tornar a
+  decisao observavel de fora sem olhar um pixel. `widgetCount` e contado
+  pela **shell**, a partir da page que a island veste agora, entao ele so
+  muda se a shell de fato enxergou a mudanca.
+- **o estado empty da 14.3 chegando ao compositor**. A bolinha nao e so
+  desenho: ela encolhe o retangulo da island, e portanto a reserva. O teste
+  le o `reserved` do `monitors -j` antes e depois de apagar a page e exige
+  32 px (4 celulas) virando 16 px (2 celulas).
+
+Na camada 1, `tests/unit/page-editing.test.mjs` tem um teste que vale
+apontar: ele **le o `page/Page.qml`** e falha se um type do catalogo nao
+tiver `case` la, e tambem se um widget da propria Settings aparecer no
+catalogo. Os dois erros seriam silenciosos de outro jeito — o primeiro da um
+widget que o editor oferece e a page desenha em branco.
+
+`tests/cli/settings-pages-click-path.sh` e o critério 5. Ele sozinho nao
+prova muita coisa: se o widget escrevesse a configuracao por conta propria,
+passaria igual. Quem prova a fronteira e o `settings-write-boundary.sh`, que
+deixa o `cli/vtnc` sem permissao de execucao e exige que o `config.json`
+fique intacto. Os dois andam juntos.
+
+Foi esse click-path que pegou um defeito real: o editor escolhia a page
+aberta no `Component.onCompleted`, que corre antes de o `Config` ter lido o
+arquivo, e o editor ficava preso no vazio para sempre. Virou ligacao, que
+esta sempre certa e ainda resolve de graca o caso de a page aberta ser
+apagada.
+

@@ -177,3 +177,22 @@ export function cursorNearBorder(cursor, edge, monitor, bandPx) {
 export function cursorOverRect(cursor, rect) {
     return cursor.x >= rect.x && cursor.x < rect.x + rect.width && cursor.y >= rect.y && cursor.y < rect.y + rect.height;
 }
+
+// O estado empty (decisao 14.3): a island cuja page nao existe - apagada no
+// editor de Pages, ou nunca criada - vira uma bolinha de 2x2 celulas em vez
+// de ficar do tamanho cheio mostrando nada. A troca acontece no tamanho, e
+// nao so no desenho, porque a reserva de espaco sai do mesmo retangulo: uma
+// island vazia que continuasse reservando quarenta celulas empurraria as
+// janelas do usuario por nada.
+export const EMPTY_STATE_CELLS = 2;
+
+// Object.assign, e nao spread: o motor de JS que o QML usa para estes
+// .mjs nao aceita spread de OBJETO, `{ ...obj }` (dá "Unexpected token
+// `...`" no carregamento, nao em execucao, entao a shell inteira deixa de
+// subir). Spread de array funciona - `[...lista, x]` esta em uso no
+// config-shape.mjs. A diferenca nao e obvia, e o erro nao ajuda.
+export function emptyStateIsland(island) {
+    return Object.assign({}, island, {
+        size: { w: EMPTY_STATE_CELLS, h: EMPTY_STATE_CELLS },
+    });
+}

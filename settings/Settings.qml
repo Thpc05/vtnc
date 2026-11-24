@@ -21,8 +21,9 @@ Window {
     visible: true
     color: "#1b1b1b"
 
-    // The ten Settings pages (decision 8.1); Islands (0.503) and Keybinds
-    // (0.507) are built, the rest still say so (vtnc.not-built).
+    // The ten Settings pages (decision 8.1); Islands (0.503), Keybinds
+    // (0.507) and Pages (0.508) are built, the rest still say so
+    // (vtnc.not-built).
     readonly property var pageNames: [
         "Appearance", "Islands", "Pages", "Monitors", "Keybinds",
         "Services", "Extensions", "Dependencies", "Presets", "About",
@@ -52,6 +53,24 @@ Window {
                         islandName: island.name,
                         cell: { x: 0, y: globalRows + index * rowsPerIsland, w: root.contentCols, h: rowsPerIsland - 1 },
                     })),
+                ],
+            };
+        }
+        if (name === "Pages") {
+            // Altura: um cabecalho fixo (a lista de pages, criar/apagar, a
+            // grade e o menu de acrescentar) mais duas celulas por widget da
+            // page aberta. Como a page aberta e estado interno do widget, e
+            // nao da config, aqui nao da para saber quantas linhas ela tem —
+            // usa-se a maior page, que e o pior caso e nunca fica curto.
+            const pages = Config.data.pages ?? {};
+            let widest = 0;
+            for (const key of Object.keys(pages))
+                widest = Math.max(widest, ((pages[key].widgets ?? []).length));
+            const rows = 12 + 2 * widest;
+            return {
+                grid: { cols: root.contentCols, rows: rows },
+                widgets: [
+                    { type: "vtnc.pages-editor", cell: { x: 0, y: 0, w: root.contentCols, h: rows } },
                 ],
             };
         }

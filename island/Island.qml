@@ -58,8 +58,18 @@ PanelWindow {
     readonly property bool isLock: currentLifecycle === "lock"
     readonly property bool pageNeedsKeyboard: showingCalled && ConfigShape.pageNeedsKeyboard(configRef.page(calledPageName))
 
-    readonly property var geometry: Grid.islandGeometry(islandConfig, cellPx)
-    readonly property var exclusive: Grid.exclusiveZone(islandConfig, cellPx)
+    // O estado empty (decisao 14.3): a page que a island veste pode nao
+    // existir - foi apagada no editor de Pages, ou o nome nunca existiu.
+    // Nesse caso a island nao some nem fica do tamanho cheio mostrando
+    // nada: ela encolhe para a bolinha de 2x2, e a reserva de espaco
+    // encolhe junto, porque as duas saem do mesmo retangulo.
+    readonly property bool hasPage: !!configRef.page(currentPageName)
+    readonly property var effectiveIslandConfig: hasPage
+        ? islandConfig
+        : Grid.emptyStateIsland(islandConfig)
+
+    readonly property var geometry: Grid.islandGeometry(effectiveIslandConfig, cellPx)
+    readonly property var exclusive: Grid.exclusiveZone(effectiveIslandConfig, cellPx)
 
     // --- Autohide (0.505) -------------------------------------------------
     //
@@ -264,8 +274,22 @@ PanelWindow {
 
         Page {
             anchors.fill: parent
+            visible: root.hasPage
             pageConfig: configRef.page(root.currentPageName) ?? { grid: { cols: 1, rows: 1 }, widgets: [] }
             cellPx: root.cellPx
+        }
+
+        // A bolinha do estado empty (decisao 14.3). Serve tanto para a page
+        // apagada quanto para a island recem-criada que ainda nao veste
+        // nada: em vez de uma superficie invisivel, que nao da para clicar
+        // nem para achar, fica uma marca de 2x2 celulas na tela.
+        Rectangle {
+            anchors.fill: parent
+            visible: !root.hasPage
+            radius: Math.min(width, height) / 2
+            color: "#3a3a3a"
+            border.color: "#6a6a6a"
+            border.width: 1
         }
 
         // Esc (decision 1e.4): only armed while showing a called/popup page
