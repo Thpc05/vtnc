@@ -15,6 +15,8 @@ Rectangle {
     required property var selectedGrid
     required property var widgets
     required property var catalog
+    required property var stylesOf
+    required property var styleOfWidget
     required property var selectPage
     required property var createPage
     required property var deletePage
@@ -22,6 +24,7 @@ Rectangle {
     required property var addWidget
     required property var removeWidget
     required property var nudgeCell
+    required property var setStyle
 
     color: "#262626"
     border.color: "#3a3a3a"
@@ -214,11 +217,14 @@ Rectangle {
             // Apertado de proposito: quatro steppers mais o nome e o botao
             // nao cabem nos 540 px uteis do painel com o espacamento largo
             // do resto da tela — foi o que a camada 4 pegou.
-            delegate: Row {
+            delegate: Column {
                 id: widgetRow
                 required property var modelData
                 required property int index
 
+                spacing: 3
+
+                Row {
                 spacing: 4
 
                 Text {
@@ -253,6 +259,32 @@ Rectangle {
                     label: "remove"
                     anchors.verticalCenter: parent.verticalCenter
                     onActivated: root.removeWidget(widgetRow.index)
+                }
+                }
+
+                // O style numa linha propria, e nao ao lado das celulas:
+                // quatro steppers mais o nome ja ocupam a largura util do
+                // painel, e foi assim que a linha vazou para fora na 0.508.
+                // Os nomes vem do registro, nunca escritos aqui (3.5).
+                Row {
+                    spacing: 6
+                    leftPadding: 90
+
+                    Text {
+                        text: "style:"
+                        color: "#777777"
+                        font.pixelSize: 11
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                    Repeater {
+                        model: root.stylesOf(widgetRow.modelData.type)
+                        delegate: Chip {
+                            required property var modelData
+                            label: modelData.title
+                            active: modelData.style === root.styleOfWidget(widgetRow.modelData)
+                            onActivated: root.setStyle(widgetRow.index, modelData.style)
+                        }
+                    }
                 }
             }
         }

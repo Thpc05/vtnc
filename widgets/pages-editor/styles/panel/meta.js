@@ -3,6 +3,7 @@
 // passo bem mais tarde, depois que a estrutura estiver de pe.
 export default {
     style: "panel",
+    type: "vtnc.pages-editor",
     title: "Panel",
-    options: {},
+    component: "Panel.qml",
 };

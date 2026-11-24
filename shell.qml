@@ -2,6 +2,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Hyprland
 import "./core/config-shape.mjs" as ConfigShape
+import "./core/widget-registry.mjs" as Registry
 import "./core"
 import "./island"
 import "./services"
@@ -65,6 +66,15 @@ ShellRoot {
                 // 14.3, a page que nao existe mais.
                 widgetCount: ((Config.page(calledPage !== "" ? calledPage : (island.page ?? "")) ?? {}).widgets ?? []).length,
                 empty: !Config.page(calledPage !== "" ? calledPage : (island.page ?? "")),
+                // 0.509: o type e o style que cada widget esta vestindo de
+                // fato, resolvidos pelo registro e nao copiados da config -
+                // uma instancia sem `style` veste o padrao do type, e e o
+                // padrao que aparece aqui. E o que torna a troca de style
+                // (3.3) observavel na shell viva, e nao so no config.json.
+                widgets: (((Config.page(calledPage !== "" ? calledPage : (island.page ?? "")) ?? {}).widgets) ?? []).map((widget) => ({
+                    type: widget.type,
+                    style: widget.style ?? Registry.defaultStyleOf(widget.type)
+                })),
             });
         }
 

@@ -1,6 +1,6 @@
 import QtQuick
 import "../../core"
-import "./styles/panel"
+import "../../core/widget-registry.mjs" as Registry
 
 // The type: vtnc.keybinds-editor. The Settings Keybinds page (0.507,
 // decision 10.3b): the consent toggle plus the list of keybinds
@@ -15,7 +15,7 @@ Item {
 
     property var widgetConfig: ({})
 
-    readonly property string styleName: widgetConfig.style ?? "panel"
+    readonly property string styleName: widgetConfig.style ?? Registry.defaultStyleOf("vtnc.keybinds-editor")
     readonly property var hyprland: Config.data.hyprland ?? ({ enabled: false, keybinds: [] })
     readonly property bool consentGiven: hyprland.enabled ?? false
     readonly property var keybinds: hyprland.keybinds ?? []
@@ -50,25 +50,25 @@ Item {
         writeKeybinds(next);
     }
 
-    Loader {
-        anchors.fill: parent
-        sourceComponent: {
-            switch (root.styleName) {
-            case "panel": return panelStyle;
-            default: return panelStyle;
-            }
-        }
+    onStyleNameChanged: root.loadStyle()
+
+    // Qt.binding, nao o valor cru: as propriedades iniciais do setSource sao
+    // atribuicoes, entao um valor direto congelaria o style no primeiro
+    // quadro. Tudo o que o type publica (meta.js, `provides`) viaja assim.
+    function loadStyle() {
+        styleLoader.setSource(Registry.resolvedStylePath("vtnc.keybinds-editor", root.styleName), {
+            consentGiven: Qt.binding(() => root.consentGiven),
+            keybinds: Qt.binding(() => root.keybinds),
+            setConsent: Qt.binding(() => root.setConsent),
+            addKeybind: Qt.binding(() => root.addKeybind),
+            removeKeybind: Qt.binding(() => root.removeKeybind),
+            updateKeybind: Qt.binding(() => root.updateKeybind)
+        });
     }
 
-    Component {
-        id: panelStyle
-        Panel {
-            consentGiven: root.consentGiven
-            keybinds: root.keybinds
-            setConsent: root.setConsent
-            addKeybind: root.addKeybind
-            removeKeybind: root.removeKeybind
-            updateKeybind: root.updateKeybind
-        }
+    Loader {
+        id: styleLoader
+        anchors.fill: parent
+        Component.onCompleted: root.loadStyle()
     }
 }

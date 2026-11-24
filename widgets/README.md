@@ -12,6 +12,53 @@ widgets/<type>/
         <Style>.qml
 ```
 
+## Os `meta.js` valem de verdade desde a 0.509
+
+Até a 0.508 eles eram decoração: nada no código os abria. Agora
+`core/widget-registry.mjs` os importa, no node e no QML, e é dele que sai
+toda pergunta sobre quem é quem.
+
+O **meta do type** declara:
+
+| campo | |
+|---|---|
+| `type` | o nome completo, com o prefixo da fonte (3.1) |
+| `title` | como ele aparece no catálogo |
+| `services` | os services que ele consome (5.2b), nem que seja `[]` |
+| `defaultStyle` | o style que a instância veste quando não escolheu nenhum |
+| `provides` | **a interface que ele entrega aos styles** (3.5b) |
+
+O **meta do style** declara `style`, o `type` a que pertence (3.5),
+`title` e `component`, o arquivo QML que o type carrega.
+
+A lista de styles de um type **não existe escrita em lugar nenhum**: ela é
+derivada do `type` que cada style declara. Antes da 0.509 ela vivia em dois
+lugares — no meta do type e num `switch` dentro do QML dele — com nada
+obrigando os dois a concordarem. Hoje o type pede ao registro o caminho do
+QML do style e carrega por `Loader.setSource`; acrescentar um style a um
+type é acrescentar uma pasta com um meta, e o QML do type não muda.
+
+Por causa do `setSource`, tudo que o type entrega ao style viaja como
+`Qt.binding(() => ...)`. Um valor cru congelaria o style no primeiro quadro
+— foi por isso que o relógio precisou disso primeiro.
+
+### `provides`, e por que ele não é comentário
+
+A decisão 3.5b existe porque **terceiros escrevem styles para types do
+vtnc**: quem for fazer um style novo precisa saber o que vai receber sem
+abrir o QML do type. Cada entrada é `{ name, kind, doc }`.
+
+Um teste unitário lê o QML de cada style, pega as `required property` da
+raiz e reprova se alguma não estiver publicada no meta do type. Sem ele,
+`provides` envelheceria em silêncio: bastaria alguém acrescentar uma
+propriedade exigida e passar a entregá-la na mão.
+
+`options` é a única exceção, listada em `FRAMEWORK_PROPERTIES`: é o canal
+que o vtnc dá a todo style, não algo que este ou aquele type inventou. O
+conteúdo dele é a 3.4, que espera a `oq-8-5` ser fechada.
+
+## Os types que existem
+
 - `square` (0.501) — um quadrado burro com texto, para provar o tripé
   type/style/page com o mínimo de código possível (decisão 16.4). Sem
   services — não precisa de nenhum.

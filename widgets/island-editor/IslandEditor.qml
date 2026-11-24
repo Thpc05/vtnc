@@ -1,7 +1,7 @@
 import QtQuick
 import "../../core/config-shape.mjs" as ConfigShape
 import "../../core"
-import "./styles/panel"
+import "../../core/widget-registry.mjs" as Registry
 
 // The type: vtnc.island-editor. Reads one island's live state straight from
 // core/Config.qml (so it reflects any change, from anywhere, immediately)
@@ -14,7 +14,7 @@ Item {
 
     property var widgetConfig: ({})
 
-    readonly property string styleName: widgetConfig.style ?? "panel"
+    readonly property string styleName: widgetConfig.style ?? Registry.defaultStyleOf("vtnc.island-editor")
     readonly property string islandName: widgetConfig.islandName ?? ""
     readonly property var island: Config.island(islandName) ?? {}
 
@@ -76,40 +76,40 @@ Item {
         CliRunner.run(["island", islandName, "set", "page", value]);
     }
 
-    Loader {
-        anchors.fill: parent
-        sourceComponent: {
-            switch (root.styleName) {
-            case "panel": return panelStyle;
-            default: return panelStyle;
-            }
-        }
+    onStyleNameChanged: root.loadStyle()
+
+    // Qt.binding, nao o valor cru: as propriedades iniciais do setSource sao
+    // atribuicoes, entao um valor direto congelaria o style no primeiro
+    // quadro. Tudo o que o type publica (meta.js, `provides`) viaja assim.
+    function loadStyle() {
+        styleLoader.setSource(Registry.resolvedStylePath("vtnc.island-editor", root.styleName), {
+            islandName: Qt.binding(() => root.islandName),
+            anchor: Qt.binding(() => root.anchor),
+            offset: Qt.binding(() => root.offset),
+            size: Qt.binding(() => root.size),
+            gap: Qt.binding(() => root.gap),
+            islandLayer: Qt.binding(() => root.islandLayer),
+            pageName: Qt.binding(() => root.pageName),
+            pageNames: Qt.binding(() => root.pageNames),
+            edges: Qt.binding(() => root.edges),
+            layers: Qt.binding(() => root.layers),
+            autohideModes: Qt.binding(() => root.autohideModes),
+            autohide: Qt.binding(() => root.autohide),
+            autohideMode: Qt.binding(() => root.autohideMode),
+            setAnchorEdge: Qt.binding(() => root.setAnchorEdge),
+            nudgeOffset: Qt.binding(() => root.nudgeOffset),
+            nudgeSize: Qt.binding(() => root.nudgeSize),
+            nudgeGap: Qt.binding(() => root.nudgeGap),
+            setLayer: Qt.binding(() => root.setLayer),
+            setPage: Qt.binding(() => root.setPage),
+            setAutohide: Qt.binding(() => root.setAutohide),
+            setAutohideMode: Qt.binding(() => root.setAutohideMode)
+        });
     }
 
-    Component {
-        id: panelStyle
-        Panel {
-            islandName: root.islandName
-            anchor: root.anchor
-            offset: root.offset
-            size: root.size
-            gap: root.gap
-            islandLayer: root.islandLayer
-            pageName: root.pageName
-            pageNames: root.pageNames
-            edges: root.edges
-            layers: root.layers
-            autohideModes: root.autohideModes
-            autohide: root.autohide
-            autohideMode: root.autohideMode
-            setAnchorEdge: root.setAnchorEdge
-            nudgeOffset: root.nudgeOffset
-            nudgeSize: root.nudgeSize
-            nudgeGap: root.nudgeGap
-            setLayer: root.setLayer
-            setPage: root.setPage
-            setAutohide: root.setAutohide
-            setAutohideMode: root.setAutohideMode
-        }
+    Loader {
+        id: styleLoader
+        anchors.fill: parent
+        Component.onCompleted: root.loadStyle()
     }
 }

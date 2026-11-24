@@ -395,3 +395,38 @@ arquivo, e o editor ficava preso no vazio para sempre. Virou ligacao, que
 esta sempre certa e ainda resolve de graca o caso de a page aberta ser
 apagada.
 
+
+## 0.509 — a interface que o type publica
+
+A camada 1 e onde este passo tem dentes. `tests/unit/widget-registry.test.mjs`
+le o QML de cada style, pega as `required property` da raiz e reprova se
+alguma nao estiver publicada no `provides` do meta do type (decisao 3.5b).
+Falsificado na marra: acrescentei uma `required property string inventado`
+ao `Digital.qml` e o teste acusou pelo nome, dizendo qual style exigia o
+que. Sem ele, `provides` seria mais um comentario que envelhece — basta
+alguem acrescentar uma propriedade e passar a entrega-la na mao.
+
+O mesmo arquivo confere o registro contra o **disco**: toda pasta de widget
+esta registrada, os styles de um type sao exatamente as pastas em
+`styles/`, e todo `component` nomeado por um meta existe. E ha um teste que
+impede a regressao estrutural: nenhum QML de type pode voltar a escolher
+style com `case "<nome>":`, porque quem sabe isso e o registro.
+
+Esses testes pegaram uma inconsistencia que ja estava la: o meta do style
+`panel` do `pages-editor` nao declarava a que type pertencia, e carregava um
+`options: {}` que nada lia. Ninguem notaria enquanto os metas fossem
+decoracao.
+
+`tests/cli/style-switch.sh` e a camada 3, sete medidas. O que so se mede ali
+e que a shell **resolve** o style pelo registro em vez de repetir o que esta
+no `config.json`: uma instancia sem `style` tem de aparecer vestindo o
+`defaultStyle` do type. Para isso o `island <nome> get` ganhou `widgets`,
+com o `type` e o `style` de cada instancia — mesmo motivo do `mirrors` na
+0.506 e do `widgetCount` na 0.508. O teste tambem exige que um style
+inexistente na config nao faca o widget sumir.
+
+`tests/cli/settings-style-click-path.sh` e o critério 4, no molde dos
+outros click-paths. O chip de style e o mais frágil de achar que temos: o
+rótulo é o **título** do style, que vem do meta pelo registro, e não um
+texto escrito no painel — se o registro deixar de ser lido, o chip não
+existe e o teste reprova por não encontrá-lo.

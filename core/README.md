@@ -46,6 +46,23 @@ A base que não conhece ninguém acima dela: nenhum arquivo aqui importa
   propria Settings ficam em `SETTINGS_ONLY_TYPES`: sao desenhaveis (decisao
   8.3), mas oferecer um island-editor para colocar numa page qualquer seria
   oferecer uma tela de configuracao solta.
+- `widget-registry.mjs` (0.509) — quem e quem entre types e styles, lido
+  pelo node nos testes e pelo QML na shell. Importa os `meta.js` de cada
+  type e de cada style, que ate a 0.508 nao eram abertos por codigo nenhum.
+  A lista de styles de um type nao mora aqui nem no meta do type: ela e
+  **derivada** do `type` que cada style declara (decisao 3.5), que era a
+  unica forma de ela nao existir escrita em dois lugares que podem
+  discordar. Tambem e daqui que sai o caminho do QML de um style, com queda
+  para o `defaultStyle` do type quando o nome pedido nao existe — a config
+  e um arquivo que o usuario edita a mao, e um nome errado nao pode fazer o
+  widget sumir da tela.
+
+  Medido antes de escrever, com `qml6`: **um `.mjs` consegue importar outro
+  `.mjs` (ou `.js`) de outra pasta de dentro do QML**. Era a duvida que
+  decidia se o meta podia morar junto de cada style ou teria de virar lista
+  central. Os imports aqui ainda sao escritos a mao, um a um; o catalogo
+  automatico por varredura (3b/4.x) e outro passo, e quando vier troca so
+  estas linhas, porque todo o resto ja pergunta ao registro.
 - `hyprland-lua.mjs` (0.507) — a geração do texto Lua, pura, sem I/O (quem
   escreve e recarrega é `cli/lib/hyprland-write.js`). Fica separada do
   `config-shape.mjs` porque trata da sintaxe do Hyprland, não da forma do

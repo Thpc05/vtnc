@@ -1,7 +1,7 @@
 import QtQuick
 import "../../core"
 import "../../core/widget-catalog.mjs" as Catalog
-import "./styles/panel"
+import "../../core/widget-registry.mjs" as Registry
 
 // O type: vtnc.pages-editor. A pagina Pages da Settings (0.508).
 //
@@ -18,7 +18,7 @@ Item {
 
     property var widgetConfig: ({})
 
-    readonly property string styleName: widgetConfig.style ?? "panel"
+    readonly property string styleName: widgetConfig.style ?? Registry.defaultStyleOf("vtnc.pages-editor")
     readonly property var pages: Config.data.pages ?? ({})
     readonly property var pageNames: Object.keys(root.pages).sort()
 
@@ -94,6 +94,29 @@ Item {
         root.writeWidgets(next);
     }
 
+    // Os styles que aquele type tem, do registro (0.509). O editor nao
+    // conhece style nenhum pelo nome: ele pergunta.
+    function stylesOf(type) {
+        return Registry.stylesOf(type);
+    }
+
+    // Qual style uma instancia esta vestindo de fato. Sem `style` na
+    // config ela veste o padrao do type, e e esse que o chip tem de
+    // mostrar aceso - senao o usuario ve "nenhum selecionado" vestindo um.
+    function styleOfWidget(widget) {
+        return widget.style ?? Registry.defaultStyleOf(widget.type);
+    }
+
+    // Trocar o style de um widget (decisao 3.3, a escala de widget). As
+    // outras duas escalas - por page e por island, um for-each disto - sao
+    // de outro passo.
+    function setStyle(index, style) {
+        const next = root.selectedWidgets.map(function (widget, i) {
+            return i !== index ? widget : Object.assign({}, widget, { style: style });
+        });
+        root.writeWidgets(next);
+    }
+
     // Object.assign, nao spread de objeto: nem o motor de JS do QML nem o
     // que carrega os .mjs aceitam `{ ...obj }` (ver core/grid.mjs).
     function nudgeCell(index, field, delta) {
@@ -108,31 +131,34 @@ Item {
         root.writeWidgets(next);
     }
 
-    Loader {
-        anchors.fill: parent
-        sourceComponent: {
-            switch (root.styleName) {
-            case "panel": return panelStyle;
-            default: return panelStyle;
-            }
-        }
+    onStyleNameChanged: root.loadStyle()
+
+    // Qt.binding, nao o valor cru: as propriedades iniciais do setSource sao
+    // atribuicoes, entao um valor direto congelaria o style no primeiro
+    // quadro. Tudo o que o type publica (meta.js, `provides`) viaja assim.
+    function loadStyle() {
+        styleLoader.setSource(Registry.resolvedStylePath("vtnc.pages-editor", root.styleName), {
+            pageNames: Qt.binding(() => root.pageNames),
+            selectedPage: Qt.binding(() => root.selectedPage),
+            selectedGrid: Qt.binding(() => (root.selected ? root.selected.grid : null) ?? ({ cols: 10, rows: 4 })),
+            widgets: Qt.binding(() => root.selectedWidgets),
+            catalog: Qt.binding(() => root.catalog),
+            stylesOf: Qt.binding(() => root.stylesOf),
+            styleOfWidget: Qt.binding(() => root.styleOfWidget),
+            selectPage: Qt.binding(() => root.selectPage),
+            createPage: Qt.binding(() => root.createPage),
+            deletePage: Qt.binding(() => root.deletePage),
+            nudgeGrid: Qt.binding(() => root.nudgeGrid),
+            addWidget: Qt.binding(() => root.addWidget),
+            removeWidget: Qt.binding(() => root.removeWidget),
+            nudgeCell: Qt.binding(() => root.nudgeCell),
+            setStyle: Qt.binding(() => root.setStyle)
+        });
     }
 
-    Component {
-        id: panelStyle
-        Panel {
-            pageNames: root.pageNames
-            selectedPage: root.selectedPage
-            selectedGrid: (root.selected ? root.selected.grid : null) ?? ({ cols: 10, rows: 4 })
-            widgets: root.selectedWidgets
-            catalog: root.catalog
-            selectPage: root.selectPage
-            createPage: root.createPage
-            deletePage: root.deletePage
-            nudgeGrid: root.nudgeGrid
-            addWidget: root.addWidget
-            removeWidget: root.removeWidget
-            nudgeCell: root.nudgeCell
-        }
+    Loader {
+        id: styleLoader
+        anchors.fill: parent
+        Component.onCompleted: root.loadStyle()
     }
 }

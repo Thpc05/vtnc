@@ -165,3 +165,24 @@ mesmo retangulo (`Grid.emptyStateIsland`): uma island vazia que seguisse
 reservando quarenta celulas empurraria as janelas do usuario por nada, e ele
 nao teria como ver o porque.
 
+
+## Trocar o style de um widget (0.509)
+
+Nao ha verbo novo. O style de uma instancia e um campo dela, entao trocar o
+style e reescrever a lista da page, do mesmo jeito que mover um widget:
+
+```sh
+vtnc page dash set widgets '[{"type":"vtnc.clock","style":"compact","cell":{"x":0,"y":0,"w":6,"h":2}}]'
+```
+
+`style` continua **opcional**: sem ele a instancia veste o `defaultStyle`
+declarado no meta do type (ver `../widgets/README.md`). Um nome que nao
+existe naquele type tambem nao quebra nada — a shell cai no padrao em vez de
+deixar o widget sumir, porque o `config.json` e um arquivo que o usuario
+edita a mao.
+
+O `vtnc island <nome> get` passou a devolver `widgets`, com o `type` e o
+`style` de cada instancia **como a shell os resolveu** — nao como o
+`config.json` os escreveu. E o que torna a troca observavel de fora sem
+olhar um pixel, pelo mesmo motivo que `mirrors` (0.506) e `widgetCount`
+(0.508) existem.
