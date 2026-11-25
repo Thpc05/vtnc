@@ -67,7 +67,7 @@ skill `omnigraph` antes.
 ### As consultas que você vai usar
 
 Tudo que foi decidido sobre um conceito (`island`, `page`, `widget`, `module`, `face`, `service`,
-`cell`, `grid`, `layer`, `lifecycle`, `cli`, `notch`, `preset`, `extension`, `settings`, `startup`,
+`cell`, `grid`, `layer`, `lifecycle`, `cli`, `notch`, `preset`, `plugin`, `settings`, `startup`,
 `animation`, `game-mode`, `density`, `exclusive-zone`, `edit-mode`, `empty-state`,
 `hyprland-integration`, `dependency`, `screen-decoration`, `test-environment`, `process`,
 `omnigraph`):
@@ -122,15 +122,15 @@ Só para você não consultar o grafo às cegas. O detalhe está lá, não aqui.
 
 ## Regras de trabalho
 
-- **Um passo por vez.** Cada passo de implementação do que já foi desenhado é uma versão `0.50x`:
-  `0.501`, `0.502`, `0.503`… O `0.51` fica reservado para coisa **nova**, fora do desenho fechado
-  nos 19 blocos. Versões não levam pontos extras: `0.5.0.1` se escreve `0.501`, e isso vale para
-  pastas e para todo lugar. Entre um passo e outro há revisão — não emende dois.
+- **Um passo por vez.** A série `0.50x` — `0.501` até `0.510` — implementou o desenho fechado nos
+  19 blocos e **acabou**. Hospedar plugins é escopo novo, então estamos na série `0.51x`: `0.511`,
+  `0.512`… Versões não levam pontos extras: `0.5.1.1` se escreve `0.511`, e isso vale para pastas e
+  para todo lugar. Entre um passo e outro há revisão — não emende dois.
 - **Pergunta em aberto não se decide sozinho.** Se o que você precisa está numa `OpenQuestion`,
   pare e pergunte ao Theo.
 - **Português** na documentação; **inglês** no código e em todo texto que o usuário vê.
 - **Cada pasta se descreve**: um `README` por área, um `meta.js` por widget. É isso que faz o
-  catálogo automático funcionar e que deixa uma extensão de terceiro se apresentar sozinha.
+  catálogo automático funcionar e que deixa um plugin de terceiro se apresentar sozinho.
 - **Commit** livre nesta branch, um por passo fechado. Mensagens em inglês.
 - **Nunca** edite `~/.config/quickshell/vtnc-0.4` nem a branch `0.4`.
 - **Hyprland**: `hyprctl reload` pode sempre. `hyprctl dispatch` e trocar de workspace estão
