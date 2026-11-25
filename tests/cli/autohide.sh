@@ -126,7 +126,7 @@ cat >"$tmp_config_dir/config.json" <<'EOF'
     { "name": "fshide", "anchor": { "bottom": true }, "offset": { "x": 0, "y": 0 }, "size": { "w": 10, "h": 4 }, "gap": 0, "layer": "top", "page": "idle3", "autohide": true, "autohideMode": "fullscreen" }
   ],
   "pages": {
-    "idle": { "grid": { "cols": 10, "rows": 4 }, "widgets": [ { "type": "vtnc.square", "style": "default", "text": "idle", "cell": { "x": 0, "y": 0, "w": 6, "h": 4 } } ] },
+    "idle": { "grid": { "cols": 10, "rows": 4 }, "widgets": [ { "module": "vtnc.square", "face": "default", "text": "idle", "cell": { "x": 0, "y": 0, "w": 6, "h": 4 } } ] },
     "idle2": { "grid": { "cols": 10, "rows": 20 }, "widgets": [] },
     "idle3": { "grid": { "cols": 10, "rows": 4 }, "widgets": [] },
     "barcalled": { "grid": { "cols": 10, "rows": 4 }, "widgets": [] }

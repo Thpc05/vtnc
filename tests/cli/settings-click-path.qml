@@ -1,8 +1,8 @@
 import QtQuick
 import "../../widgets/island-editor"
 
-// The last inch of 0.503's criterion 3/4 that driving the type's functions
-// can't reach: does clicking a control in the Panel style actually call
+// The last inch of 0.503's criterion 3/4 that driving the module's functions
+// can't reach: does clicking a control in the Panel face actually call
 // them? No input injection — none of the isolated tools for it are
 // installed, and ydotool goes through the kernel's uinput, which is not
 // scoped to a compositor and would leak into Theo's real session. Instead

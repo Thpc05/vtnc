@@ -2,9 +2,9 @@ import QtQuick
 import "../../core"
 import "../../core/widget-catalog.mjs" as Catalog
 import "../../core/widget-registry.mjs" as Registry
-import "../../core/style-schema.mjs" as StyleSchema
+import "../../core/face-schema.mjs" as FaceSchema
 
-// O type: vtnc.pages-editor. A pagina Pages da Settings (0.508).
+// O module: vtnc.pages-editor. A pagina Pages da Settings (0.508).
 //
 // Decisao 8.2: o widget so existe dentro de uma page, e e aqui que ele se
 // edita. Decisao 6.1: as instancias pertencem a page, entao mexer numa page
@@ -19,7 +19,7 @@ Item {
 
     property var widgetConfig: ({})
 
-    readonly property string styleName: widgetConfig.style ?? Registry.defaultStyleOf("vtnc.pages-editor")
+    readonly property string faceName: widgetConfig.face ?? Registry.defaultFaceOf("vtnc.pages-editor")
     readonly property var pages: Config.data.pages ?? ({})
     readonly property var pageNames: Object.keys(root.pages).sort()
 
@@ -75,15 +75,15 @@ Item {
         root.setGrid(cols, rows);
     }
 
-    // O type novo nasce no canto com o tamanho que o catalogo sugere. Sem um
+    // O module novo nasce no canto com o tamanho que o catalogo sugere. Sem um
     // padrao o widget nasceria 0x0, invisivel, e o usuario acharia que o
     // botao nao fez nada.
-    function addWidget(type) {
-        const entry = Catalog.catalogEntry(type);
+    function addWidget(module) {
+        const entry = Catalog.catalogEntry(module);
         if (!entry) return;
         const next = root.selectedWidgets.slice();
         next.push({
-            type: type,
+            module: module,
             cell: { x: 0, y: 0, w: entry.defaultCell.w, h: entry.defaultCell.h },
         });
         root.writeWidgets(next);
@@ -95,65 +95,65 @@ Item {
         root.writeWidgets(next);
     }
 
-    // Os styles que aquele type tem, do registro (0.509). O editor nao
-    // conhece style nenhum pelo nome: ele pergunta.
-    function stylesOf(type) {
-        return Registry.stylesOf(type);
+    // As faces que aquele module tem, do registro (0.509). O editor nao
+    // conhece face nenhum pelo nome: ele pergunta.
+    function facesOf(module) {
+        return Registry.facesOf(module);
     }
 
-    // Qual style uma instancia esta vestindo de fato. Sem `style` na
-    // config ela veste o padrao do type, e e esse que o chip tem de
+    // Qual face uma instancia esta vestindo de fato. Sem `face` na
+    // config ela veste o padrao do module, e e esse que o chip tem de
     // mostrar aceso - senao o usuario ve "nenhum selecionado" vestindo um.
-    function styleOfWidget(widget) {
-        return widget.style ?? Registry.defaultStyleOf(widget.type);
+    function faceOfWidget(widget) {
+        return widget.face ?? Registry.defaultFaceOf(widget.module);
     }
 
-    // --- as opcoes do style (0.510, decisao 3.4) -------------------------
+    // --- as opcoes da face (0.510, decisao 3.4) -------------------------
     //
     // O editor nao conhece opcao nenhuma pelo nome: ele pede o schema ao
     // registro e desenha os controles a partir dele. Acrescentar uma opcao
-    // a um style nao encosta neste arquivo nem no painel.
+    // a uma face nao encosta neste arquivo nem no painel.
 
     // So as declaracoes que passaram pela validacao da shell. Uma
     // declaracao ruim some daqui (3.4d) em vez de derrubar a tela.
     function optionSchemaOf(widget) {
-        return StyleSchema.usableSchema(
-            Registry.optionSchemaOf(widget.type, root.styleOfWidget(widget)));
+        return FaceSchema.usableSchema(
+            Registry.optionSchemaOf(widget.module, root.faceOfWidget(widget)));
     }
 
     // O que mostrar em cada controle: o guardado quando serve, o default
     // quando nao. Sem traduzir papel em cor - aqui o usuario escolhe o
     // PAPEL, e e a shell que resolve a cor na hora de desenhar o widget.
     function optionValuesOf(widget) {
-        return StyleSchema.resolveOptions(
-            Registry.optionSchemaOf(widget.type, root.styleOfWidget(widget)),
-            StyleSchema.storedOptionsFor(widget, root.styleOfWidget(widget)));
+        return FaceSchema.resolveOptions(
+            Registry.optionSchemaOf(widget.module, root.faceOfWidget(widget)),
+            FaceSchema.storedOptionsFor(widget, root.faceOfWidget(widget)));
     }
 
     // As declaracoes que a shell recusou, para a tela poder DIZER que
     // recusou em vez de simplesmente nao desenhar nada (3.4d).
     function optionProblemsOf(widget) {
-        return StyleSchema.partitionSchema(
-            Registry.optionSchemaOf(widget.type, root.styleOfWidget(widget))).rejected;
+        return FaceSchema.partitionSchema(
+            Registry.optionSchemaOf(widget.module, root.faceOfWidget(widget))).rejected;
     }
 
-    // Guardadas por nome de style, e por isso trocar de style e voltar nao
-    // perde nada (decisao 4.4): as opcoes do style antigo continuam ali,
+    // Guardadas por nome de face, e por isso trocar de face e voltar nao
+    // perde nada (decisao 4.4): as opcoes da face antigo continuam ali,
     // debaixo do nome dele.
     function setOption(index, key, value) {
-        const style = root.styleOfWidget(root.selectedWidgets[index]);
+        const face = root.faceOfWidget(root.selectedWidgets[index]);
         const next = root.selectedWidgets.map(function (widget, i) {
-            return i !== index ? widget : StyleSchema.withOption(widget, style, key, value);
+            return i !== index ? widget : FaceSchema.withOption(widget, face, key, value);
         });
         root.writeWidgets(next);
     }
 
-    // Trocar o style de um widget (decisao 3.3, a escala de widget). As
+    // Trocar a face de um widget (decisao 3.3, a escala de widget). As
     // outras duas escalas - por page e por island, um for-each disto - sao
     // de outro passo.
-    function setStyle(index, style) {
+    function setFace(index, face) {
         const next = root.selectedWidgets.map(function (widget, i) {
-            return i !== index ? widget : Object.assign({}, widget, { style: style });
+            return i !== index ? widget : Object.assign({}, widget, { face: face });
         });
         root.writeWidgets(next);
     }
@@ -172,20 +172,20 @@ Item {
         root.writeWidgets(next);
     }
 
-    onStyleNameChanged: root.loadStyle()
+    onFaceNameChanged: root.loadFace()
 
     // Qt.binding, nao o valor cru: as propriedades iniciais do setSource sao
-    // atribuicoes, entao um valor direto congelaria o style no primeiro
-    // quadro. Tudo o que o type publica (meta.js, `provides`) viaja assim.
-    function loadStyle() {
-        styleLoader.setSource(Registry.resolvedStylePath("vtnc.pages-editor", root.styleName), {
+    // atribuicoes, entao um valor direto congelaria a face no primeiro
+    // quadro. Tudo o que o module publica (meta.js, `provides`) viaja assim.
+    function loadFace() {
+        faceLoader.setSource(Registry.resolvedFacePath("vtnc.pages-editor", root.faceName), {
             pageNames: Qt.binding(() => root.pageNames),
             selectedPage: Qt.binding(() => root.selectedPage),
             selectedGrid: Qt.binding(() => (root.selected ? root.selected.grid : null) ?? ({ cols: 10, rows: 4 })),
             widgets: Qt.binding(() => root.selectedWidgets),
             catalog: Qt.binding(() => root.catalog),
-            stylesOf: Qt.binding(() => root.stylesOf),
-            styleOfWidget: Qt.binding(() => root.styleOfWidget),
+            facesOf: Qt.binding(() => root.facesOf),
+            faceOfWidget: Qt.binding(() => root.faceOfWidget),
             selectPage: Qt.binding(() => root.selectPage),
             createPage: Qt.binding(() => root.createPage),
             deletePage: Qt.binding(() => root.deletePage),
@@ -193,18 +193,18 @@ Item {
             addWidget: Qt.binding(() => root.addWidget),
             removeWidget: Qt.binding(() => root.removeWidget),
             nudgeCell: Qt.binding(() => root.nudgeCell),
-            setStyle: Qt.binding(() => root.setStyle),
+            setFace: Qt.binding(() => root.setFace),
             optionSchemaOf: Qt.binding(() => root.optionSchemaOf),
             optionValuesOf: Qt.binding(() => root.optionValuesOf),
             optionProblemsOf: Qt.binding(() => root.optionProblemsOf),
             setOption: Qt.binding(() => root.setOption),
-            colorRoles: Qt.binding(() => StyleSchema.COLOR_ROLES)
+            colorRoles: Qt.binding(() => FaceSchema.COLOR_ROLES)
         });
     }
 
     Loader {
-        id: styleLoader
+        id: faceLoader
         anchors.fill: parent
-        Component.onCompleted: root.loadStyle()
+        Component.onCompleted: root.loadFace()
     }
 }

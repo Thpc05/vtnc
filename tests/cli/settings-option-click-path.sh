@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# 0.510 critério 1: mudar uma opção de style pela página Pages passa pela
+# 0.510 critério 1: mudar uma opção de face pela página Pages passa pela
 # CLI e chega ao config.json — com o controle desenhado a partir do schema
-# que o style declarou, não escrito no painel. Mesma restrição de Quickshell.shellDir dos outros
+# que a face declarou, não escrito no painel. Mesma restrição de Quickshell.shellDir dos outros
 # harnesses de tests/cli: roda de uma cópia descartável na raiz do vtnc-dev,
 # com o import reescrito.
 set -euo pipefail
@@ -26,7 +26,7 @@ cat >"$tmp_config_dir/config.json" <<'EOF'
   "monitors": {},
   "islands": [],
   "pages": { "dash": { "grid": { "cols": 10, "rows": 4 },
-    "widgets": [ { "type": "vtnc.clock", "cell": { "x": 0, "y": 0, "w": 6, "h": 2 } } ] } }
+    "widgets": [ { "module": "vtnc.clock", "cell": { "x": 0, "y": 0, "w": 6, "h": 2 } } ] } }
 }
 EOF
 
@@ -47,7 +47,7 @@ check "o controle montado a partir do schema foi achado no Panel construído" \
     "$(echo "$log" | grep -c 'OPTIONCLICKPATH: clicking the showSeconds toggle')" "1"
 
 widgets_after=$(python3 -c 'import json; print(json.dumps(json.load(open("'"$tmp_config_dir"'/config.json"))["pages"]["dash"]["widgets"]))')
-check "clicar guardou a opção, debaixo do nome do style (4.4), pela CLI" \
+check "clicar guardou a opção, debaixo do nome da face (4.4), pela CLI" \
     "$(echo "$widgets_after" | python3 -c 'import json,sys; print(json.dumps(json.load(sys.stdin)[0]["options"], sort_keys=True))')" \
     '{"digital": {"showSeconds": false}}'
 

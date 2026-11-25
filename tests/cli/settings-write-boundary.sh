@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # 0.503 acceptance criterion 4: Settings never writes configuration on its
-# own — only `cli/vtnc` does. Drives the real vtnc.island-editor type
+# own — only `cli/vtnc` does. Drives the real vtnc.island-editor module
 # (settings-write-boundary.qml) the way a click on it would, once with
 # cli/vtnc executable and once without, and checks config.json either
 # changed or stayed byte-for-byte the same.

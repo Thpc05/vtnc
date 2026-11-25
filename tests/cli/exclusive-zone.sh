@@ -54,8 +54,8 @@ cat >"$tmp_config_dir/config.json" <<'EOF'
     { "name": "silent", "anchor": { "right": true }, "offset": { "x": 0, "y": 0 }, "size": { "w": 10, "h": 4 }, "gap": 5, "layer": "top", "page": "" }
   ],
   "pages": {
-    "idle": { "grid": { "cols": 10, "rows": 4 }, "widgets": [ { "type": "vtnc.square", "style": "default", "text": "idle", "cell": { "x": 0, "y": 0, "w": 6, "h": 4 } } ] },
-    "big": { "grid": { "cols": 10, "rows": 20 }, "widgets": [ { "type": "vtnc.square", "style": "default", "text": "big", "cell": { "x": 0, "y": 0, "w": 6, "h": 20 } } ] }
+    "idle": { "grid": { "cols": 10, "rows": 4 }, "widgets": [ { "module": "vtnc.square", "face": "default", "text": "idle", "cell": { "x": 0, "y": 0, "w": 6, "h": 4 } } ] },
+    "big": { "grid": { "cols": 10, "rows": 20 }, "widgets": [ { "module": "vtnc.square", "face": "default", "text": "big", "cell": { "x": 0, "y": 0, "w": 6, "h": 20 } } ] }
   }
 }
 EOF

@@ -2,7 +2,7 @@ import QtQuick
 import "../../core"
 import "../../core/widget-registry.mjs" as Registry
 
-// The type: vtnc.autohide-settings. The one global autohide knob the
+// The module: vtnc.autohide-settings. The one global autohide knob the
 // Settings Islands page needs, besides what each island's own
 // vtnc.island-editor already shows (decision 12.4 — trigger distance is
 // global, not per-island). Reads core/Config.qml directly and writes
@@ -13,7 +13,7 @@ Item {
 
     property var widgetConfig: ({})
 
-    readonly property string styleName: widgetConfig.style ?? Registry.defaultStyleOf("vtnc.autohide-settings")
+    readonly property string faceName: widgetConfig.face ?? Registry.defaultFaceOf("vtnc.autohide-settings")
     readonly property var autohide: Config.data.autohide ?? ({ distance: 2 })
     readonly property int distance: autohide.distance ?? 2
 
@@ -21,21 +21,21 @@ Item {
         CliRunner.run(["autohide", "set", "distance", String(Math.max(0, distance + delta))]);
     }
 
-    onStyleNameChanged: root.loadStyle()
+    onFaceNameChanged: root.loadFace()
 
     // Qt.binding, nao o valor cru: as propriedades iniciais do setSource sao
-    // atribuicoes, entao um valor direto congelaria o style no primeiro
-    // quadro. Tudo o que o type publica (meta.js, `provides`) viaja assim.
-    function loadStyle() {
-        styleLoader.setSource(Registry.resolvedStylePath("vtnc.autohide-settings", root.styleName), {
+    // atribuicoes, entao um valor direto congelaria a face no primeiro
+    // quadro. Tudo o que o module publica (meta.js, `provides`) viaja assim.
+    function loadFace() {
+        faceLoader.setSource(Registry.resolvedFacePath("vtnc.autohide-settings", root.faceName), {
             distance: Qt.binding(() => root.distance),
             nudgeDistance: Qt.binding(() => root.nudgeDistance)
         });
     }
 
     Loader {
-        id: styleLoader
+        id: faceLoader
         anchors.fill: parent
-        Component.onCompleted: root.loadStyle()
+        Component.onCompleted: root.loadFace()
     }
 }

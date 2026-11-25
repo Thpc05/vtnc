@@ -2,15 +2,15 @@
 // feita de pages e widgets de verdade, so nao editaveis). Le o estado vivo
 // do core/Config.qml e escreve exclusivamente pela CLI (6.3).
 //
-// A lista `provides` e longa porque este type entrega muita coisa: e
+// A lista `provides` e longa porque este module entrega muita coisa: e
 // exatamente por isso que a 3.5b pede que ela esteja escrita. Quem for
-// escrever um style novo para esta tela le daqui o que vai receber, sem
-// abrir o QML do type.
+// escrever uma face novo para esta tela le daqui o que vai receber, sem
+// abrir o QML do module.
 export default {
-    type: "vtnc.island-editor",
+    module: "vtnc.island-editor",
     title: "Island editor",
     services: [],
-    defaultStyle: "panel",
+    defaultFace: "panel",
     provides: [
         { name: "islandName", kind: "string", doc: "O nome da island sendo editada." },
         { name: "anchor", kind: "var", doc: "As bordas ancoradas: { top, bottom, left, right } booleanos." },

@@ -2,7 +2,7 @@ import QtQuick
 import "../../core"
 import "../../core/widget-registry.mjs" as Registry
 
-// The type: vtnc.keybinds-editor. The Settings Keybinds page (0.507,
+// The module: vtnc.keybinds-editor. The Settings Keybinds page (0.507,
 // decision 10.3b): the consent toggle plus the list of keybinds
 // themselves. Reads core/Config.qml directly and writes nothing itself —
 // every edit becomes a CliRunner.run() call (decision 6.3's exception,
@@ -15,7 +15,7 @@ Item {
 
     property var widgetConfig: ({})
 
-    readonly property string styleName: widgetConfig.style ?? Registry.defaultStyleOf("vtnc.keybinds-editor")
+    readonly property string faceName: widgetConfig.face ?? Registry.defaultFaceOf("vtnc.keybinds-editor")
     readonly property var hyprland: Config.data.hyprland ?? ({ enabled: false, keybinds: [] })
     readonly property bool consentGiven: hyprland.enabled ?? false
     readonly property var keybinds: hyprland.keybinds ?? []
@@ -50,13 +50,13 @@ Item {
         writeKeybinds(next);
     }
 
-    onStyleNameChanged: root.loadStyle()
+    onFaceNameChanged: root.loadFace()
 
     // Qt.binding, nao o valor cru: as propriedades iniciais do setSource sao
-    // atribuicoes, entao um valor direto congelaria o style no primeiro
-    // quadro. Tudo o que o type publica (meta.js, `provides`) viaja assim.
-    function loadStyle() {
-        styleLoader.setSource(Registry.resolvedStylePath("vtnc.keybinds-editor", root.styleName), {
+    // atribuicoes, entao um valor direto congelaria a face no primeiro
+    // quadro. Tudo o que o module publica (meta.js, `provides`) viaja assim.
+    function loadFace() {
+        faceLoader.setSource(Registry.resolvedFacePath("vtnc.keybinds-editor", root.faceName), {
             consentGiven: Qt.binding(() => root.consentGiven),
             keybinds: Qt.binding(() => root.keybinds),
             setConsent: Qt.binding(() => root.setConsent),
@@ -67,8 +67,8 @@ Item {
     }
 
     Loader {
-        id: styleLoader
+        id: faceLoader
         anchors.fill: parent
-        Component.onCompleted: root.loadStyle()
+        Component.onCompleted: root.loadFace()
     }
 }

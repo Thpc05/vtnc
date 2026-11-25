@@ -13,7 +13,7 @@ import "../widgets/not-built"
 Item {
     id: root
 
-    required property var pageConfig // { grid: {cols, rows}, widgets: [{type, style, cell:{x,y,w,h}}] }
+    required property var pageConfig // { grid: {cols, rows}, widgets: [{module, face, cell:{x,y,w,h}}] }
     required property real cellPx
 
     Repeater {
@@ -27,11 +27,11 @@ Item {
             width: (modelData.cell?.w ?? 1) * root.cellPx
             height: (modelData.cell?.h ?? 1) * root.cellPx
 
-            // Adding a type is one case here, nothing else in this file
-            // (decision 3.1 — type/style come from third parties too, Page
+            // Adding a module is one case here, nothing else in this file
+            // (decision 3.1 — module/face come from third parties too, Page
             // can't know their names in advance beyond this list).
             sourceComponent: {
-                switch (modelData.type) {
+                switch (modelData.module) {
                 case "vtnc.square": return squareComponent;
                 case "vtnc.clock": return clockComponent;
                 case "vtnc.island-editor": return islandEditorComponent;

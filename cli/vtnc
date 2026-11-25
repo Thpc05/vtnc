@@ -63,7 +63,7 @@ autohide set keys: enabled, mode, distance
 page set keys: grid, widgets
   (0.508: os dois sao um argumento JSON so. "grid" e {"cols":N,"rows":N};
    "widgets" substitui a lista inteira, cada entrada
-   {"type":"vtnc.clock","cell":{"x":0,"y":0,"w":6,"h":2}} com "style"
+   {"module":"vtnc.clock","cell":{"x":0,"y":0,"w":6,"h":2}} com "face"
    opcional. A page e dona das instancias (decisao 6.1): mexer numa page
    muda todas as islands que a usam, ao vivo. "create" e "delete" criam e
    apagam a page em si; apagar uma page em uso deixa as islands que a
@@ -100,7 +100,7 @@ examples:
   vtnc hyprland list                current hyprland config, as JSON
   vtnc page dashboard create        a new, empty page
   vtnc page dashboard set grid '{"cols":12,"rows":4}'
-  vtnc page dashboard set widgets '[{"type":"vtnc.clock","cell":{"x":0,"y":0,"w":6,"h":2}}]'
+  vtnc page dashboard set widgets '[{"module":"vtnc.clock","cell":{"x":0,"y":0,"w":6,"h":2}}]'
   vtnc page dashboard delete        islands wearing it fall back to empty`);
 }
 

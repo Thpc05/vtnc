@@ -46,7 +46,7 @@ check "o chip + Clock foi achado no Panel construído" \
 
 widgets_after=$(python3 -c 'import json; print(json.dumps(json.load(open("'"$tmp_config_dir"'/config.json"))["pages"]["dash"]["widgets"]))')
 check "clicar acrescentou o clock à page, pela CLI" \
-    "$(echo "$widgets_after" | python3 -c 'import json,sys; w=json.load(sys.stdin); print("%s %sx%s" % (w[0]["type"], w[0]["cell"]["w"], w[0]["cell"]["h"]))')" \
+    "$(echo "$widgets_after" | python3 -c 'import json,sys; w=json.load(sys.stdin); print("%s %sx%s" % (w[0]["module"], w[0]["cell"]["w"], w[0]["cell"]["h"]))')" \
     "vtnc.clock 6x2"
 
 [[ $fail -ne 0 ]] && echo "--- log:" && echo "$log"

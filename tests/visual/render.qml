@@ -29,9 +29,9 @@ Window {
         pageConfig: ({
             "grid": { "cols": 28, "rows": 4 },
             "widgets": [
-                { "type": "vtnc.square", "style": "default", "text": "square", "cell": { "x": 1, "y": 1, "w": 6, "h": 4 } },
-                { "type": "vtnc.clock", "style": "digital", "cell": { "x": 9, "y": 0, "w": 12, "h": 4 } },
-                { "type": "vtnc.clock", "style": "compact", "cell": { "x": 23, "y": 1, "w": 5, "h": 2 } }
+                { "module": "vtnc.square", "face": "default", "text": "square", "cell": { "x": 1, "y": 1, "w": 6, "h": 4 } },
+                { "module": "vtnc.clock", "face": "digital", "cell": { "x": 9, "y": 0, "w": 12, "h": 4 } },
+                { "module": "vtnc.clock", "face": "compact", "cell": { "x": 23, "y": 1, "w": 5, "h": 2 } }
             ]
         })
     }

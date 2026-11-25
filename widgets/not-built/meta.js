@@ -1,8 +1,8 @@
 export default {
-    type: "vtnc.not-built",
+    module: "vtnc.not-built",
     title: "Not built",
     services: [],
-    defaultStyle: "placeholder",
+    defaultFace: "placeholder",
     provides: [
         { name: "pageName", kind: "string", doc: "O nome da pagina da Settings que ainda nao foi construida." },
     ],

@@ -2,10 +2,10 @@ import QtQuick
 import "../../widgets/pages-editor"
 
 // O caminho de clique do critério 1 da 0.510: clicar o controle de uma
-// OPÇÃO de style tem de chegar ao config.json pelo cli/vtnc real.
+// OPÇÃO de face tem de chegar ao config.json pelo cli/vtnc real.
 //
 // Este é o mais indireto de todos os click-paths: o chip "on" não existe
-// escrito em lugar nenhum. Ele aparece porque o meta do style `digital`
+// escrito em lugar nenhum. Ele aparece porque o meta da face `digital`
 // declara uma opção `showSeconds` do tipo toggle, o registro entrega essa
 // declaração ao editor, e o painel desenha o controle que a declaração
 // pediu. Se qualquer elo dessa corrente quebrar, não há chip para clicar e

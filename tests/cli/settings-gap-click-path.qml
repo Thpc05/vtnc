@@ -3,7 +3,7 @@ import "../../widgets/island-editor"
 
 // 0.504 criterion 5, modeled directly on the coordinator's
 // settings-click-path.sh: not "setGap reaches config.json" (settings-write-
-// boundary.sh already proves the type-to-CLI boundary in general), but
+// boundary.sh already proves the module-to-CLI boundary in general), but
 // "clicking the gap stepper's + button calls it". Walks the built item
 // tree to the Stepper labelled "gap", finds its "+" MouseArea by name
 // (decrementButton/incrementButton, as Panel.qml's Stepper declares them),

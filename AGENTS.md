@@ -66,7 +66,7 @@ skill `omnigraph` antes.
 
 ### As consultas que você vai usar
 
-Tudo que foi decidido sobre um conceito (`island`, `page`, `widget`, `type`, `style`, `service`,
+Tudo que foi decidido sobre um conceito (`island`, `page`, `widget`, `module`, `face`, `service`,
 `cell`, `grid`, `layer`, `lifecycle`, `cli`, `notch`, `preset`, `extension`, `settings`, `startup`,
 `animation`, `game-mode`, `density`, `exclusive-zone`, `edit-mode`, `empty-state`,
 `hyprland-integration`, `dependency`, `screen-decoration`, `test-environment`, `process`,
@@ -110,8 +110,9 @@ Só para você não consultar o grafo às cegas. O detalhe está lá, não aqui.
 - **Page** — grupo **reutilizável** de widgets com grid próprio. É **dona** das instâncias de
   widget, então mexer numa page muda todas as islands que a usam. O **ciclo de vida**
   (`idle` · `called` · `popup` · `lock`) e o gatilho são dela, não da island.
-- **Widget** — um **type** (a função; nomeia os services que usa) vestindo um **style** (a
-  aparência). Um style pertence a **um único type**; um type tem vários styles.
+- **Widget** — um **module** (a função; nomeia os services que usa) vestindo uma **face** (a
+  aparência). Uma face pertence a **um único module**; um module tem várias faces. Os dois juntos
+  são a **camada visual** de um **plugin**, que pode trazer também uma **camada serviço**.
 - **Service** — código único e compartilhado que fala com o sistema, ligado só quando algum widget
   visível precisa e desligado quando o último sai de cena.
 - **Célula** — tudo é medido em células: uma célula base global × um fator por monitor. Posição é

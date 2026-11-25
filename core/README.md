@@ -37,45 +37,45 @@ A base que não conhece ninguém acima dela: nenhum arquivo aqui importa
   para não re-gerar quando o que mudou foi uma island; e como a assinatura
   começa vazia, uma shell recém-aberta re-sincroniza por conta própria se o
   consentimento já tinha sido dado antes.
-- `widget-catalog.mjs` (0.508) — a lista dos types que o editor de Pages
+- `widget-catalog.mjs` (0.508) — a lista dos modules que o editor de Pages
   **oferece** para acrescentar, pura e testada em node. Mora aqui, e nao no
   QML, para que o editor e o `page/Page.qml` nao possam discordar: um teste
-  le o `Page.qml` e falha se um type do catalogo nao tiver `case` la. Nao e
+  le o `Page.qml` e falha se um module do catalogo nao tiver `case` la. Nao e
   o catalogo automatico por `meta.js` que a 3b/4.x pede, com extensao de
   terceiro se apresentando sozinha — esse e outro passo. Os widgets da
-  propria Settings ficam em `SETTINGS_ONLY_TYPES`: sao desenhaveis (decisao
+  propria Settings ficam em `SETTINGS_ONLY_MODULES`: sao desenhaveis (decisao
   8.3), mas oferecer um island-editor para colocar numa page qualquer seria
   oferecer uma tela de configuracao solta.
-- `widget-registry.mjs` (0.509) — quem e quem entre types e styles, lido
+- `widget-registry.mjs` (0.509) — quem e quem entre modules e faces, lido
   pelo node nos testes e pelo QML na shell. Importa os `meta.js` de cada
-  type e de cada style, que ate a 0.508 nao eram abertos por codigo nenhum.
-  A lista de styles de um type nao mora aqui nem no meta do type: ela e
-  **derivada** do `type` que cada style declara (decisao 3.5), que era a
+  module e de cada face, que ate a 0.508 nao eram abertos por codigo nenhum.
+  A lista de faces de um module nao mora aqui nem no meta do module: ela e
+  **derivada** do `module` que cada face declara (decisao 3.5), que era a
   unica forma de ela nao existir escrita em dois lugares que podem
-  discordar. Tambem e daqui que sai o caminho do QML de um style, com queda
-  para o `defaultStyle` do type quando o nome pedido nao existe — a config
+  discordar. Tambem e daqui que sai o caminho do QML de uma face, com queda
+  para o `defaultFace` do module quando o nome pedido nao existe — a config
   e um arquivo que o usuario edita a mao, e um nome errado nao pode fazer o
   widget sumir da tela.
 
   Medido antes de escrever, com `qml6`: **um `.mjs` consegue importar outro
   `.mjs` (ou `.js`) de outra pasta de dentro do QML**. Era a duvida que
-  decidia se o meta podia morar junto de cada style ou teria de virar lista
+  decidia se o meta podia morar junto de cada face ou teria de virar lista
   central. Os imports aqui ainda sao escritos a mao, um a um; o catalogo
   automatico por varredura (3b/4.x) e outro passo, e quando vier troca so
   estas linhas, porque todo o resto ja pergunta ao registro.
-- `style-schema.mjs` (0.510) — o que um style pode declarar como opcao, e
+- `face-schema.mjs` (0.510) — o que uma face pode declarar como opcao, e
   o que a shell aceita como valor. A decisao 3.4d da a forma ao arquivo
-  inteiro: o style DESCREVE, a shell DECIDE. Por isso `min`/`max`, a lista
+  inteiro: a face DESCREVE, a shell DECIDE. Por isso `min`/`max`, a lista
   do `choice`, os papeis de cor e o teto do texto sao impostos aqui, de
   fora, e por isso uma declaracao ruim e DESCARTADA (`partitionSchema`) em
-  vez de derrubar o style inteiro — a shell tem de ser modulavel e
+  vez de derrubar a face inteiro — a shell tem de ser modulavel e
   confiavel ao mesmo tempo, e um meta mal escrito de terceiro nao pode
-  tirar tudo do ar. `resolveOptions` entrega so o que o style declarou, com
+  tirar tudo do ar. `resolveOptions` entrega so o que a face declarou, com
   o default no lugar de qualquer valor que nao sirva mais; `withOption` e
-  `storedOptionsFor` guardam por nome de style, que e o que faz a 4.4
+  `storedOptionsFor` guardam por nome de face, que e o que faz a 4.4
   funcionar sem codigo nenhum "lembrando" das opcoes antigas.
 - `palette.mjs` (0.510) — papel de cor em cor de verdade, **provisorio**
-  (decisao 3.4c) ate o bloco de Appearance existir. Nenhum style conhece
+  (decisao 3.4c) ate o bloco de Appearance existir. Nenhuma face conhece
   estes valores: a cor ja chega resolvida a ele. Trocar esta tabela troca a
   shell inteira de uma vez, que e exatamente o motivo de o controle ser
   `role` e nao um seletor de cor livre.

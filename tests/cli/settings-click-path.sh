@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Coordinator-side reinforcement of 0.503's criteria 3 and 4: not "the
-# type's functions reach config.json" (settings-write-boundary.sh already
+# module's functions reach config.json" (settings-write-boundary.sh already
 # proves that), but "clicking the control calls the function". It emits the
-# clicked signal of the real MouseArea inside the real Panel style, so the
+# clicked signal of the real MouseArea inside the real Panel face, so the
 # whole chain runs: MouseArea -> Chip.activated -> IslandEditor.setLayer ->
 # CliRunner -> cli/vtnc -> config.json.
 #

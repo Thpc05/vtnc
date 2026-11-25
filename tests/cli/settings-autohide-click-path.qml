@@ -4,7 +4,7 @@ import "../../widgets/island-editor"
 // 0.505 criterion 5's click path, the same model as the coordinator's
 // settings-click-path.sh / settings-gap-click-path.sh: not "setAutohide
 // reaches config.json" (settings-write-boundary.sh already proves the
-// type-to-CLI boundary in general), but "clicking the toggle in the built
+// module-to-CLI boundary in general), but "clicking the toggle in the built
 // Panel actually calls it". The island starts with no autohide override
 // (so it reads the global default, off), so the toggle's own label is
 // literally "off" — the one chip in the whole panel with that exact text,

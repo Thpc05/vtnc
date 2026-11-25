@@ -3,7 +3,7 @@
 # QT_QPA_PLATFORM=offscreen takes it as far as it can go without a real
 # Wayland connection (up to "no PanelWindow backend loaded", which is
 # exactly the point where a real backend would be needed — everything
-# before that, every import and type reference, has already resolved).
+# before that, every import and module reference, has already resolved).
 
 set -euo pipefail
 
@@ -21,7 +21,7 @@ if echo "$out" | grep -q "No PanelWindow backend loaded"; then
     exit 0
 fi
 
-if echo "$out" | grep -qiE "error|unavailable|not a type"; then
+if echo "$out" | grep -qiE "error|unavailable|not a module"; then
     echo "FAIL: QML did not compile cleanly."
     exit 1
 fi

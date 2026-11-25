@@ -2,8 +2,8 @@
 // Shared between the CLI (node) and the shell (QML import as ECMAScript
 // module) so the two never disagree about what a valid config looks like.
 
-import { optionSchemaOf, styleMeta } from "./widget-registry.mjs";
-import { usableSchema, validateOptionValue } from "./style-schema.mjs";
+import { optionSchemaOf, faceMeta } from "./widget-registry.mjs";
+import { usableSchema, validateOptionValue } from "./face-schema.mjs";
 
 export function defaultConfig() {
     return {
@@ -275,39 +275,39 @@ function isValidCell(cell) {
 
 function isValidWidgetInstance(value) {
     if (!isPlainObject(value)) return false;
-    if (typeof value.type !== "string" || value.type.trim() === "") return false;
-    if (value.style !== undefined && typeof value.style !== "string") return false;
+    if (typeof value.module !== "string" || value.module.trim() === "") return false;
+    if (value.face !== undefined && typeof value.face !== "string") return false;
     if (value.options !== undefined) {
         if (!isPlainObject(value.options)) return false;
-        for (const perStyle of Object.values(value.options)) {
-            if (!isPlainObject(perStyle)) return false;
+        for (const perFace of Object.values(value.options)) {
+            if (!isPlainObject(perFace)) return false;
         }
     }
     return isValidCell(value.cell);
 }
 
 // As opcoes guardadas numa instancia, conferidas contra o schema que o
-// style declarou (0.510, decisao 3.4d: quem impoe min/max, a lista fechada
-// e o papel de cor e a shell, nao o style). Devolve uma string de erro ou
+// face declarou (0.510, decisao 3.4d: quem impoe min/max, a lista fechada
+// e o papel de cor e a shell, nao a face). Devolve uma string de erro ou
 // null.
 //
-// Confere SO o que da para conferir. Opcoes guardadas debaixo de um style
+// Confere SO o que da para conferir. Opcoes guardadas debaixo de uma face
 // que nao existe (ou nao existe mais) ficam onde estao sem reclamacao: sao
-// a memoria da decisao 4.4, e recusa-las aqui faria "trocar de style e
-// voltar" perder tudo. Chave desconhecida dentro de um style conhecido
-// tambem passa, pelo mesmo motivo — o que ela NAO faz e chegar ao style,
+// a memoria da decisao 4.4, e recusa-las aqui faria "trocar de face e
+// voltar" perder tudo. Chave desconhecida dentro de uma face conhecido
+// tambem passa, pelo mesmo motivo — o que ela NAO faz e chegar à face,
 // que so recebe o que declarou.
 function optionsError(widget) {
     if (!isPlainObject(widget.options)) return null;
-    for (const [styleName, values] of Object.entries(widget.options)) {
-        if (!styleMeta(widget.type, styleName)) continue;
-        const schema = usableSchema(optionSchemaOf(widget.type, styleName));
+    for (const [faceName, values] of Object.entries(widget.options)) {
+        if (!faceMeta(widget.module, faceName)) continue;
+        const schema = usableSchema(optionSchemaOf(widget.module, faceName));
         for (const [key, value] of Object.entries(values)) {
             const declaration = schema.find((entry) => entry.key === key);
             if (!declaration) continue;
             const error = validateOptionValue(declaration, value);
             if (error) {
-                return `invalid widgets: option "${key}" of style "${styleName}" on ${widget.type}: ${error}`;
+                return `invalid widgets: option "${key}" of face "${faceName}" on ${widget.module}: ${error}`;
             }
         }
     }
@@ -331,7 +331,7 @@ export function validatePageSet(key, value) {
         if (!Array.isArray(value)) return "invalid widgets: must be a JSON array";
         for (const widget of value) {
             if (!isValidWidgetInstance(widget)) {
-                return 'invalid widgets: each entry needs a non-empty "type" and a "cell" with whole-number x, y (0 or more) and w, h (1 or more) — "style" is an optional string and "options" an optional object keyed by style name';
+                return 'invalid widgets: each entry needs a non-empty "module" and a "cell" with whole-number x, y (0 or more) and w, h (1 or more) — "face" is an optional string and "options" an optional object keyed by face name';
             }
             const optionError = optionsError(widget);
             if (optionError) return optionError;

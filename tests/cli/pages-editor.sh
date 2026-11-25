@@ -75,22 +75,22 @@ check "a page nasce pela CLI e a shell passa a listá-la (critério 1)" \
 
 # ------------------------------------------------- critério 2: grade e widgets
 v page dash set grid '{"cols":12,"rows":6}' >/dev/null
-v page dash set widgets '[{"type":"vtnc.clock","cell":{"x":0,"y":0,"w":6,"h":2}}]' >/dev/null
+v page dash set widgets '[{"module":"vtnc.clock","cell":{"x":0,"y":0,"w":6,"h":2}}]' >/dev/null
 sleep 0.6
 check "a grade da page muda (critério 2)" \
     "$(v page dash get | python3 -c 'import json,sys; g=json.load(sys.stdin)["grid"]; print("%sx%s" % (g["cols"], g["rows"]))')" "12x6"
 check "o widget entra na page com a célula pedida (critério 2)" \
-    "$(v page dash get | python3 -c 'import json,sys; w=json.load(sys.stdin)["widgets"][0]; print("%s %s %s" % (w["type"], w["cell"]["w"], w["cell"]["h"]))')" "vtnc.clock 6 2"
+    "$(v page dash get | python3 -c 'import json,sys; w=json.load(sys.stdin)["widgets"][0]; print("%s %s %s" % (w["module"], w["cell"]["w"], w["cell"]["h"]))')" "vtnc.clock 6 2"
 # Uma célula sem tamanho é recusada antes de encostar no config.json.
-bad=$(v page dash set widgets '[{"type":"vtnc.clock","cell":{"x":0,"y":0,"w":0,"h":2}}]' 2>&1 >/dev/null; true)
+bad=$(v page dash set widgets '[{"module":"vtnc.clock","cell":{"x":0,"y":0,"w":0,"h":2}}]' 2>&1 >/dev/null; true)
 check "uma célula inválida é recusada com explicação (critério 2)" \
     "$(echo "$bad" | grep -qi 'cell' && echo explica)" "explica"
 
 # ------------------------------------------------- critério 3: a page é compartilhada
 check "as duas islands na mesma page começam sem widget (critério 3)" \
     "$(v island bar get | field widgetCount)/$(v island dock get | field widgetCount)" "0/0"
-v page shared set widgets '[{"type":"vtnc.clock","cell":{"x":0,"y":0,"w":6,"h":2}},
-                            {"type":"vtnc.square","cell":{"x":6,"y":0,"w":2,"h":2}}]' >/dev/null
+v page shared set widgets '[{"module":"vtnc.clock","cell":{"x":0,"y":0,"w":6,"h":2}},
+                            {"module":"vtnc.square","cell":{"x":6,"y":0,"w":2,"h":2}}]' >/dev/null
 sleep 0.8
 check "mexer na page muda as DUAS islands que a usam, ao vivo (critério 3 / 6.1)" \
     "$(v island bar get | field widgetCount)/$(v island dock get | field widgetCount)" "2/2"

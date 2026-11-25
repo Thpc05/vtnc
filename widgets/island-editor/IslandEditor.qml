@@ -3,7 +3,7 @@ import "../../core/config-shape.mjs" as ConfigShape
 import "../../core"
 import "../../core/widget-registry.mjs" as Registry
 
-// The type: vtnc.island-editor. Reads one island's live state straight from
+// The module: vtnc.island-editor. Reads one island's live state straight from
 // core/Config.qml (so it reflects any change, from anywhere, immediately)
 // and writes nothing itself — every edit becomes a CliRunner.run() call to
 // the real cli/vtnc binary (decision 6.3's exception). That boundary is
@@ -14,7 +14,7 @@ Item {
 
     property var widgetConfig: ({})
 
-    readonly property string styleName: widgetConfig.style ?? Registry.defaultStyleOf("vtnc.island-editor")
+    readonly property string faceName: widgetConfig.face ?? Registry.defaultFaceOf("vtnc.island-editor")
     readonly property string islandName: widgetConfig.islandName ?? ""
     readonly property var island: Config.island(islandName) ?? {}
 
@@ -76,13 +76,13 @@ Item {
         CliRunner.run(["island", islandName, "set", "page", value]);
     }
 
-    onStyleNameChanged: root.loadStyle()
+    onFaceNameChanged: root.loadFace()
 
     // Qt.binding, nao o valor cru: as propriedades iniciais do setSource sao
-    // atribuicoes, entao um valor direto congelaria o style no primeiro
-    // quadro. Tudo o que o type publica (meta.js, `provides`) viaja assim.
-    function loadStyle() {
-        styleLoader.setSource(Registry.resolvedStylePath("vtnc.island-editor", root.styleName), {
+    // atribuicoes, entao um valor direto congelaria a face no primeiro
+    // quadro. Tudo o que o module publica (meta.js, `provides`) viaja assim.
+    function loadFace() {
+        faceLoader.setSource(Registry.resolvedFacePath("vtnc.island-editor", root.faceName), {
             islandName: Qt.binding(() => root.islandName),
             anchor: Qt.binding(() => root.anchor),
             offset: Qt.binding(() => root.offset),
@@ -108,8 +108,8 @@ Item {
     }
 
     Loader {
-        id: styleLoader
+        id: faceLoader
         anchors.fill: parent
-        Component.onCompleted: root.loadStyle()
+        Component.onCompleted: root.loadFace()
     }
 }

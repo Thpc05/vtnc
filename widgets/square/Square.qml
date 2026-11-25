@@ -1,9 +1,9 @@
 import QtQuick
 import "../../core/widget-registry.mjs" as Registry
-import "../../core/style-schema.mjs" as StyleSchema
+import "../../core/face-schema.mjs" as FaceSchema
 
-// The type: vtnc.square. A dumb widget — a square with text — that exists
-// to prove the type/style split (decision 3.1/3.5) with the least possible
+// The module: vtnc.square. A dumb widget — a square with text — that exists
+// to prove the module/face split (decision 3.1/3.5) with the least possible
 // code. No services: it names none because it needs none.
 Item {
     id: root
@@ -11,30 +11,30 @@ Item {
     // Set by Page.qml's Loader once instantiated.
     property var widgetConfig: ({})
 
-    readonly property string styleName: widgetConfig.style ?? Registry.defaultStyleOf("vtnc.square")
+    readonly property string faceName: widgetConfig.face ?? Registry.defaultFaceOf("vtnc.square")
     readonly property string text: widgetConfig.text ?? "square"
 
     // Ver o comentario igual em widgets/clock/Clock.qml: o canal `options`
-    // da decisao 3.4, entregue sem o type olhar o conteudo.
-    readonly property var styleOptions: StyleSchema.resolveStyleOptions(
-        Registry.optionSchemaOf("vtnc.square", root.styleName),
-        StyleSchema.storedOptionsFor(root.widgetConfig, root.styleName))
+    // da decisao 3.4, entregue sem o module olhar o conteudo.
+    readonly property var faceOptions: FaceSchema.resolveFaceOptions(
+        Registry.optionSchemaOf("vtnc.square", root.faceName),
+        FaceSchema.storedOptionsFor(root.widgetConfig, root.faceName))
 
-    onStyleNameChanged: root.loadStyle()
+    onFaceNameChanged: root.loadFace()
 
     // Qt.binding, nao o valor cru: as propriedades iniciais do setSource sao
-    // atribuicoes, entao um valor direto congelaria o style no primeiro
-    // quadro. Tudo o que o type publica (meta.js, `provides`) viaja assim.
-    function loadStyle() {
-        styleLoader.setSource(Registry.resolvedStylePath("vtnc.square", root.styleName), {
+    // atribuicoes, entao um valor direto congelaria a face no primeiro
+    // quadro. Tudo o que o module publica (meta.js, `provides`) viaja assim.
+    function loadFace() {
+        faceLoader.setSource(Registry.resolvedFacePath("vtnc.square", root.faceName), {
             text: Qt.binding(() => root.text),
-            options: Qt.binding(() => root.styleOptions)
+            options: Qt.binding(() => root.faceOptions)
         });
     }
 
     Loader {
-        id: styleLoader
+        id: faceLoader
         anchors.fill: parent
-        Component.onCompleted: root.loadStyle()
+        Component.onCompleted: root.loadFace()
     }
 }

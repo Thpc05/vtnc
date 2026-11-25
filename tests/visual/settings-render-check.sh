@@ -55,8 +55,8 @@ cat >"$tmp_config_dir/config.json" <<'EOF'
   ],
   "pages": {
     "clock": { "grid": { "cols": 10, "rows": 4 }, "widgets": [
-      { "type": "vtnc.clock", "cell": { "x": 0, "y": 0, "w": 6, "h": 2 } },
-      { "type": "vtnc.square", "cell": { "x": 6, "y": 0, "w": 2, "h": 2 } }
+      { "module": "vtnc.clock", "cell": { "x": 0, "y": 0, "w": 6, "h": 2 } },
+      { "module": "vtnc.square", "cell": { "x": 6, "y": 0, "w": 2, "h": 2 } }
     ] },
     "launcher": { "grid": { "cols": 10, "rows": 6 }, "widgets": [] }
   },

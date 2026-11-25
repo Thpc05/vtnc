@@ -7,7 +7,7 @@ import {
     defaultPage, PAGE_SETTABLE_KEYS, parsePageSetValue, validatePageSet,
 } from "../../core/config-shape.mjs";
 import { emptyStateIsland, exclusiveZone, islandGeometry, EMPTY_STATE_CELLS } from "../../core/grid.mjs";
-import { WIDGET_CATALOG, SETTINGS_ONLY_TYPES, catalogEntry, isPlaceableType } from "../../core/widget-catalog.mjs";
+import { WIDGET_CATALOG, SETTINGS_ONLY_MODULES, catalogEntry, isPlaceableModule } from "../../core/widget-catalog.mjs";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -32,21 +32,21 @@ test("a grid needs whole numbers of at least 1 on both axes", () => {
 
 // Sem w/h o widget nasce invisivel e sem x/y ele empilha no canto: os dois
 // casos parecem "o botao nao fez nada" para quem esta usando.
-test("a widget instance needs a type and a complete cell", () => {
-    const ok = [{ type: "vtnc.clock", cell: { x: 0, y: 0, w: 6, h: 2 } }];
+test("a widget instance needs a module and a complete cell", () => {
+    const ok = [{ module: "vtnc.clock", cell: { x: 0, y: 0, w: 6, h: 2 } }];
     assert.equal(validatePageSet("widgets", ok), null);
-    assert.match(validatePageSet("widgets", [{ type: "vtnc.clock" }]), /cell/);
-    assert.match(validatePageSet("widgets", [{ cell: { x: 0, y: 0, w: 1, h: 1 } }]), /type/);
-    assert.match(validatePageSet("widgets", [{ type: "vtnc.clock", cell: { x: 0, y: 0, w: 0, h: 1 } }]), /1 or more/);
-    assert.match(validatePageSet("widgets", [{ type: "vtnc.clock", cell: { x: -1, y: 0, w: 1, h: 1 } }]), /0 or more/);
+    assert.match(validatePageSet("widgets", [{ module: "vtnc.clock" }]), /cell/);
+    assert.match(validatePageSet("widgets", [{ cell: { x: 0, y: 0, w: 1, h: 1 } }]), /module/);
+    assert.match(validatePageSet("widgets", [{ module: "vtnc.clock", cell: { x: 0, y: 0, w: 0, h: 1 } }]), /1 or more/);
+    assert.match(validatePageSet("widgets", [{ module: "vtnc.clock", cell: { x: -1, y: 0, w: 1, h: 1 } }]), /0 or more/);
     assert.match(validatePageSet("widgets", {}), /JSON array/);
 });
 
-test("style is optional on a widget instance, but must be a string", () => {
-    const withStyle = [{ type: "vtnc.clock", style: "panel", cell: { x: 0, y: 0, w: 1, h: 1 } }];
+test("face is optional on a widget instance, but must be a string", () => {
+    const withStyle = [{ module: "vtnc.clock", face: "panel", cell: { x: 0, y: 0, w: 1, h: 1 } }];
     assert.equal(validatePageSet("widgets", withStyle), null);
-    const badStyle = [{ type: "vtnc.clock", style: 3, cell: { x: 0, y: 0, w: 1, h: 1 } }];
-    assert.match(validatePageSet("widgets", badStyle), /style/);
+    const badStyle = [{ module: "vtnc.clock", face: 3, cell: { x: 0, y: 0, w: 1, h: 1 } }];
+    assert.match(validatePageSet("widgets", badStyle), /face/);
 });
 
 test("parsePageSetValue turns the CLI's JSON argument into the value, or undefined", () => {
@@ -84,13 +84,13 @@ test("the empty dot is square on screen", () => {
 
 // --- o catalogo (8.2) ------------------------------------------------------
 
-test("the catalogue only offers types page/Page.qml can actually draw", () => {
+test("the catalogue only offers modules page/Page.qml can actually draw", () => {
     const pageQml = readFileSync(join(repoRoot, "page", "Page.qml"), "utf8");
     for (const entry of WIDGET_CATALOG) {
-        assert.ok(pageQml.includes(`case "${entry.type}":`),
-            `${entry.type} está no catálogo mas Page.qml não sabe desenhá-lo`);
+        assert.ok(pageQml.includes(`case "${entry.module}":`),
+            `${entry.module} está no catálogo mas Page.qml não sabe desenhá-lo`);
         assert.ok(entry.defaultCell.w >= 1 && entry.defaultCell.h >= 1,
-            `${entry.type} nasceria invisível`);
+            `${entry.module} nasceria invisível`);
     }
 });
 
@@ -99,16 +99,16 @@ test("the catalogue only offers types page/Page.qml can actually draw", () => {
 // de uma page qualquer seria oferecer uma tela de configuracao solta.
 test("the Settings' own widgets are drawable but never offered in the catalogue", () => {
     const pageQml = readFileSync(join(repoRoot, "page", "Page.qml"), "utf8");
-    for (const type of SETTINGS_ONLY_TYPES) {
-        assert.ok(pageQml.includes(`case "${type}":`), `${type} não é desenhável`);
-        assert.equal(isPlaceableType(type), false, `${type} não devia estar no catálogo`);
-        assert.equal(catalogEntry(type), null);
+    for (const module of SETTINGS_ONLY_MODULES) {
+        assert.ok(pageQml.includes(`case "${module}":`), `${module} não é desenhável`);
+        assert.equal(isPlaceableModule(module), false, `${module} não devia estar no catálogo`);
+        assert.equal(catalogEntry(module), null);
     }
 });
 
 test("a widget instance the catalogue doesn't know is still valid config", () => {
-    // Uma extensao de terceiro instala o proprio type: o validador nao pode
+    // Uma extensao de terceiro instala o proprio module: o validador nao pode
     // exigir que ele esteja nesta lista, que e so o que o editor OFERECE.
-    assert.equal(validatePageSet("widgets", [{ type: "user8.weather", cell: { x: 0, y: 0, w: 2, h: 2 } }]), null);
-    assert.equal(isPlaceableType("user8.weather"), false);
+    assert.equal(validatePageSet("widgets", [{ module: "user8.weather", cell: { x: 0, y: 0, w: 2, h: 2 } }]), null);
+    assert.equal(isPlaceableModule("user8.weather"), false);
 });

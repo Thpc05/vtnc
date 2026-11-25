@@ -37,10 +37,10 @@ cat >"$tmp_config_dir/config.json" <<'EOF'
     { "name": "dock", "anchor": { "bottom": true, "left": true }, "offset": { "x": 2, "y": 2 }, "size": { "w": 20, "h": 6 }, "layer": "top", "page": "launcher" }
   ],
   "pages": {
-    "clock": { "grid": { "cols": 10, "rows": 4 }, "widgets": [ { "type": "vtnc.square", "style": "default", "text": "clock", "cell": { "x": 0, "y": 0, "w": 6, "h": 4 } } ] },
-    "launcher": { "grid": { "cols": 10, "rows": 6 }, "widgets": [ { "type": "vtnc.square", "style": "default", "text": "launcher", "cell": { "x": 0, "y": 0, "w": 20, "h": 6 } } ] },
-    "dashboard": { "grid": { "cols": 10, "rows": 4 }, "widgets": [ { "type": "vtnc.clock", "style": "digital", "cell": { "x": 0, "y": 0, "w": 6, "h": 4 } } ] },
-    "dashboard-compact": { "grid": { "cols": 10, "rows": 6 }, "widgets": [ { "type": "vtnc.clock", "style": "compact", "cell": { "x": 0, "y": 0, "w": 4, "h": 2 } } ] }
+    "clock": { "grid": { "cols": 10, "rows": 4 }, "widgets": [ { "module": "vtnc.square", "face": "default", "text": "clock", "cell": { "x": 0, "y": 0, "w": 6, "h": 4 } } ] },
+    "launcher": { "grid": { "cols": 10, "rows": 6 }, "widgets": [ { "module": "vtnc.square", "face": "default", "text": "launcher", "cell": { "x": 0, "y": 0, "w": 20, "h": 6 } } ] },
+    "dashboard": { "grid": { "cols": 10, "rows": 4 }, "widgets": [ { "module": "vtnc.clock", "face": "digital", "cell": { "x": 0, "y": 0, "w": 6, "h": 4 } } ] },
+    "dashboard-compact": { "grid": { "cols": 10, "rows": 6 }, "widgets": [ { "module": "vtnc.clock", "face": "compact", "cell": { "x": 0, "y": 0, "w": 4, "h": 2 } } ] }
   }
 }
 EOF
@@ -115,7 +115,7 @@ sleep 0.3
 # (clock/launcher, neither of which uses the clock widget) — so each island
 # contributes exactly one holder, regardless of how many screens it mirrors
 # across.
-check "clock turns on and is shared by two islands (two different styles)" \
+check "clock turns on and is shared by two islands (two different faces)" \
     "$("$here/cli/vtnc" service list | python3 -c 'import json,sys; s=[x for x in json.load(sys.stdin) if x["name"]=="clock"][0]; print(s["running"], s["holders"])')" \
     "True 2"
 

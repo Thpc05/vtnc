@@ -133,7 +133,7 @@ Ate a 0.507 o `page` so tinha `call`, `get` e `list`. Agora tem tambem:
 - `vtnc page <nome> delete` — apaga a page. Devolve `{"deleted": ...,
   "nowEmpty": [...]}` dizendo **quais islands ficaram sem ela**.
 - `vtnc page <nome> set grid '{"cols":12,"rows":6}'`
-- `vtnc page <nome> set widgets '[{"type":"vtnc.clock","cell":{"x":0,"y":0,"w":6,"h":2}}]'`
+- `vtnc page <nome> set widgets '[{"module":"vtnc.clock","cell":{"x":0,"y":0,"w":6,"h":2}}]'`
 
 As duas chaves viajam como um argumento JSON so, do mesmo jeito que
 `anchor`/`offset`/`size` do island e `keybinds` do hyprland. `widgets`
@@ -166,51 +166,51 @@ reservando quarenta celulas empurraria as janelas do usuario por nada, e ele
 nao teria como ver o porque.
 
 
-## Trocar o style de um widget (0.509)
+## Trocar a face de um widget (0.509)
 
-Nao ha verbo novo. O style de uma instancia e um campo dela, entao trocar o
-style e reescrever a lista da page, do mesmo jeito que mover um widget:
+Nao ha verbo novo. A face de uma instancia e um campo dela, entao trocar o
+face e reescrever a lista da page, do mesmo jeito que mover um widget:
 
 ```sh
-vtnc page dash set widgets '[{"type":"vtnc.clock","style":"compact","cell":{"x":0,"y":0,"w":6,"h":2}}]'
+vtnc page dash set widgets '[{"module":"vtnc.clock","face":"compact","cell":{"x":0,"y":0,"w":6,"h":2}}]'
 ```
 
-`style` continua **opcional**: sem ele a instancia veste o `defaultStyle`
-declarado no meta do type (ver `../widgets/README.md`). Um nome que nao
-existe naquele type tambem nao quebra nada — a shell cai no padrao em vez de
+`face` continua **opcional**: sem ele a instancia veste o `defaultFace`
+declarado no meta do module (ver `../widgets/README.md`). Um nome que nao
+existe naquele module tambem nao quebra nada — a shell cai no padrao em vez de
 deixar o widget sumir, porque o `config.json` e um arquivo que o usuario
 edita a mao.
 
-O `vtnc island <nome> get` passou a devolver `widgets`, com o `type` e o
-`style` de cada instancia **como a shell os resolveu** — nao como o
+O `vtnc island <nome> get` passou a devolver `widgets`, com o `module` e o
+`face` de cada instancia **como a shell os resolveu** — nao como o
 `config.json` os escreveu. E o que torna a troca observavel de fora sem
 olhar um pixel, pelo mesmo motivo que `mirrors` (0.506) e `widgetCount`
 (0.508) existem.
 
-## As opcoes de style (0.510)
+## As opcoes de face (0.510)
 
 Tambem nao ha verbo novo: as opcoes sao campo da instancia, entao viajam
-dentro do `page <nome> set widgets`, guardadas **por nome de style**
+dentro do `page <nome> set widgets`, guardadas **por nome de face**
 (decisao 4.4):
 
 ```sh
-vtnc page dash set widgets '[{"type":"vtnc.clock","style":"digital",
+vtnc page dash set widgets '[{"module":"vtnc.clock","face":"digital",
   "cell":{"x":0,"y":0,"w":6,"h":2},
   "options":{"digital":{"fontSize":32},"compact":{"showSeconds":true}}}]'
 ```
 
-O validador recusa, com o motivo, o que o style nao pediu — numero fora do
+O validador recusa, com o motivo, o que a face nao pediu — numero fora do
 `min`/`max`, escolha fora da lista, papel de cor que nao existe, texto
-acima do teto (decisao 3.4d: quem decide e a shell, nao o style):
+acima do teto (decisao 3.4d: quem decide e a shell, nao a face):
 
 ```
-invalid widgets: option "fontSize" of style "digital" on vtnc.clock: precisa estar entre 8 e 72
+invalid widgets: option "fontSize" of face "digital" on vtnc.clock: precisa estar entre 8 e 72
 ```
 
 Duas coisas ele **nao** recusa, de proposito: opcoes guardadas debaixo de
-um style que nao existe mais, e uma chave que o style deixou de declarar.
-As duas sao a memoria da 4.4 — recusa-las faria "trocar de style e voltar"
-perder tudo. O que elas nao fazem e chegar ao style, que so recebe o que
+uma face que nao existe mais, e uma chave que a face deixou de declarar.
+As duas sao a memoria da 4.4 — recusa-las faria "trocar de face e voltar"
+perder tudo. O que elas nao fazem e chegar à face, que so recebe o que
 declarou.
 
 O `vtnc island <nome> get` devolve, em cada widget, as `options` **como a

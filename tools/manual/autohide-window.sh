@@ -86,7 +86,7 @@ cat >"$cfg/config.json" <<'JSON'
       "layer": "top", "page": "idle", "autohide": true, "autohideMode": "window" }
   ],
   "pages": { "idle": { "grid": {"cols":10,"rows":6},
-    "widgets": [ {"type":"vtnc.square","style":"default","text":"autohide window","cell":{"x":0,"y":0,"w":10,"h":6}} ] } } }
+    "widgets": [ {"module":"vtnc.square","face":"default","text":"autohide window","cell":{"x":0,"y":0,"w":10,"h":6}} ] } } }
 JSON
 
 echo "monitor em foco: $HOME_FOCUS"

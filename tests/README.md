@@ -92,7 +92,7 @@ As quatro camadas da decisão 17.2:
 4. **`visual/render-check.sh`** — renderiza uma page para PNG, para ser
    **olhada**, não comparada pixel a pixel. Sobe o aninhado sozinho, a menos
    que `NESTED_PID` já esteja no ambiente. Desde a 0.502, a page renderizada
-   traz os dois styles do `vtnc.clock` (`digital` e `compact`) lado a lado
+   traz os dois faces do `vtnc.clock` (`digital` e `compact`) lado a lado
    com o `vtnc.square` da 0.501.
 4b. **`visual/settings-render-check.sh`** — o critério 6 da 0.503: abre a
    Settings de verdade (`settings/Settings.qml`) na página Islands e tira
@@ -107,9 +107,9 @@ As quatro camadas da decisão 17.2:
    por `Qt.application.arguments`.
 
 **`cli/settings-click-path.sh`** (do coordenador) fecha o centímetro que os
-outros não alcançam: não "as funções do type chegam ao `config.json`", mas
+outros não alcançam: não "as funções do module chegam ao `config.json`", mas
 "clicar o controle chama a função". Ele caminha a árvore de objetos até o
-`MouseArea` dentro do chip `overlay` do style `panel` e emite o `clicked`
+`MouseArea` dentro do chip `overlay` da face `panel` e emite o `clicked`
 dele, então a corrente inteira roda — `MouseArea` → `Chip.activated` →
 `IslandEditor.setLayer` → `CliRunner` → `cli/vtnc` → `config.json`.
 Falsificado na marra: trocando o `onActivated` do chip por um `console.log`,
@@ -378,7 +378,7 @@ dao para medir em node:
   32 px (4 celulas) virando 16 px (2 celulas).
 
 Na camada 1, `tests/unit/page-editing.test.mjs` tem um teste que vale
-apontar: ele **le o `page/Page.qml`** e falha se um type do catalogo nao
+apontar: ele **le o `page/Page.qml`** e falha se um module do catalogo nao
 tiver `case` la, e tambem se um widget da propria Settings aparecer no
 catalogo. Os dois erros seriam silenciosos de outro jeito — o primeiro da um
 widget que o editor oferece e a page desenha em branco.
@@ -396,46 +396,46 @@ esta sempre certa e ainda resolve de graca o caso de a page aberta ser
 apagada.
 
 
-## 0.509 — a interface que o type publica
+## 0.509 — a interface que o module publica
 
 A camada 1 e onde este passo tem dentes. `tests/unit/widget-registry.test.mjs`
-le o QML de cada style, pega as `required property` da raiz e reprova se
-alguma nao estiver publicada no `provides` do meta do type (decisao 3.5b).
+le o QML de cada face, pega as `required property` da raiz e reprova se
+alguma nao estiver publicada no `provides` do meta do module (decisao 3.5b).
 Falsificado na marra: acrescentei uma `required property string inventado`
-ao `Digital.qml` e o teste acusou pelo nome, dizendo qual style exigia o
+ao `Digital.qml` e o teste acusou pelo nome, dizendo qual face exigia o
 que. Sem ele, `provides` seria mais um comentario que envelhece — basta
 alguem acrescentar uma propriedade e passar a entrega-la na mao.
 
 O mesmo arquivo confere o registro contra o **disco**: toda pasta de widget
-esta registrada, os styles de um type sao exatamente as pastas em
-`styles/`, e todo `component` nomeado por um meta existe. E ha um teste que
-impede a regressao estrutural: nenhum QML de type pode voltar a escolher
-style com `case "<nome>":`, porque quem sabe isso e o registro.
+esta registrada, as faces de um module sao exatamente as pastas em
+`faces/`, e todo `component` nomeado por um meta existe. E ha um teste que
+impede a regressao estrutural: nenhum QML de module pode voltar a escolher
+face com `case "<nome>":`, porque quem sabe isso e o registro.
 
-Esses testes pegaram uma inconsistencia que ja estava la: o meta do style
-`panel` do `pages-editor` nao declarava a que type pertencia, e carregava um
+Esses testes pegaram uma inconsistencia que ja estava la: o meta da face
+`panel` do `pages-editor` nao declarava a que module pertencia, e carregava um
 `options: {}` que nada lia. Ninguem notaria enquanto os metas fossem
 decoracao.
 
-`tests/cli/style-switch.sh` e a camada 3, sete medidas. O que so se mede ali
-e que a shell **resolve** o style pelo registro em vez de repetir o que esta
-no `config.json`: uma instancia sem `style` tem de aparecer vestindo o
-`defaultStyle` do type. Para isso o `island <nome> get` ganhou `widgets`,
-com o `type` e o `style` de cada instancia — mesmo motivo do `mirrors` na
-0.506 e do `widgetCount` na 0.508. O teste tambem exige que um style
+`tests/cli/face-switch.sh` e a camada 3, sete medidas. O que so se mede ali
+e que a shell **resolve** a face pelo registro em vez de repetir o que esta
+no `config.json`: uma instancia sem `face` tem de aparecer vestindo o
+`defaultFace` do module. Para isso o `island <nome> get` ganhou `widgets`,
+com o `module` e o `face` de cada instancia — mesmo motivo do `mirrors` na
+0.506 e do `widgetCount` na 0.508. O teste tambem exige que uma face
 inexistente na config nao faca o widget sumir.
 
-`tests/cli/settings-style-click-path.sh` e o critério 4, no molde dos
-outros click-paths. O chip de style e o mais frágil de achar que temos: o
-rótulo é o **título** do style, que vem do meta pelo registro, e não um
+`tests/cli/settings-face-click-path.sh` e o critério 4, no molde dos
+outros click-paths. O chip de face e o mais frágil de achar que temos: o
+rótulo é o **título** da face, que vem do meta pelo registro, e não um
 texto escrito no painel — se o registro deixar de ser lido, o chip não
 existe e o teste reprova por não encontrá-lo.
 
 ## 0.510 — o schema de opcoes
 
-`tests/unit/style-schema.test.mjs` e o grosso. Quase todo teste ali existe
-por causa da decisao 3.4d — o style descreve, a shell decide — e conferem
-que a shell recusa e limita por conta propria, sem depender de o style ter
+`tests/unit/face-schema.test.mjs` e o grosso. Quase todo teste ali existe
+por causa da decisao 3.4d — a face descreve, a shell decide — e conferem
+que a shell recusa e limita por conta propria, sem depender de a face ter
 se comportado: controle fora da lista fechada, chave que nao e
 identificador, default que nao serve para o proprio controle, numero fora
 da faixa, escolha fora da lista, papel de cor inventado, texto acima do
@@ -443,24 +443,24 @@ teto. Ha tambem o caso do schema que nem e uma lista (`undefined`, numero,
 objeto): ele devolve vazio em vez de explodir, porque um meta de terceiro
 pode ser qualquer coisa.
 
-Um teste anda junto com os styles de verdade: **todo style que existe tem
+Um teste anda junto com as faces de verdade: **toda face que existe tem
 de declarar opcoes que a shell aceita inteiras**. Se um dia alguem escrever
 uma declaracao torta, ela e descartada em silencio na tela — este teste e
 quem grita.
 
-`tests/cli/style-options.sh` e a camada 3, nove medidas, e mede o que o
+`tests/cli/face-options.sh` e a camada 3, nove medidas, e mede o que o
 node nao alcanca: que o caminho inteiro, da CLI ate a shell viva, obedece.
 Os defaults declarados aparecem no `island get` sem nada guardado; mudar
 uma opcao chega; as tres recusas (faixa, lista, papel) acontecem **antes**
-do `config.json` e nao mexem no que ja estava la; trocar de style mostra as
+do `config.json` e nao mexem no que ja estava la; trocar de face mostra as
 opcoes do novo e voltar reencontra as do antigo intactas (4.4). O ultimo
 caso escreve `fontSize: 999` **direto no arquivo**, por fora da CLI, para
 provar que um valor impossivel editado a mao cai no default em vez de
-chegar torto ao style.
+chegar torto à face.
 
 `tests/cli/settings-option-click-path.sh` e o mais indireto dos
 click-paths: o chip "on" que ele procura nao existe escrito em lugar
-nenhum. Ele aparece porque o meta do style `digital` declara uma opcao
+nenhum. Ele aparece porque o meta da face `digital` declara uma opcao
 `showSeconds` do tipo toggle, o registro entrega a declaracao ao editor e o
 painel desenha o controle que a declaracao pediu. Qualquer elo que quebre
 tira o chip da tela, e o teste reprova por nao acha-lo.

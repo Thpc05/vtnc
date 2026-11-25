@@ -48,9 +48,9 @@ Window {
                 widgets: [
                     // The one autohide knob that isn't per-island (decision
                     // 12.4): shown once, above every island's own editor.
-                    { type: "vtnc.autohide-settings", cell: { x: 0, y: 0, w: root.contentCols, h: globalRows - 1 } },
+                    { module: "vtnc.autohide-settings", cell: { x: 0, y: 0, w: root.contentCols, h: globalRows - 1 } },
                     ...islands.map((island, index) => ({
-                        type: "vtnc.island-editor",
+                        module: "vtnc.island-editor",
                         islandName: island.name,
                         cell: { x: 0, y: globalRows + index * rowsPerIsland, w: root.contentCols, h: rowsPerIsland - 1 },
                     })),
@@ -65,9 +65,9 @@ Window {
             // mais cara, que e o pior caso e nunca fica curto.
             //
             // 0.510: um widget nao ocupa mais uma linha so. Ele tem a linha
-            // das celulas, a linha dos styles e UMA LINHA POR OPCAO do style
-            // vestido — e, como o style vestido tambem e escolha do momento,
-            // conta-se o style mais cheio daquele type. Sem isto a lista
+            // das celulas, a linha das faces e UMA LINHA POR OPCAO da face
+            // vestido — e, como a face vestido tambem e escolha do momento,
+            // conta-se a face mais cheio daquele module. Sem isto a lista
             // vaza para fora do painel, que foi o defeito que a camada 4
             // pegou duas vezes, na 0.508 e na 0.507.
             const pages = Config.data.pages ?? {};
@@ -79,8 +79,8 @@ Window {
                     // cor: os sete papeis nao cabem numa linha so e o Flow
                     // os quebra em duas.
                     let options = 0;
-                    for (const style of Registry.stylesOf(widget.type)) {
-                        const declared = style.options ?? [];
+                    for (const face of Registry.facesOf(widget.module)) {
+                        const declared = face.options ?? [];
                         const roles = declared.filter((option) => option.kind === "role").length;
                         options = Math.max(options, declared.length + roles);
                     }
@@ -92,7 +92,7 @@ Window {
             return {
                 grid: { cols: root.contentCols, rows: rows },
                 widgets: [
-                    { type: "vtnc.pages-editor", cell: { x: 0, y: 0, w: root.contentCols, h: rows } },
+                    { module: "vtnc.pages-editor", cell: { x: 0, y: 0, w: root.contentCols, h: rows } },
                 ],
             };
         }
@@ -107,14 +107,14 @@ Window {
             return {
                 grid: { cols: root.contentCols, rows: rows },
                 widgets: [
-                    { type: "vtnc.keybinds-editor", cell: { x: 0, y: 0, w: root.contentCols, h: rows } },
+                    { module: "vtnc.keybinds-editor", cell: { x: 0, y: 0, w: root.contentCols, h: rows } },
                 ],
             };
         }
         return {
             grid: { cols: root.contentCols, rows: 6 },
             widgets: [
-                { type: "vtnc.not-built", pageName: name, cell: { x: 0, y: 0, w: root.contentCols, h: 6 } },
+                { module: "vtnc.not-built", pageName: name, cell: { x: 0, y: 0, w: root.contentCols, h: 6 } },
             ],
         };
     }

@@ -79,15 +79,15 @@ cat >"$cfg/config.json" <<'JSON'
   ],
   "pages": {
     "idle": { "grid": {"cols":10,"rows":4},
-      "widgets": [ {"type":"vtnc.square","style":"default","text":"idle","cell":{"x":0,"y":0,"w":10,"h":4}} ] },
+      "widgets": [ {"module":"vtnc.square","face":"default","text":"idle","cell":{"x":0,"y":0,"w":10,"h":4}} ] },
     "calledplain": { "grid": {"cols":10,"rows":4}, "lifecycle": "called", "needsKeyboard": false,
-      "widgets": [ {"type":"vtnc.square","style":"default","text":"called (no kb)","cell":{"x":0,"y":0,"w":10,"h":4}} ] },
+      "widgets": [ {"module":"vtnc.square","face":"default","text":"called (no kb)","cell":{"x":0,"y":0,"w":10,"h":4}} ] },
     "modal": { "grid": {"cols":10,"rows":4}, "lifecycle": "called", "needsKeyboard": true,
-      "widgets": [ {"type":"vtnc.square","style":"default","text":"called (needs kb)","cell":{"x":0,"y":0,"w":10,"h":4}} ] },
+      "widgets": [ {"module":"vtnc.square","face":"default","text":"called (needs kb)","cell":{"x":0,"y":0,"w":10,"h":4}} ] },
     "popup": { "grid": {"cols":10,"rows":4}, "lifecycle": "popup", "popupTimeout": 8000,
-      "widgets": [ {"type":"vtnc.square","style":"default","text":"popup (8s or x)","cell":{"x":0,"y":0,"w":10,"h":4}} ] },
+      "widgets": [ {"module":"vtnc.square","face":"default","text":"popup (8s or x)","cell":{"x":0,"y":0,"w":10,"h":4}} ] },
     "locked": { "grid": {"cols":10,"rows":4}, "lifecycle": "lock",
-      "widgets": [ {"type":"vtnc.square","style":"default","text":"lock (CLI only)","cell":{"x":0,"y":0,"w":10,"h":4}} ] }
+      "widgets": [ {"module":"vtnc.square","face":"default","text":"lock (CLI only)","cell":{"x":0,"y":0,"w":10,"h":4}} ] }
   }
 }
 JSON

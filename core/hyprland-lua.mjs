@@ -39,7 +39,7 @@ export function enabledKeybinds(hyprland) {
 
 // Lua's long-bracket string ([[ ... ]]) needs no escaping for quotes or
 // backslashes, unlike a normal "..." literal — and a key or command the
-// user types can contain either. It only breaks if the text itself
+// user modules can contain either. It only breaks if the text itself
 // contains "]]", which nothing here guards against.
 function luaLongString(value) {
     return `[[${value}]]`;

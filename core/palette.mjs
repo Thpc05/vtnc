@@ -1,13 +1,13 @@
 // Os papeis de cor em cores de verdade (decisao 3.4c), **provisorio**.
 //
-// A 3.4b fechou o controle `role`: um style nomeia um papel, nunca um
+// A 3.4b fechou o controle `role`: uma face nomeia um papel, nunca um
 // hexadecimal. Alguem tem de traduzir papel em cor, e enquanto o bloco de
 // Appearance nao existe e este arquivo - uma tabela fixa, escrita para
 // combinar com o andaime cinza que a Settings usa hoje.
 //
 // Quando o Appearance existir, ele substitui esta tabela e nada mais muda:
-// nenhum style conhece estes valores, porque a cor ja chega resolvida a
-// eles (ver resolveStyleOptions em style-schema.mjs). Trocar a tabela
+// nenhuma face conhece estes valores, porque a cor ja chega resolvida a
+// eles (ver resolveFaceOptions em face-schema.mjs). Trocar a tabela
 // troca a shell inteira de uma vez, que e exatamente o motivo de o
 // controle ser `role` e nao um seletor de cor livre.
 
