@@ -1,7 +1,7 @@
 # core
 
 A base que não conhece ninguém acima dela: nenhum arquivo aqui importa
-`island/`, `page/` ou `widgets/`.
+`island/`, `page/` ou `modules/`.
 
 - `grid.mjs` — matemática pura (célula base × fator do monitor, âncora +
   deslocamento → geometria em pixels). Testada em node (`tests/unit/`).
@@ -37,32 +37,46 @@ A base que não conhece ninguém acima dela: nenhum arquivo aqui importa
   para não re-gerar quando o que mudou foi uma island; e como a assinatura
   começa vazia, uma shell recém-aberta re-sincroniza por conta própria se o
   consentimento já tinha sido dado antes.
-- `widget-catalog.mjs` (0.508) — a lista dos modules que o editor de Pages
-  **oferece** para acrescentar, pura e testada em node. Mora aqui, e nao no
-  QML, para que o editor e o `page/Page.qml` nao possam discordar: um teste
-  le o `Page.qml` e falha se um module do catalogo nao tiver `case` la. Nao e
-  o catalogo automatico por `meta.js` que a 3b/4.x pede, com extensao de
-  terceiro se apresentando sozinha — esse e outro passo. Os widgets da
-  propria Settings ficam em `SETTINGS_ONLY_MODULES`: sao desenhaveis (decisao
-  8.3), mas oferecer um island-editor para colocar numa page qualquer seria
-  oferecer uma tela de configuracao solta.
-- `widget-registry.mjs` (0.509) — quem e quem entre modules e faces, lido
-  pelo node nos testes e pelo QML na shell. Importa os `meta.js` de cada
-  module e de cada face, que ate a 0.508 nao eram abertos por codigo nenhum.
+- `plugin-manifest.mjs` (0.512) — o que um `plugin.json` precisa ter, e o
+  que um `meta.json` de module e de face precisam ter. Tudo funcao pura: o
+  node valida nos testes e na CLI, o QML valida na shell, com o mesmo
+  codigo. Aqui tambem mora a faixa de API (`PLUGIN_API_MIN`/`CURRENT`): um
+  inteiro cumulativo, e um plugin fora da faixa e recusado **pela faixa**,
+  com motivo escrito, em vez de quebrar no meio da carga.
+- `plugin-catalog.mjs` (0.512) — o catalogo montado a partir do que a
+  varredura achou: quais plugins existem, quais modules e faces cada um
+  traz, e a URL do QML de cada coisa. Substituiu o `widget-registry.mjs` e o
+  `widget-catalog.mjs` da 0.509/0.508, que importavam cada meta **a mao** —
+  ali a lista de quem existe era codigo escrito dentro da shell, e era por
+  isso que nada de fora dela podia entrar. Aqui ela e dado, e o proprio vtnc
+  entra por ele como qualquer plugin.
+
   A lista de faces de um module nao mora aqui nem no meta do module: ela e
   **derivada** do `module` que cada face declara (decisao 3.5), que era a
   unica forma de ela nao existir escrita em dois lugares que podem
-  discordar. Tambem e daqui que sai o caminho do QML de uma face, com queda
-  para o `defaultFace` do module quando o nome pedido nao existe — a config
-  e um arquivo que o usuario edita a mao, e um nome errado nao pode fazer o
+  discordar. Como a face nomeia o module pelo nome completo, uma face pode
+  vestir o module de **outro plugin** — e o que faz "qualquer um escreve
+  estilos" ser verdade. Daqui tambem sai a URL de uma face, com queda para
+  o `defaultFace` do module quando o nome pedido nao existe: a config e um
+  arquivo que o usuario edita a mao, e um nome errado nao pode fazer o
   widget sumir da tela.
 
-  Medido antes de escrever, com `qml6`: **um `.mjs` consegue importar outro
-  `.mjs` (ou `.js`) de outra pasta de dentro do QML**. Era a duvida que
-  decidia se o meta podia morar junto de cada face ou teria de virar lista
-  central. Os imports aqui ainda sao escritos a mao, um a um; o catalogo
-  automatico por varredura (3b/4.x) e outro passo, e quando vier troca so
-  estas linhas, porque todo o resto ja pergunta ao registro.
+  Nada aqui lanca excecao. Um plugin quebrado vira um problema na lista e
+  os outros continuam carregando — a mesma regra da 3.4d que ja valia para
+  uma declaracao de opcao invalida.
+- `PluginRegistry.qml` (0.512) — a varredura do lado da shell; o lado node
+  e `cli/lib/plugins.js`, e os dois chamam o mesmo `buildCatalog`. Medido
+  com `qs` antes de escrever: `Qt.labs.folderlistmodel` lista pastas, e um
+  `FileView { blockLoading: true }` criado em tempo de execucao le arquivo
+  de forma **sincrona** — o catalogo inteiro se monta dentro de uma funcao,
+  sem cascata de callbacks. So a listagem de pastas e assincrona, e por
+  isso um plugin instalado entra no catalogo um instante depois de a shell
+  subir; quem desenha reage a `catalog` mudar.
+
+  Pegadinha medida aqui: com uma pasta que nao existe, o `FolderListModel`
+  nao fica vazio — ele continua listando o diretorio corrente, e a shell
+  "achou" um plugin para cada pasta do proprio repositorio. Confere-se a
+  pasta que ele de fato abriu antes de acreditar no que ele lista.
 - `face-schema.mjs` (0.510) — o que uma face pode declarar como opcao, e
   o que a shell aceita como valor. A decisao 3.4d da a forma ao arquivo
   inteiro: a face DESCREVE, a shell DECIDE. Por isso `min`/`max`, a lista

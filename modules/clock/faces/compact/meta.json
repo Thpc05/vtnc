@@ -1,0 +1,20 @@
+{
+    "face": "compact",
+    "module": "vtnc.clock",
+    "title": "Compact",
+    "component": "Compact.qml",
+    "options": [
+        {
+            "key": "showSeconds",
+            "kind": "toggle",
+            "title": "Show seconds",
+            "default": false
+        },
+        {
+            "key": "fill",
+            "kind": "role",
+            "title": "Pill colour",
+            "default": "accent"
+        }
+    ]
+}

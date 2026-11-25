@@ -16,7 +16,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-sed 's#\.\./\.\./widgets/pages-editor#./widgets/pages-editor#' \
+sed 's#\.\./\.\./modules/pages-editor#./modules/pages-editor#' \
     "$here/tests/cli/settings-face-click-path.qml" >"$harness"
 
 cat >"$tmp_config_dir/config.json" <<'EOF'

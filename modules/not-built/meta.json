@@ -1,0 +1,14 @@
+{
+    "module": "not-built",
+    "title": "Not built",
+    "component": "NotBuilt.qml",
+    "services": [],
+    "defaultFace": "placeholder",
+    "provides": [
+        {
+            "name": "pageName",
+            "kind": "string",
+            "doc": "O nome da pagina da Settings que ainda nao foi construida."
+        }
+    ]
+}

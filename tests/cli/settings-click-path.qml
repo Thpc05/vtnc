@@ -1,5 +1,5 @@
 import QtQuick
-import "../../widgets/island-editor"
+import "../../modules/island-editor"
 
 // The last inch of 0.503's criterion 3/4 that driving the module's functions
 // can't reach: does clicking a control in the Panel face actually call

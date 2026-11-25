@@ -1,5 +1,5 @@
 import QtQuick
-import "../../widgets/pages-editor"
+import "../../modules/pages-editor"
 
 // O caminho de clique do critério 1 da 0.510: clicar o controle de uma
 // OPÇÃO de face tem de chegar ao config.json pelo cli/vtnc real.

@@ -4,3 +4,4 @@ singleton IslandState 1.0 IslandState.qml
 singleton CliRunner 1.0 CliRunner.qml
 singleton HoverCursor 1.0 HoverCursor.qml
 HyprlandSync 1.0 HyprlandSync.qml
+singleton PluginRegistry 1.0 PluginRegistry.qml

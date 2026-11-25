@@ -20,7 +20,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-sed 's#\.\./\.\./widgets/island-editor#./widgets/island-editor#' \
+sed 's#\.\./\.\./modules/island-editor#./modules/island-editor#' \
     "$here/tests/cli/settings-gap-click-path.qml" >"$harness"
 
 cat >"$tmp_config_dir/config.json" <<'EOF'

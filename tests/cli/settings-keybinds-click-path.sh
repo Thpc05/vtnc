@@ -24,7 +24,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-sed 's#\.\./\.\./widgets/keybinds-editor#./widgets/keybinds-editor#' \
+sed 's#\.\./\.\./modules/keybinds-editor#./modules/keybinds-editor#' \
     "$here/tests/cli/settings-keybinds-click-path.qml" >"$harness"
 
 cat >"$tmp_config_dir/config.json" <<'EOF'

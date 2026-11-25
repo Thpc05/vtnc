@@ -1,5 +1,5 @@
 import QtQuick
-import "../../widgets/pages-editor"
+import "../../modules/pages-editor"
 
 // O caminho de clique do critério 5 da 0.508, no mesmo molde do
 // settings-keybinds-click-path.qml: clicar o chip "+ Clock" no Panel

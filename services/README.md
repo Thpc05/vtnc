@@ -11,7 +11,7 @@ visível precisa, desligado quando o último sai de cena (decisão 5.2).
 - `clock/` — o service real desta etapa: um timer só na shell inteira
   (decisão 15.2), para não ter vinte widgets com vinte timers desalinhados.
 
-Um `widgets/<module>` consome um service chamando
+Um `modules/<module>` consome um service chamando
 `ServiceRegistry.acquire("nome")` no `Component.onCompleted` e
 `ServiceRegistry.release("nome")` no `Component.onDestruction`, e lê o
 estado vivo por `ServiceRegistry.get("nome")`.

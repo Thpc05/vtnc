@@ -1,5 +1,5 @@
 import QtQuick
-import "../../widgets/island-editor"
+import "../../modules/island-editor"
 
 // 0.505 criterion 5's click path, the same model as the coordinator's
 // settings-click-path.sh / settings-gap-click-path.sh: not "setAutohide

@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Window
 import "../core"
-import "../core/widget-registry.mjs" as Registry
 import "../page"
 
 // The Settings: a plain Hyprland window, not a layer-shell surface
@@ -27,7 +26,7 @@ Window {
     // (vtnc.not-built).
     readonly property var pageNames: [
         "Appearance", "Islands", "Pages", "Monitors", "Keybinds",
-        "Services", "Extensions", "Dependencies", "Presets", "About",
+        "Services", "Plugins", "Dependencies", "Presets", "About",
     ]
     property string currentPage: "Islands"
 
@@ -79,7 +78,7 @@ Window {
                     // cor: os sete papeis nao cabem numa linha so e o Flow
                     // os quebra em duas.
                     let options = 0;
-                    for (const face of Registry.facesOf(widget.module)) {
+                    for (const face of PluginRegistry.facesOf(widget.module)) {
                         const declared = face.options ?? [];
                         const roles = declared.filter((option) => option.kind === "role").length;
                         options = Math.max(options, declared.length + roles);

@@ -22,7 +22,8 @@ import {
     withOption,
 } from "../../core/face-schema.mjs";
 
-import { FACE_METAS, optionSchemaOf } from "../../core/widget-registry.mjs";
+import { optionSchemaOf } from "../../core/plugin-catalog.mjs";
+import { loadCatalog } from "../../cli/lib/plugins.js";
 import { PROVISIONAL_PALETTE, colorForRole } from "../../core/palette.mjs";
 
 const toggle = { key: "showSeconds", kind: "toggle", title: "Show seconds", default: true };
@@ -192,8 +193,9 @@ test("storedOptionsFor aguenta instancia sem options nenhuma", () => {
 // --- as faces de verdade ---------------------------------------------
 
 test("toda face que existe declara opcoes que a shell aceita inteiras", () => {
-    for (const face of FACE_METAS) {
-        const declared = optionSchemaOf(face.module, face.face);
+    const catalog = loadCatalog();
+    for (const face of catalog.faces) {
+        const declared = optionSchemaOf(catalog, face.moduleId, face.face);
         const { rejected } = partitionSchema(declared);
         assert.deepEqual(rejected, [],
             `${face.module}/${face.face} declara opcao que a shell recusa: ${JSON.stringify(rejected)}`);

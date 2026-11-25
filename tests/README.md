@@ -17,7 +17,7 @@ As quatro camadas da decisão 17.2:
    falha (hoje, `IslandManager`, por causa do PanelWindow). Um irmão
    declarado **depois** dele (como `Settings {}`) só é checado se também for
    alcançado por um import de algo que JÁ está na cadeia que falha — no caso
-   da 0.503, `page/Page.qml` importa `widgets/island-editor` incondicionalmente
+   da 0.503, `page/Page.qml` importava `widgets/island-editor` incondicionalmente
    (não só dentro do `switch`), e é isso que garante que o tipo seja
    verificado mesmo sem a Settings chegar a instanciar. Sem essa importação
    cruzada, um erro só na Settings passaria batido neste script. Confirmei
@@ -398,7 +398,7 @@ apagada.
 
 ## 0.509 — a interface que o module publica
 
-A camada 1 e onde este passo tem dentes. `tests/unit/widget-registry.test.mjs`
+A camada 1 e onde este passo tem dentes. `tests/unit/plugin-catalog.test.mjs`
 le o QML de cada face, pega as `required property` da raiz e reprova se
 alguma nao estiver publicada no `provides` do meta do module (decisao 3.5b).
 Falsificado na marra: acrescentei uma `required property string inventado`
@@ -469,3 +469,33 @@ A camada 4 pegou defeito de novo, o mesmo de sempre: os sete papeis de cor
 em fila vazavam para fora do painel. Viraram chip menor dentro de um
 `Flow`, e a conta de altura da Settings passou a reservar uma linha a mais
 por opcao de cor, porque o `Flow` quebra em duas.
+
+## 0.512 — o plugin de terceiro
+
+`tests/unit/plugin-catalog.test.mjs` nao se contenta em validar manifesto:
+ele **monta um plugin inteiro** numa pasta descartavel e manda varrer. E a
+unica forma de provar que o mecanismo nao e so para o vtnc, e e o mesmo
+plugin que prova a recusa por faixa de API — a promessa que mais vai
+importar quando a shell atualizar e o plugin de terceiro nao acompanhar. Um
+teste a parte monta um SEGUNDO plugin que traz so uma face, vestindo o
+module do primeiro: e o caso que faz "qualquer um escreve estilos" ser
+verdade, e ele nao tem como ser verificado sem dois plugins no disco.
+
+Um teste cobra o preco do indice no manifesto: as pastas listadas no
+`plugin.json` do vtnc tem de ser exatamente as que existem no disco.
+Acrescentar uma pasta e esquecer de lista-la reprova ali.
+
+`tests/cli/plugins.sh` e a camada 3, treze medidas, com a mesma recusa
+explicita da 0.507: se `VTNC_PLUGIN_DIR` nao apontar para a pasta
+temporaria que o proprio script criou, ele nao roda. Ele mede o que node
+nenhum mede — a shell viva lista os plugins, resolve o module e a face de
+um terceiro, e marca o incompativel com o motivo escrito.
+
+**Mas ele nao prova que desenha.** O `island get` le a CONFIG, nao a arvore
+viva: ele diz que a shell resolveu, nao que apareceu alguma coisa na tela.
+A prova de que desenha e `tests/visual/plugin-render-check.sh`, camada 4,
+olhada: o relogio do vtnc e o widget do plugin lado a lado, mais um module
+que nao existe, que nao pode deixar buraco. Na primeira vez que rodou, o
+widget do plugin **nao apareceu** — e foi assim que se descobriu que a
+listagem de pastas e assincrona e que um plugin precisa perguntar ao
+registro por ligacao, nao uma vez so em `Component.onCompleted`.

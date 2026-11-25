@@ -1,0 +1,19 @@
+{
+    "module": "square",
+    "title": "Square",
+    "component": "Square.qml",
+    "services": [],
+    "defaultFace": "default",
+    "placeable": true,
+    "defaultCell": {
+        "w": 2,
+        "h": 2
+    },
+    "provides": [
+        {
+            "name": "text",
+            "kind": "string",
+            "doc": "O texto a desenhar dentro do quadrado; vem da propria instancia do widget."
+        }
+    ]
+}

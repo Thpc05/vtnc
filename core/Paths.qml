@@ -21,4 +21,15 @@ QtObject {
     }
 
     readonly property string configFile: configDir + "/config.json"
+
+    // Onde moram os plugins instalados (decisao do Theo em 2026-11-24).
+    // Em ~/.local/share e nao em ~/.config porque plugin e codigo baixado,
+    // nao configuracao escrita pelo usuario: quem versiona a propria
+    // config nao leva codigo de terceiro junto.
+    readonly property string pluginDir: {
+        const override = Quickshell.env("VTNC_PLUGIN_DIR");
+        if (override) return override;
+        const dataHome = Quickshell.env("XDG_DATA_HOME");
+        return (dataHome ? dataHome : home + "/.local/share") + "/vtnc/plugins";
+    }
 }

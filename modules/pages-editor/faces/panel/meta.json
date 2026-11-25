@@ -1,0 +1,6 @@
+{
+    "face": "panel",
+    "module": "vtnc.pages-editor",
+    "title": "Panel",
+    "component": "Panel.qml"
+}

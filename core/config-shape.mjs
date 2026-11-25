@@ -2,7 +2,7 @@
 // Shared between the CLI (node) and the shell (QML import as ECMAScript
 // module) so the two never disagree about what a valid config looks like.
 
-import { optionSchemaOf, faceMeta } from "./widget-registry.mjs";
+import { optionSchemaOf, faceMeta } from "./plugin-catalog.mjs";
 import { usableSchema, validateOptionValue } from "./face-schema.mjs";
 
 export function defaultConfig() {
@@ -297,11 +297,12 @@ function isValidWidgetInstance(value) {
 // voltar" perder tudo. Chave desconhecida dentro de uma face conhecido
 // tambem passa, pelo mesmo motivo — o que ela NAO faz e chegar à face,
 // que so recebe o que declarou.
-function optionsError(widget) {
+function optionsError(widget, catalog) {
     if (!isPlainObject(widget.options)) return null;
+    if (!catalog) return null;
     for (const [faceName, values] of Object.entries(widget.options)) {
-        if (!faceMeta(widget.module, faceName)) continue;
-        const schema = usableSchema(optionSchemaOf(widget.module, faceName));
+        if (!faceMeta(catalog, widget.module, faceName)) continue;
+        const schema = usableSchema(optionSchemaOf(catalog, widget.module, faceName));
         for (const [key, value] of Object.entries(values)) {
             const declaration = schema.find((entry) => entry.key === key);
             if (!declaration) continue;
@@ -316,7 +317,7 @@ function optionsError(widget) {
 
 // Devolve uma string de erro, ou null se `value` (ja passado pelo
 // parsePageSetValue) serve para `key` numa page.
-export function validatePageSet(key, value) {
+export function validatePageSet(key, value, catalog = null) {
     if (!PAGE_SETTABLE_KEYS.includes(key)) {
         return `unknown key "${key}" for page set (try: ${PAGE_SETTABLE_KEYS.join(", ")})`;
     }
@@ -333,7 +334,7 @@ export function validatePageSet(key, value) {
             if (!isValidWidgetInstance(widget)) {
                 return 'invalid widgets: each entry needs a non-empty "module" and a "cell" with whole-number x, y (0 or more) and w, h (1 or more) — "face" is an optional string and "options" an optional object keyed by face name';
             }
-            const optionError = optionsError(widget);
+            const optionError = optionsError(widget, catalog);
             if (optionError) return optionError;
         }
         return null;

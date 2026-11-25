@@ -1,0 +1,50 @@
+{
+    "face": "digital",
+    "module": "vtnc.clock",
+    "title": "Digital",
+    "component": "Digital.qml",
+    "options": [
+        {
+            "key": "showSeconds",
+            "kind": "toggle",
+            "title": "Show seconds",
+            "default": true
+        },
+        {
+            "key": "fontSize",
+            "kind": "number",
+            "title": "Font size",
+            "default": 20,
+            "min": 8,
+            "max": 72,
+            "step": 1,
+            "unit": "px"
+        },
+        {
+            "key": "align",
+            "kind": "choice",
+            "title": "Align",
+            "default": "center",
+            "choices": [
+                {
+                    "value": "left",
+                    "title": "Left"
+                },
+                {
+                    "value": "center",
+                    "title": "Center"
+                },
+                {
+                    "value": "right",
+                    "title": "Right"
+                }
+            ]
+        },
+        {
+            "key": "color",
+            "kind": "role",
+            "title": "Text colour",
+            "default": "text"
+        }
+    ]
+}

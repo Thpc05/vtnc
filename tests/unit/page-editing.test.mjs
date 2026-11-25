@@ -7,7 +7,8 @@ import {
     defaultPage, PAGE_SETTABLE_KEYS, parsePageSetValue, validatePageSet,
 } from "../../core/config-shape.mjs";
 import { emptyStateIsland, exclusiveZone, islandGeometry, EMPTY_STATE_CELLS } from "../../core/grid.mjs";
-import { WIDGET_CATALOG, SETTINGS_ONLY_MODULES, catalogEntry, isPlaceableModule } from "../../core/widget-catalog.mjs";
+import { placeableModules, isPlaceableModule, moduleIds } from "../../core/plugin-catalog.mjs";
+import { loadCatalog } from "../../cli/lib/plugins.js";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -84,11 +85,15 @@ test("the empty dot is square on screen", () => {
 
 // --- o catalogo (8.2) ------------------------------------------------------
 
-test("the catalogue only offers modules page/Page.qml can actually draw", () => {
-    const pageQml = readFileSync(join(repoRoot, "page", "Page.qml"), "utf8");
-    for (const entry of WIDGET_CATALOG) {
-        assert.ok(pageQml.includes(`case "${entry.module}":`),
-            `${entry.module} está no catálogo mas Page.qml não sabe desenhá-lo`);
+// 0.512: o Page nao tem mais lista de modules, entao "o Page sabe
+// desenhar" deixou de ser uma pergunta - ele desenha o que o catalogo
+// tiver. O que sobra para conferir e que o catalogo so oferece module que
+// existe, e com um tamanho que nao nasce invisivel.
+test("the catalogue only offers modules that exist, at a visible size", () => {
+    const catalog = loadCatalog();
+    for (const entry of placeableModules(catalog)) {
+        assert.ok(moduleIds(catalog).includes(entry.module),
+            `${entry.module} esta no catalogo mas nao existe`);
         assert.ok(entry.defaultCell.w >= 1 && entry.defaultCell.h >= 1,
             `${entry.module} nasceria invisível`);
     }
@@ -98,11 +103,12 @@ test("the catalogue only offers modules page/Page.qml can actually draw", () => 
 // nao sao para o usuario espalhar por ai: oferecer um island-editor dentro
 // de uma page qualquer seria oferecer uma tela de configuracao solta.
 test("the Settings' own widgets are drawable but never offered in the catalogue", () => {
-    const pageQml = readFileSync(join(repoRoot, "page", "Page.qml"), "utf8");
-    for (const module of SETTINGS_ONLY_MODULES) {
-        assert.ok(pageQml.includes(`case "${module}":`), `${module} não é desenhável`);
-        assert.equal(isPlaceableModule(module), false, `${module} não devia estar no catálogo`);
-        assert.equal(catalogEntry(module), null);
+    const catalog = loadCatalog();
+    const settingsOnly = ["vtnc.island-editor", "vtnc.autohide-settings",
+        "vtnc.keybinds-editor", "vtnc.pages-editor", "vtnc.not-built"];
+    for (const module of settingsOnly) {
+        assert.ok(moduleIds(catalog).includes(module), `${module} não é desenhável`);
+        assert.equal(isPlaceableModule(catalog, module), false, `${module} não devia estar no catálogo`);
     }
 });
 
@@ -110,5 +116,5 @@ test("a widget instance the catalogue doesn't know is still valid config", () =>
     // Uma extensao de terceiro instala o proprio module: o validador nao pode
     // exigir que ele esteja nesta lista, que e so o que o editor OFERECE.
     assert.equal(validatePageSet("widgets", [{ module: "user8.weather", cell: { x: 0, y: 0, w: 2, h: 2 } }]), null);
-    assert.equal(isPlaceableModule("user8.weather"), false);
+    assert.equal(isPlaceableModule(loadCatalog(), "user8.weather"), false);
 });

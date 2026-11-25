@@ -1,0 +1,14 @@
+{"edge": "DecidesAbout", "from": "id-de-plugin-e-um-segmento", "to": "plugin", "data": {}}
+{"edge": "DecidesAbout", "from": "id-de-plugin-e-um-segmento", "to": "module", "data": {}}
+{"edge": "DecidesAbout", "from": "plugin-mora-em-local-share", "to": "plugin", "data": {}}
+{"edge": "DecidesAbout", "from": "manifesto-indexa-metas-json", "to": "plugin", "data": {}}
+{"edge": "DecidesAbout", "from": "manifesto-indexa-metas-json", "to": "module", "data": {}}
+{"edge": "DecidesAbout", "from": "manifesto-indexa-metas-json", "to": "face", "data": {}}
+{"edge": "DecidesAbout", "from": "fronteira-e-o-canal-de-propriedades", "to": "plugin", "data": {}}
+{"edge": "DecidesAbout", "from": "fronteira-e-o-canal-de-propriedades", "to": "service", "data": {}}
+{"edge": "DependsOn", "from": "fronteira-e-o-canal-de-propriedades", "to": "plugin-confianca-por-revisao", "data": {}}
+{"edge": "RiskFrom", "from": "risk-singleton-duplicado", "to": "fronteira-e-o-canal-de-propriedades", "data": {}}
+{"edge": "StepImplements", "from": "0.512", "to": "id-de-plugin-e-um-segmento", "data": {}}
+{"edge": "StepImplements", "from": "0.512", "to": "plugin-mora-em-local-share", "data": {}}
+{"edge": "StepImplements", "from": "0.512", "to": "manifesto-indexa-metas-json", "data": {}}
+{"edge": "StepImplements", "from": "0.512", "to": "fronteira-e-o-canal-de-propriedades", "data": {}}

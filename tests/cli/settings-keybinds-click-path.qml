@@ -1,5 +1,5 @@
 import QtQuick
-import "../../widgets/keybinds-editor"
+import "../../modules/keybinds-editor"
 
 // 0.507 criterion 1's click path, same model as
 // settings-autohide-click-path.qml: clicking the consent chip in the built

@@ -2,7 +2,6 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Hyprland
 import "./core/config-shape.mjs" as ConfigShape
-import "./core/widget-registry.mjs" as Registry
 import "./core/face-schema.mjs" as FaceSchema
 import "./core"
 import "./island"
@@ -73,7 +72,7 @@ ShellRoot {
                 // padrao que aparece aqui. E o que torna a troca de face
                 // (3.3) observavel na shell viva, e nao so no config.json.
                 widgets: (((Config.page(calledPage !== "" ? calledPage : (island.page ?? "")) ?? {}).widgets) ?? []).map((widget) => {
-                    const face = widget.face ?? Registry.defaultFaceOf(widget.module);
+                    const face = widget.face ?? PluginRegistry.defaultFaceOf(widget.module);
                     return {
                         module: widget.module,
                         face: face,
@@ -85,7 +84,7 @@ ShellRoot {
                         // dela. O que se quer observar aqui e a resolucao,
                         // nao a pintura.
                         options: FaceSchema.resolveOptions(
-                            Registry.optionSchemaOf(widget.module, face),
+                            PluginRegistry.optionSchemaOf(widget.module, face),
                             FaceSchema.storedOptionsFor(widget, face))
                     };
                 }),
@@ -156,6 +155,38 @@ ShellRoot {
             const page = Config.page(name);
             if (!page) return JSON.stringify({ error: "no such page: " + name });
             return JSON.stringify(page);
+        }
+    }
+
+    // 0.512: o que a varredura de plugins achou. E o unico jeito de ver,
+    // de fora, que um plugin existe mas nao carregou - um pluginApi fora
+    // da faixa aparece aqui com `compatible: false` e o motivo escrito,
+    // em vez de simplesmente nao desenhar e deixar o usuario adivinhando.
+    IpcHandler {
+        target: "plugin"
+
+        function list(): string {
+            return JSON.stringify(PluginRegistry.plugins().map((plugin) => ({
+                id: plugin.id,
+                version: plugin.version,
+                pluginApi: plugin.pluginApi,
+                author: plugin.author,
+                builtin: plugin.builtin,
+                compatible: plugin.compatible,
+                loaded: plugin.loaded,
+                modules: PluginRegistry.catalog.modules
+                    .filter((entry) => entry.pluginId === plugin.id).map((entry) => entry.id),
+                faces: PluginRegistry.catalog.faces
+                    .filter((entry) => entry.pluginId === plugin.id)
+                    .map((entry) => entry.moduleId + "/" + entry.face),
+                problems: plugin.problems,
+            })));
+        }
+
+        function get(name: string): string {
+            const plugin = PluginRegistry.plugins().find((entry) => entry.id === name);
+            if (!plugin) return JSON.stringify({ error: "no such plugin: " + name });
+            return JSON.stringify(plugin);
         }
     }
 

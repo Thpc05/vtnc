@@ -129,7 +129,7 @@ Só para você não consultar o grafo às cegas. O detalhe está lá, não aqui.
 - **Pergunta em aberto não se decide sozinho.** Se o que você precisa está numa `OpenQuestion`,
   pare e pergunte ao Theo.
 - **Português** na documentação; **inglês** no código e em todo texto que o usuário vê.
-- **Cada pasta se descreve**: um `README` por área, um `meta.js` por widget. É isso que faz o
+- **Cada pasta se descreve**: um `README` por área, um `meta.json` por module e por face. É isso que faz o
   catálogo automático funcionar e que deixa um plugin de terceiro se apresentar sozinho.
 - **Commit** livre nesta branch, um por passo fechado. Mensagens em inglês.
 - **Nunca** edite `~/.config/quickshell/vtnc-0.4` nem a branch `0.4`.

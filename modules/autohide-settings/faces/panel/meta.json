@@ -1,0 +1,6 @@
+{
+    "face": "panel",
+    "module": "vtnc.autohide-settings",
+    "title": "Panel",
+    "component": "Panel.qml"
+}

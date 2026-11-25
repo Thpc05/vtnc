@@ -1,0 +1,21 @@
+{
+    "module": "clock",
+    "title": "Clock",
+    "component": "Clock.qml",
+    "services": [
+        "clock"
+    ],
+    "defaultFace": "digital",
+    "placeable": true,
+    "defaultCell": {
+        "w": 6,
+        "h": 2
+    },
+    "provides": [
+        {
+            "name": "time",
+            "kind": "string",
+            "doc": "A hora corrente formatada pelo service clock, HH:MM:SS."
+        }
+    ]
+}

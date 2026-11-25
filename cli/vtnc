@@ -16,6 +16,7 @@ import {
     validateHyprlandSet, parseHyprlandSetValue, defaultHyprland,
 } from "../core/config-shape.mjs";
 import { syncHyprlandFiles } from "./lib/hyprland-write.js";
+import { loadCatalog } from "./lib/plugins.js";
 
 const VERBS = new Set(["set", "call", "get", "list", "end", "generate", "create", "delete"]);
 // The full namespace list from decision 4b.3 — widget/monitor/preset/theme
@@ -24,8 +25,12 @@ const VERBS = new Set(["set", "call", "get", "list", "end", "generate", "create"
 // as open to — it's global, not per-island, so it has no target name, the
 // same grammar `page list`/`service list` already use. `hyprland` (0.507)
 // is the same shape as `autohide`: global, no target name.
-const NAMESPACES = new Set(["island", "page", "widget", "service", "monitor", "preset", "theme", "autohide", "hyprland"]);
-const NAMESPACES_WITH_VERBS = new Set(["island", "page", "service", "autohide", "hyprland"]);
+// `plugin` (0.512) e o namespace da varredura: `list` mostra o que a shell
+// achou, com versao, nivel de API e por que um plugin nao carregou. Os
+// verbos que um PLUGIN declara para si proprio sao outro passo (4.8) -
+// este aqui e sobre os plugins, nao de um plugin.
+const NAMESPACES = new Set(["island", "page", "widget", "service", "monitor", "preset", "theme", "autohide", "hyprland", "plugin"]);
+const NAMESPACES_WITH_VERBS = new Set(["island", "page", "service", "autohide", "hyprland", "plugin"]);
 
 // The shell's own source folder — one level up from cli/ — doubles as its
 // quickshell config name (vtnc-dev while developing, vtnc once installed),
@@ -214,7 +219,7 @@ function cmdSetPage(name, args) {
     }
 
     const value = parsePageSetValue(key, rawValue);
-    const error = validatePageSet(key, value);
+    const error = validatePageSet(key, value, loadCatalog());
     if (error) {
         console.error(`vtnc: ${error}`);
         process.exit(1);

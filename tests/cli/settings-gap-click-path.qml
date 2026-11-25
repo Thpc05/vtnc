@@ -1,5 +1,5 @@
 import QtQuick
-import "../../widgets/island-editor"
+import "../../modules/island-editor"
 
 // 0.504 criterion 5, modeled directly on the coordinator's
 // settings-click-path.sh: not "setGap reaches config.json" (settings-write-

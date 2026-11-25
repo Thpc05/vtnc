@@ -1,5 +1,5 @@
 import QtQuick
-import "../../widgets/pages-editor"
+import "../../modules/pages-editor"
 
 // O caminho de clique do critério 4 da 0.509: clicar o chip "Compact" na
 // linha de face de um widget tem de chegar ao config.json pelo cli/vtnc

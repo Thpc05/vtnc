@@ -27,7 +27,7 @@ trap cleanup EXIT
 
 # Quickshell.shellDir is "wherever this file lives", so the import path
 # has to become relative to vtnc-dev's root, not to tests/cli/.
-sed 's#\.\./\.\./widgets/island-editor#./widgets/island-editor#' \
+sed 's#\.\./\.\./modules/island-editor#./modules/island-editor#' \
     "$here/tests/cli/settings-write-boundary.qml" >"$harness"
 
 reset_config() {

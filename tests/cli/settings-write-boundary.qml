@@ -1,5 +1,5 @@
 import QtQuick
-import "../../widgets/island-editor"
+import "../../modules/island-editor"
 
 // 0.503 acceptance criterion 4: Settings never writes configuration on its
 // own. This drives the real vtnc.island-editor module exactly the way a

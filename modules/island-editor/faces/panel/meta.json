@@ -1,0 +1,6 @@
+{
+    "face": "panel",
+    "module": "vtnc.island-editor",
+    "title": "Panel",
+    "component": "Panel.qml"
+}

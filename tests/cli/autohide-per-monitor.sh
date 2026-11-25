@@ -13,7 +13,7 @@
 # tomada na tela real.
 set -uo pipefail
 fail=0
-here=/home/thpc/.config/quickshell/vtnc-dev
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cfg=$(mktemp -d); env_f=$(mktemp)
 real_sig="${HYPRLAND_INSTANCE_SIGNATURE:-}"
 nested_sig=""; nested_wl=""; nested_ok=0

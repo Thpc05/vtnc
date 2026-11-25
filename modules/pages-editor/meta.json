@@ -1,0 +1,109 @@
+{
+    "module": "pages-editor",
+    "title": "Pages editor",
+    "component": "PagesEditor.qml",
+    "services": [],
+    "defaultFace": "panel",
+    "provides": [
+        {
+            "name": "pageNames",
+            "kind": "var",
+            "doc": "Os nomes das pages que existem, em ordem."
+        },
+        {
+            "name": "selectedPage",
+            "kind": "string",
+            "doc": "A page aberta no editor; vazio quando nao ha page nenhuma."
+        },
+        {
+            "name": "selectedGrid",
+            "kind": "var",
+            "doc": "A grade { cols, rows } da page aberta."
+        },
+        {
+            "name": "widgets",
+            "kind": "var",
+            "doc": "As instancias de widget dentro da page aberta, na ordem da config."
+        },
+        {
+            "name": "catalog",
+            "kind": "var",
+            "doc": "O que da para acrescentar: { module, title, defaultCell } por entrada."
+        },
+        {
+            "name": "facesOf",
+            "kind": "var",
+            "doc": "Funcao (module) que devolve as faces daquele module: { face, title } (3.3/3.5)."
+        },
+        {
+            "name": "faceOfWidget",
+            "kind": "var",
+            "doc": "Funcao (widget) que diz qual face a instancia veste de fato, caindo no padrao do module."
+        },
+        {
+            "name": "selectPage",
+            "kind": "var",
+            "doc": "Funcao (nome) que abre outra page no editor."
+        },
+        {
+            "name": "createPage",
+            "kind": "var",
+            "doc": "Funcao (nome) que cria uma page pela CLI."
+        },
+        {
+            "name": "deletePage",
+            "kind": "var",
+            "doc": "Funcao (nome) que apaga uma page; as islands que a usavam caem no estado empty (14.3)."
+        },
+        {
+            "name": "nudgeGrid",
+            "kind": "var",
+            "doc": "Funcao (eixo, delta) que muda cols ou rows da page aberta."
+        },
+        {
+            "name": "addWidget",
+            "kind": "var",
+            "doc": "Funcao (module) que acrescenta um widget daquele module com a celula padrao do catalogo."
+        },
+        {
+            "name": "removeWidget",
+            "kind": "var",
+            "doc": "Funcao (index) que tira um widget da page."
+        },
+        {
+            "name": "nudgeCell",
+            "kind": "var",
+            "doc": "Funcao (index, campo, delta) que muda x, y, w ou h de um widget."
+        },
+        {
+            "name": "setFace",
+            "kind": "var",
+            "doc": "Funcao (index, face) que veste outra face naquele widget (3.3, escala de widget)."
+        },
+        {
+            "name": "optionSchemaOf",
+            "kind": "var",
+            "doc": "Funcao (widget) que devolve as opcoes que a face dele declara e a shell aceitou (3.4)."
+        },
+        {
+            "name": "optionValuesOf",
+            "kind": "var",
+            "doc": "Funcao (widget) que devolve o valor de cada opcao, o guardado ou o default."
+        },
+        {
+            "name": "optionProblemsOf",
+            "kind": "var",
+            "doc": "Funcao (widget) que devolve as declaracoes de opcao que a shell recusou, com o motivo (3.4d)."
+        },
+        {
+            "name": "setOption",
+            "kind": "var",
+            "doc": "Funcao (index, chave, valor) que muda uma opcao; guardada por face, entao voltar à face antigo nao perde nada (4.4)."
+        },
+        {
+            "name": "colorRoles",
+            "kind": "var",
+            "doc": "A lista fechada de papeis de cor que um controle role aceita (3.4c)."
+        }
+    ]
+}

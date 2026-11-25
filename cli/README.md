@@ -176,7 +176,7 @@ vtnc page dash set widgets '[{"module":"vtnc.clock","face":"compact","cell":{"x"
 ```
 
 `face` continua **opcional**: sem ele a instancia veste o `defaultFace`
-declarado no meta do module (ver `../widgets/README.md`). Um nome que nao
+declarado no meta do module (ver `../modules/README.md`). Um nome que nao
 existe naquele module tambem nao quebra nada — a shell cai no padrao em vez de
 deixar o widget sumir, porque o `config.json` e um arquivo que o usuario
 edita a mao.

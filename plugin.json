@@ -1,0 +1,29 @@
+{
+    "id": "vtnc",
+    "version": "0.512.0",
+    "pluginApi": 1,
+    "author": "Thpc",
+    "description": "The shell's own modules, faces and services.",
+    "modules": [
+        "modules/autohide-settings",
+        "modules/clock",
+        "modules/island-editor",
+        "modules/keybinds-editor",
+        "modules/not-built",
+        "modules/pages-editor",
+        "modules/square"
+    ],
+    "faces": [
+        "modules/autohide-settings/faces/panel",
+        "modules/clock/faces/compact",
+        "modules/clock/faces/digital",
+        "modules/island-editor/faces/panel",
+        "modules/keybinds-editor/faces/panel",
+        "modules/not-built/faces/placeholder",
+        "modules/pages-editor/faces/panel",
+        "modules/square/faces/default"
+    ],
+    "services": [
+        "clock"
+    ]
+}
